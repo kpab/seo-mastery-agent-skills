@@ -1,117 +1,117 @@
 ---
 name: seo-mastery
-description: 包括的なSEO最適化スキル。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T対策を網羅し、実践的なコード生成とサイト監査ワークフローを提供
+description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T strategies, practical code generation, and site audit workflows.
 version: 1.0.0
 author: pani
 ---
 
 # SEO Mastery Agent Skills
 
-Google公式ドキュメントに基づく包括的なSEO最適化スキル。技術SEO、コンテンツ最適化、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
+Comprehensive SEO optimization skill based on Google's official documentation. Provides integrated support for technical SEO, content optimization, structured data, Core Web Vitals, and site audits.
 
-## このスキルを使うタイミング
+## When to Use This Skill
 
-### 🔧 技術SEO（Technical SEO）
-- クロール・インデックス問題のデバッグ
-- robots.txt / sitemap.xml の設定
-- canonical URL / hreflang の実装
-- JavaScript SEO対策
-- モバイルファースト最適化
-- サーバーサイドレンダリング（SSR）設定
+### Technical SEO
+- Debugging crawl and indexing issues
+- Configuring robots.txt / sitemap.xml
+- Implementing canonical URLs / hreflang
+- JavaScript SEO optimization
+- Mobile-first optimization
+- Server-side rendering (SSR) setup
 
-### 📝 コンテンツSEO
-- メタタグ（title, description）の最適化
-- 見出し構造（H1-H6）の設計
-- E-E-A-T（経験・専門性・権威性・信頼性）対策
-- 検索意図に沿ったコンテンツ設計
-- 内部リンク戦略
+### Content SEO
+- Meta tag optimization (title, description)
+- Heading structure design (H1-H6)
+- E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) strategies
+- Search intent-aligned content design
+- Internal linking strategy
 
-### 📊 構造化データ（Structured Data）
-- JSON-LD形式のschema.org実装
-- リッチリザルト対応（FAQ, How-to, Article, Product等）
-- VideoObject, BroadcastEvent実装
-- パンくずリスト（BreadcrumbList）設定
-- LocalBusiness / Organization設定
+### Structured Data
+- JSON-LD schema.org implementation
+- Rich results support (FAQ, How-to, Article, Product, etc.)
+- VideoObject, BroadcastEvent implementation
+- BreadcrumbList configuration
+- LocalBusiness / Organization setup
 
-### ⚡ Core Web Vitals
-- LCP（Largest Contentful Paint）最適化
-- INP（Interaction to Next Paint）改善
-- CLS（Cumulative Layout Shift）対策
-- パフォーマンス監視と改善
+### Core Web Vitals
+- LCP (Largest Contentful Paint) optimization
+- INP (Interaction to Next Paint) improvement
+- CLS (Cumulative Layout Shift) fixes
+- Performance monitoring and improvement
 
-### 🔍 サイト監査
-- 包括的なSEO監査ワークフロー
-- 自動チェックリスト生成
-- 問題の優先順位付け
-- 改善レポート作成
+### Site Audit
+- Comprehensive SEO audit workflow
+- Automated checklist generation
+- Issue prioritization
+- Improvement report creation
 
-## 🚀 クイックスタート
+## Quick Start
 
-### 基本的な使い方
+### Basic Usage
 
 ```
-# メタタグ最適化を依頼
-「このページのメタタグを最適化して」
+# Request meta tag optimization
+"Optimize the meta tags for this page"
 
-# 構造化データ生成
-「この記事にArticle構造化データを追加して」
+# Generate structured data
+"Add Article structured data to this blog post"
 
-# サイト監査実行
-「このサイトのSEO監査をして」
+# Run site audit
+"Perform an SEO audit on this site"
 
-# Core Web Vitals改善
-「LCPを改善する方法を教えて」
+# Improve Core Web Vitals
+"How can I improve LCP?"
 ```
 
 ---
 
-## 📋 技術SEO チェックリスト
+## Technical SEO Checklist
 
-### クロール最適化
-- [ ] robots.txt が正しく設定されている
-- [ ] XML サイトマップが存在し、Search Console に送信済み
-- [ ] 重要ページがnoindexになっていない
-- [ ] クロール予算を無駄遣いしていない
-- [ ] 404/5xx エラーがない
+### Crawl Optimization
+- [ ] robots.txt is properly configured
+- [ ] XML sitemap exists and is submitted to Search Console
+- [ ] Important pages are not set to noindex
+- [ ] Crawl budget is not wasted
+- [ ] No 404/5xx errors
 
-### インデックス最適化
-- [ ] canonical URL が正しく設定されている
-- [ ] 重複コンテンツが適切に処理されている
-- [ ] hreflang（多言語サイトの場合）が正しい
-- [ ] モバイル版とPC版で同じコンテンツ
+### Index Optimization
+- [ ] Canonical URLs are correctly set
+- [ ] Duplicate content is properly handled
+- [ ] hreflang (for multilingual sites) is correct
+- [ ] Mobile and desktop versions have the same content
 
-### レンダリング最適化
-- [ ] JavaScript が適切にレンダリングされる
-- [ ] 重要なコンテンツがHTMLに含まれる
-- [ ] 遅延読み込みが適切に実装されている
+### Rendering Optimization
+- [ ] JavaScript is properly rendered
+- [ ] Critical content is included in HTML
+- [ ] Lazy loading is properly implemented
 
 ---
 
-## 🏗️ 構造化データ テンプレート集
+## Structured Data Templates
 
-### Article（記事）
+### Article
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "記事のタイトル（最大110文字推奨）",
-  "description": "記事の説明文",
+  "headline": "Article title (max 110 characters recommended)",
+  "description": "Article description",
   "image": [
     "https://example.com/photos/1x1/photo.jpg",
     "https://example.com/photos/4x3/photo.jpg",
     "https://example.com/photos/16x9/photo.jpg"
   ],
-  "datePublished": "2025-01-01T08:00:00+09:00",
-  "dateModified": "2025-01-15T10:30:00+09:00",
+  "datePublished": "2025-01-01T08:00:00+00:00",
+  "dateModified": "2025-01-15T10:30:00+00:00",
   "author": {
     "@type": "Person",
-    "name": "著者名",
+    "name": "Author Name",
     "url": "https://example.com/author/profile"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "サイト名",
+    "name": "Site Name",
     "logo": {
       "@type": "ImageObject",
       "url": "https://example.com/logo.png"
@@ -120,7 +120,7 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 }
 ```
 
-### FAQ（よくある質問）
+### FAQ
 
 ```json
 {
@@ -129,25 +129,25 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "質問1のテキスト",
+      "name": "Question 1 text",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "回答1のテキスト"
+        "text": "Answer 1 text"
       }
     },
     {
       "@type": "Question",
-      "name": "質問2のテキスト",
+      "name": "Question 2 text",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "回答2のテキスト"
+        "text": "Answer 2 text"
       }
     }
   ]
 }
 ```
 
-### BreadcrumbList（パンくずリスト）
+### BreadcrumbList
 
 ```json
 {
@@ -157,46 +157,46 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "ホーム",
+      "name": "Home",
       "item": "https://example.com/"
     },
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "カテゴリ",
+      "name": "Category",
       "item": "https://example.com/category/"
     },
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "現在のページ"
+      "name": "Current Page"
     }
   ]
 }
 ```
 
-### Product（商品）
+### Product
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "商品名",
+  "name": "Product Name",
   "image": "https://example.com/product.jpg",
-  "description": "商品の説明",
+  "description": "Product description",
   "brand": {
     "@type": "Brand",
-    "name": "ブランド名"
+    "name": "Brand Name"
   },
   "offers": {
     "@type": "Offer",
     "url": "https://example.com/product",
-    "priceCurrency": "JPY",
-    "price": "9800",
+    "priceCurrency": "USD",
+    "price": "99.00",
     "availability": "https://schema.org/InStock",
     "seller": {
       "@type": "Organization",
-      "name": "販売者名"
+      "name": "Seller Name"
     }
   },
   "aggregateRating": {
@@ -207,28 +207,28 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 }
 ```
 
-### LocalBusiness（ローカルビジネス）
+### LocalBusiness
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "name": "店舗名",
+  "name": "Business Name",
   "image": "https://example.com/store.jpg",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "○○区△△1-2-3",
-    "addressLocality": "横浜市",
-    "addressRegion": "神奈川県",
-    "postalCode": "220-0001",
-    "addressCountry": "JP"
+    "streetAddress": "123 Main Street",
+    "addressLocality": "New York",
+    "addressRegion": "NY",
+    "postalCode": "10001",
+    "addressCountry": "US"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 35.4437,
-    "longitude": 139.6380
+    "latitude": 40.7128,
+    "longitude": -74.0060
   },
-  "telephone": "+81-45-XXX-XXXX",
+  "telephone": "+1-212-555-1234",
   "openingHoursSpecification": [
     {
       "@type": "OpeningHoursSpecification",
@@ -237,24 +237,24 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
       "closes": "18:00"
     }
   ],
-  "priceRange": "¥¥"
+  "priceRange": "$$"
 }
 ```
 
-### VideoObject（動画）
+### VideoObject
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "動画タイトル",
-  "description": "動画の説明",
+  "name": "Video Title",
+  "description": "Video description",
   "thumbnailUrl": [
     "https://example.com/thumb-1x1.jpg",
     "https://example.com/thumb-4x3.jpg",
     "https://example.com/thumb-16x9.jpg"
   ],
-  "uploadDate": "2025-01-01T08:00:00+09:00",
+  "uploadDate": "2025-01-01T08:00:00+00:00",
   "duration": "PT5M30S",
   "contentUrl": "https://example.com/video.mp4",
   "embedUrl": "https://example.com/embed/video123",
@@ -266,14 +266,14 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
   "hasPart": [
     {
       "@type": "Clip",
-      "name": "イントロ",
+      "name": "Introduction",
       "startOffset": 0,
       "endOffset": 30,
       "url": "https://example.com/video?t=0"
     },
     {
       "@type": "Clip",
-      "name": "メインコンテンツ",
+      "name": "Main Content",
       "startOffset": 30,
       "endOffset": 300,
       "url": "https://example.com/video?t=30"
@@ -284,214 +284,214 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 ---
 
-## ⚡ Core Web Vitals 最適化ガイド
+## Core Web Vitals Optimization Guide
 
-### LCP（Largest Contentful Paint）- 2.5秒以下が目標
+### LCP (Largest Contentful Paint) - Target: Under 2.5 seconds
 
-**主な原因と対策:**
+**Common Causes and Solutions:**
 
-| 原因 | 対策 |
-|------|------|
-| 遅いサーバーレスポンス | CDN導入、キャッシュ最適化、サーバースペック向上 |
-| レンダーブロッキングリソース | CSS/JSの遅延読み込み、Critical CSSのインライン化 |
-| 遅い画像読み込み | WebP/AVIF使用、適切なサイズ指定、preload設定 |
-| クライアントサイドレンダリング | SSR/SSG導入、重要コンテンツの事前レンダリング |
+| Cause | Solution |
+|-------|----------|
+| Slow server response | CDN implementation, cache optimization, server upgrades |
+| Render-blocking resources | Defer CSS/JS loading, inline Critical CSS |
+| Slow image loading | Use WebP/AVIF, specify proper sizes, preload settings |
+| Client-side rendering | Implement SSR/SSG, pre-render critical content |
 
-**実装例: 画像のプリロード**
+**Example: Image Preloading**
 ```html
 <link rel="preload" as="image" href="hero-image.webp" fetchpriority="high">
 ```
 
-### INP（Interaction to Next Paint）- 200ms以下が目標
+### INP (Interaction to Next Paint) - Target: Under 200ms
 
-**主な原因と対策:**
+**Common Causes and Solutions:**
 
-| 原因 | 対策 |
-|------|------|
-| 重いJavaScript | コード分割、不要なJSの削除、遅延実行 |
-| 長いタスク | タスクの分割（yield to main thread） |
-| 大きなDOMサイズ | DOM要素の削減、仮想スクロール導入 |
-| サードパーティスクリプト | 遅延読み込み、必要性の見直し |
+| Cause | Solution |
+|-------|----------|
+| Heavy JavaScript | Code splitting, remove unnecessary JS, defer execution |
+| Long tasks | Split tasks (yield to main thread) |
+| Large DOM size | Reduce DOM elements, implement virtual scrolling |
+| Third-party scripts | Lazy load, review necessity |
 
-**実装例: 長いタスクの分割**
+**Example: Splitting Long Tasks**
 ```javascript
 async function processLargeArray(items) {
   for (const item of items) {
     processItem(item);
-    // メインスレッドに制御を返す
+    // Yield to main thread
     await new Promise(resolve => setTimeout(resolve, 0));
   }
 }
 ```
 
-### CLS（Cumulative Layout Shift）- 0.1以下が目標
+### CLS (Cumulative Layout Shift) - Target: Under 0.1
 
-**主な原因と対策:**
+**Common Causes and Solutions:**
 
-| 原因 | 対策 |
-|------|------|
-| サイズ未指定の画像/動画 | width/height属性を明示、aspect-ratio CSS使用 |
-| 動的に挿入されるコンテンツ | 事前にスペースを確保、スケルトンUI使用 |
-| Webフォント（FOUT/FOIT） | font-display: swap、フォントのプリロード |
-| 広告・埋め込みコンテンツ | 固定サイズのコンテナを事前配置 |
+| Cause | Solution |
+|-------|----------|
+| Images/videos without dimensions | Specify width/height attributes, use aspect-ratio CSS |
+| Dynamically inserted content | Reserve space in advance, use skeleton UI |
+| Web fonts (FOUT/FOIT) | font-display: swap, preload fonts |
+| Ads/embeds | Pre-position fixed-size containers |
 
-**実装例: 画像のアスペクト比確保**
+**Example: Image Aspect Ratio**
 ```html
-<img src="image.jpg" width="800" height="600" alt="説明" 
+<img src="image.jpg" width="800" height="600" alt="Description"
      style="aspect-ratio: 4/3; width: 100%; height: auto;">
 ```
 
 ---
 
-## 🎯 E-E-A-T 最適化チェックリスト
+## E-E-A-T Optimization Checklist
 
-### Experience（経験）
-- [ ] 実体験に基づくコンテンツを提供
-- [ ] 実際の製品使用レビュー・写真を含む
-- [ ] ケーススタディや事例を紹介
+### Experience
+- [ ] Provide content based on first-hand experience
+- [ ] Include actual product usage reviews/photos
+- [ ] Present case studies and examples
 
-### Expertise（専門性）
-- [ ] 著者情報ページが存在する
-- [ ] 著者の資格・経歴を明記
-- [ ] 専門分野に特化したコンテンツ
-- [ ] 正確で最新の情報を提供
+### Expertise
+- [ ] Author information page exists
+- [ ] Author credentials/background are stated
+- [ ] Content focuses on specialized field
+- [ ] Provide accurate and up-to-date information
 
-### Authoritativeness（権威性）
-- [ ] 信頼できる外部サイトからの被リンク
-- [ ] 業界団体・専門家からの引用
-- [ ] ブランドメンション（言及）の獲得
-- [ ] 専門家による監修・レビュー
+### Authoritativeness
+- [ ] Backlinks from trusted external sites
+- [ ] Citations from industry bodies/experts
+- [ ] Brand mentions earned
+- [ ] Expert review/supervision
 
-### Trustworthiness（信頼性）
-- [ ] HTTPS化されている
-- [ ] プライバシーポリシーが存在
-- [ ] 問い合わせ先が明確
-- [ ] 会社情報・所在地が明記
-- [ ] ユーザーレビュー・評価を掲載
-- [ ] 情報源を明記・引用
+### Trustworthiness
+- [ ] HTTPS enabled
+- [ ] Privacy policy exists
+- [ ] Contact information is clear
+- [ ] Company information/location is stated
+- [ ] User reviews/ratings are displayed
+- [ ] Sources are cited
 
 ---
 
-## 🔍 サイト監査ワークフロー
+## Site Audit Workflow
 
-### Phase 1: クロール診断（15分）
+### Phase 1: Crawl Diagnosis
 
 ```bash
-# robots.txtの確認
+# Check robots.txt
 curl -s https://example.com/robots.txt
 
-# サイトマップの確認
+# Check sitemap
 curl -s https://example.com/sitemap.xml | head -50
 
-# インデックス状況（site:検索）
-# Google検索で site:example.com を実行
+# Index status (site: search)
+# Search "site:example.com" on Google
 ```
 
-**チェック項目:**
-1. robots.txt で重要ページがブロックされていないか
-2. sitemap.xml が存在し、主要ページを含んでいるか
-3. インデックス数が想定と一致するか
+**Check Items:**
+1. Are important pages blocked by robots.txt?
+2. Does sitemap.xml exist and include main pages?
+3. Does index count match expectations?
 
-### Phase 2: ページ単位診断（30分/ページ）
+### Phase 2: Page-Level Diagnosis
 
-**HTMLヘッド要素:**
+**HTML Head Elements:**
 ```bash
-# メタ情報の抽出
+# Extract meta information
 curl -s https://example.com/ | grep -E '<title>|<meta name="description"|<link rel="canonical"'
 ```
 
-**チェック項目:**
-1. タイトルタグ（60文字以内、キーワード含む）
-2. メタディスクリプション（120文字以内）
-3. canonical URL
-4. OGP / Twitter Cardタグ
-5. 構造化データの有無
+**Check Items:**
+1. Title tag (under 60 characters, includes keywords)
+2. Meta description (under 160 characters)
+3. Canonical URL
+4. OGP / Twitter Card tags
+5. Structured data presence
 
-### Phase 3: パフォーマンス診断（20分）
+### Phase 3: Performance Diagnosis
 
 **Lighthouse CLI:**
 ```bash
 npx lighthouse https://example.com --output=json --output-path=./report.json
 ```
 
-**チェック項目:**
-1. Core Web Vitals スコア
-2. アクセシビリティスコア
-3. SEOスコア
-4. パフォーマンス改善提案
+**Check Items:**
+1. Core Web Vitals scores
+2. Accessibility score
+3. SEO score
+4. Performance improvement suggestions
 
-### Phase 4: 競合分析（30分）
+### Phase 4: Competitive Analysis
 
-1. 上位表示サイトのコンテンツ量・構成
-2. 被リンクプロファイル
-3. 使用している構造化データ
-4. ページ速度比較
+1. Content volume/structure of top-ranking sites
+2. Backlink profiles
+3. Structured data usage
+4. Page speed comparison
 
-### Phase 5: 改善優先度マトリクス
+### Phase 5: Improvement Priority Matrix
 
-| 優先度 | 影響度 | 実装難易度 | 例 |
-|--------|--------|------------|-----|
-| 🔴 緊急 | 高 | 低 | noindex削除、404修正 |
-| 🟡 高 | 高 | 中 | 構造化データ追加、メタタグ最適化 |
-| 🟢 中 | 中 | 中 | Core Web Vitals改善 |
-| 🔵 低 | 低 | 高 | サイト構造の大幅変更 |
-
----
-
-## 📁 関連リファレンスファイル
-
-このスキルには以下の詳細ドキュメントが含まれます：
-
-| ファイル | 内容 | 使用場面 |
-|----------|------|----------|
-| [technical-seo.md](technical-seo.md) | robots.txt、sitemap、canonical、hreflang等 | 技術的なSEO設定時 |
-| [content-seo.md](content-seo.md) | メタタグ、見出し構造、コンテンツ設計 | コンテンツ最適化時 |
-| [structured-data.md](structured-data.md) | 全構造化データタイプの詳細 | リッチリザルト実装時 |
-| [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLS詳細な最適化手法 | パフォーマンス改善時 |
-| [audit-workflow.md](audit-workflow.md) | 監査手順、ツール、レポート形式 | サイト監査実施時 |
+| Priority | Impact | Difficulty | Examples |
+|----------|--------|------------|----------|
+| Critical | High | Low | Remove noindex, fix 404s |
+| High | High | Medium | Add structured data, optimize meta tags |
+| Medium | Medium | Medium | Core Web Vitals improvements |
+| Low | Low | High | Major site structure changes |
 
 ---
 
-## 🛠️ 推奨ツール
+## Related Reference Files
 
-### Google公式
-- [Google Search Console](https://search.google.com/search-console) - インデックス状況・検索パフォーマンス
-- [PageSpeed Insights](https://pagespeed.web.dev/) - Core Web Vitals測定
-- [Rich Results Test](https://search.google.com/test/rich-results) - 構造化データ検証
-- [Mobile-Friendly Test](https://search.google.com/test/mobile-friendly) - モバイル対応確認
+This skill includes the following detailed documents:
 
-### CLI/開発ツール
-- Lighthouse CLI - パフォーマンス監査
-- Screaming Frog - 大規模サイトクロール
-- ahrefs / SEMrush - 競合・被リンク分析
-
----
-
-## ⚠️ よくある間違いと対策
-
-### 1. 過度なキーワード詰め込み
-❌ 「SEO SEO SEO対策 SEO最適化 SEOツール」
-✅ 自然な文脈でキーワードを使用
-
-### 2. 重複コンテンツ
-❌ wwwありなし、http/httpsで別URLとして存在
-✅ canonical設定、301リダイレクト
-
-### 3. 遅い画像読み込み
-❌ 大きなPNG/JPGをそのまま使用
-✅ WebP変換、適切なサイズ、lazy loading
-
-### 4. 構造化データのエラー
-❌ 必須フィールドの欠落、不正な形式
-✅ Rich Results Testで事前検証
-
-### 5. モバイル非対応
-❌ PC版のみ、タッチ非対応
-✅ レスポンシブデザイン、タップ領域確保
+| File | Content | Use Case |
+|------|---------|----------|
+| [technical-seo.md](technical-seo.md) | robots.txt, sitemap, canonical, hreflang, etc. | Technical SEO configuration |
+| [content-seo.md](content-seo.md) | Meta tags, heading structure, content design | Content optimization |
+| [structured-data.md](structured-data.md) | All structured data type details | Rich results implementation |
+| [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS optimization | Performance improvement |
+| [audit-workflow.md](audit-workflow.md) | Audit procedures, tools, report formats | Site audit execution |
 
 ---
 
-## 📚 公式リソース
+## Recommended Tools
+
+### Google Official
+- [Google Search Console](https://search.google.com/search-console) - Index status & search performance
+- [PageSpeed Insights](https://pagespeed.web.dev/) - Core Web Vitals measurement
+- [Rich Results Test](https://search.google.com/test/rich-results) - Structured data validation
+- [Mobile-Friendly Test](https://search.google.com/test/mobile-friendly) - Mobile compatibility check
+
+### CLI/Development Tools
+- Lighthouse CLI - Performance auditing
+- Screaming Frog - Large-scale site crawling
+- ahrefs / SEMrush - Competitive & backlink analysis
+
+---
+
+## Common Mistakes and Solutions
+
+### 1. Keyword Stuffing
+- Avoid: "SEO SEO SEO optimization SEO tools SEO company"
+- Better: Use keywords naturally in context
+
+### 2. Duplicate Content
+- Avoid: www vs non-www, http vs https as separate URLs
+- Better: Canonical settings, 301 redirects
+
+### 3. Slow Image Loading
+- Avoid: Large PNG/JPG files used as-is
+- Better: WebP conversion, proper sizing, lazy loading
+
+### 4. Structured Data Errors
+- Avoid: Missing required fields, invalid formats
+- Better: Pre-validate with Rich Results Test
+
+### 5. Not Mobile-Friendly
+- Avoid: Desktop-only, no touch support
+- Better: Responsive design, adequate tap targets
+
+---
+
+## Official Resources
 
 - [Google Search Central](https://developers.google.com/search)
 - [SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
@@ -501,11 +501,11 @@ npx lighthouse https://example.com --output=json --output-path=./report.json
 
 ---
 
-## 更新履歴
+## Changelog
 
-- **v1.0.0** (2025-01) - 初版リリース
-  - Googleの公式SEOガイドを基に作成
-  - 技術SEO、コンテンツSEO、構造化データ網羅
-  - Core Web Vitals（2024年INP対応版）
-  - E-E-A-T対策チェックリスト追加
-  - サイト監査ワークフロー追加
+- **v1.0.0** (2025-01) - Initial release
+  - Created based on Google's official SEO guides
+  - Comprehensive technical SEO, content SEO, structured data coverage
+  - Core Web Vitals (2024 INP-compliant version)
+  - E-E-A-T optimization checklist added
+  - Site audit workflow added

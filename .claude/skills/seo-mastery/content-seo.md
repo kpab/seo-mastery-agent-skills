@@ -1,85 +1,85 @@
-# コンテンツSEO リファレンス
+# Content SEO Reference
 
-検索エンジンとユーザー双方に最適化されたコンテンツ作成ガイド。
+Guide for creating content optimized for both search engines and users.
 
-## メタタグ最適化
+## Meta Tag Optimization
 
-### title タグ
+### Title Tag
 
 ```html
-<title>主要キーワード - サブキーワード | サイト名</title>
+<title>Primary Keyword - Secondary Keyword | Site Name</title>
 ```
 
-**ベストプラクティス:**
+**Best Practices:**
 
-| 項目 | 推奨 |
-|------|------|
-| 文字数 | 30〜60文字（日本語） |
-| キーワード位置 | 先頭に配置 |
-| ユニーク性 | 各ページで固有のタイトル |
-| ブランド名 | 末尾に「| サイト名」 |
-| 区切り文字 | `-` `|` `–` を使用 |
+| Item | Recommendation |
+|------|----------------|
+| Length | 50-60 characters |
+| Keyword position | Place at the beginning |
+| Uniqueness | Unique title for each page |
+| Brand name | "| Site Name" at the end |
+| Separators | Use `-` `|` `–` |
 
-**パターン別テンプレート:**
+**Pattern Templates:**
 
 ```html
-<!-- 記事ページ -->
-<title>【2025年版】SEO対策の完全ガイド - 初心者でもわかる基礎から実践まで | サイト名</title>
+<!-- Article page -->
+<title>Complete Guide to SEO in 2025 - From Basics to Advanced | Site Name</title>
 
-<!-- 商品ページ -->
-<title>商品名 - カテゴリ | ショップ名 【公式】</title>
+<!-- Product page -->
+<title>Product Name - Category | Shop Name [Official]</title>
 
-<!-- カテゴリページ -->
-<title>カテゴリ名の商品一覧 | ショップ名</title>
+<!-- Category page -->
+<title>Category Name Products | Shop Name</title>
 
-<!-- トップページ -->
-<title>サイト名 | キャッチコピー（サービスの要約）</title>
+<!-- Home page -->
+<title>Site Name | Tagline (Service Summary)</title>
 ```
 
-**避けるべきパターン:**
+**Patterns to Avoid:**
 
 ```html
-<!-- ❌ キーワード詰め込み -->
-<title>SEO SEO対策 SEO最適化 SEOツール SEO会社</title>
+<!-- Keyword stuffing -->
+<title>SEO SEO Guide SEO Tips SEO Tools SEO Company</title>
 
-<!-- ❌ 同じタイトルの重複使用 -->
-<title>サイト名</title> <!-- 全ページ同じ -->
+<!-- Duplicate titles -->
+<title>Site Name</title> <!-- Same on all pages -->
 
-<!-- ❌ 長すぎるタイトル -->
-<title>2025年最新版SEO対策完全ガイド初心者から上級者まで使える実践テクニック集Google検索エンジン最適化の極意</title>
+<!-- Too long -->
+<title>2025 Ultimate Complete Comprehensive SEO Guide For Beginners And Experts Tips Tricks And Strategies For Google Search Engine Optimization</title>
 ```
 
 ---
 
-### meta description
+### Meta Description
 
 ```html
-<meta name="description" content="ページの説明文。120文字程度で要約。">
+<meta name="description" content="Page description. Summarize in about 160 characters.">
 ```
 
-**ベストプラクティス:**
+**Best Practices:**
 
-| 項目 | 推奨 |
-|------|------|
-| 文字数 | 80〜120文字（日本語） |
-| 内容 | ページ内容の正確な要約 |
-| CTA | 「詳しくはこちら」等のアクション誘導 |
-| キーワード | 自然に含める（太字表示される） |
+| Item | Recommendation |
+|------|----------------|
+| Length | 150-160 characters |
+| Content | Accurate summary of page content |
+| CTA | Action prompts like "Learn more" |
+| Keywords | Include naturally (shown in bold) |
 
-**良い例:**
+**Good Example:**
 
 ```html
-<meta name="description" content="SEO対策の基礎から実践までを解説。クロール最適化、構造化データ、Core Web Vitalsの改善方法を具体例付きで紹介します。">
+<meta name="description" content="Learn SEO from basics to advanced techniques. This guide covers crawl optimization, structured data, and Core Web Vitals improvement with practical examples.">
 ```
 
-**悪い例:**
+**Bad Examples:**
 
 ```html
-<!-- ❌ キーワードの羅列 -->
-<meta name="description" content="SEO、SEO対策、Google、検索エンジン、最適化、ランキング、上位表示">
+<!-- Keyword list -->
+<meta name="description" content="SEO, SEO guide, Google, search engine, optimization, ranking, top results">
 
-<!-- ❌ 内容と無関係 -->
-<meta name="description" content="当社は1990年創業の老舗企業です。お客様満足度No.1を目指しています。">
+<!-- Unrelated to content -->
+<meta name="description" content="We are a company founded in 1990. We strive for customer satisfaction.">
 ```
 
 ---
@@ -88,133 +88,132 @@
 
 ```html
 <!-- Open Graph Protocol -->
-<meta property="og:title" content="ページタイトル">
-<meta property="og:description" content="ページの説明">
+<meta property="og:title" content="Page Title">
+<meta property="og:description" content="Page description">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://example.com/page/">
 <meta property="og:image" content="https://example.com/ogp-image.jpg">
-<meta property="og:site_name" content="サイト名">
-<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="Site Name">
+<meta property="og:locale" content="en_US">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@username">
-<meta name="twitter:title" content="ページタイトル">
-<meta name="twitter:description" content="ページの説明">
+<meta name="twitter:title" content="Page Title">
+<meta name="twitter:description" content="Page description">
 <meta name="twitter:image" content="https://example.com/twitter-image.jpg">
 ```
 
-**OGP画像サイズ:**
+**OGP Image Sizes:**
 
-| プラットフォーム | 推奨サイズ |
-|------------------|------------|
+| Platform | Recommended Size |
+|----------|------------------|
 | Facebook | 1200 x 630px |
 | Twitter | 1200 x 628px |
 | LinkedIn | 1200 x 627px |
-| LINE | 1200 x 630px |
+| Pinterest | 1000 x 1500px |
 
 ---
 
-## 見出し構造（H1-H6）
+## Heading Structure (H1-H6)
 
-### 正しい階層構造
+### Correct Hierarchy
 
 ```html
-<h1>メインタイトル（1ページに1つ）</h1>
+<h1>Main Title (One per page)</h1>
 
-<h2>大見出し1</h2>
-<p>本文...</p>
+<h2>Section Heading 1</h2>
+<p>Body text...</p>
 
-<h3>中見出し1-1</h3>
-<p>本文...</p>
+<h3>Subsection 1-1</h3>
+<p>Body text...</p>
 
-<h3>中見出し1-2</h3>
-<p>本文...</p>
+<h3>Subsection 1-2</h3>
+<p>Body text...</p>
 
-<h2>大見出し2</h2>
-<p>本文...</p>
+<h2>Section Heading 2</h2>
+<p>Body text...</p>
 
-<h3>中見出し2-1</h3>
-<p>本文...</p>
+<h3>Subsection 2-1</h3>
+<p>Body text...</p>
 
-<h4>小見出し2-1-1</h4>
-<p>本文...</p>
+<h4>Sub-subsection 2-1-1</h4>
+<p>Body text...</p>
 ```
 
-**ルール:**
+**Rules:**
 
-1. **H1 は1ページに1つ**
-2. **階層をスキップしない**（H1 → H3 は ❌）
-3. **論理的な構造を維持**
-4. **キーワードを自然に含める**
+1. **One H1 per page**
+2. **Don't skip levels** (H1 -> H3 is wrong)
+3. **Maintain logical structure**
+4. **Include keywords naturally**
 
-**悪い例:**
+**Bad Examples:**
 
 ```html
-<!-- ❌ 階層スキップ -->
-<h1>タイトル</h1>
-<h3>いきなりH3</h3>
+<!-- Skipping levels -->
+<h1>Title</h1>
+<h3>Jumping to H3</h3>
 
-<!-- ❌ H1が複数 -->
-<h1>タイトル1</h1>
-<h1>タイトル2</h1>
+<!-- Multiple H1s -->
+<h1>Title 1</h1>
+<h1>Title 2</h1>
 
-<!-- ❌ デザイン目的での使用 -->
-<h2 style="font-size: 14px;">小さいテキストをH2で...</h2>
+<!-- Using headings for styling -->
+<h2 style="font-size: 14px;">Small text as H2...</h2>
 ```
 
 ---
 
-## コンテンツ品質
+## Content Quality
 
-### E-E-A-T を意識した構成
+### E-E-A-T Focused Structure
 
-**Experience（経験）:**
+**Experience:**
 ```html
-<!-- 実体験を示す表現 -->
-<p>実際に3ヶ月間このツールを使用して検証した結果、
-以下のような効果が得られました。</p>
+<!-- Show first-hand experience -->
+<p>After using this tool for 3 months, I verified the following results.</p>
 
-<!-- 写真・スクリーンショット -->
+<!-- Photos/screenshots -->
 <figure>
-  <img src="実際の使用画面.jpg" alt="ツールの管理画面">
-  <figcaption>実際の管理画面（2025年1月時点）</figcaption>
+  <img src="actual-screenshot.jpg" alt="Tool dashboard">
+  <figcaption>Actual dashboard (January 2025)</figcaption>
 </figure>
 ```
 
-**Expertise（専門性）:**
+**Expertise:**
 ```html
-<!-- 著者情報 -->
+<!-- Author information -->
 <div class="author-bio">
-  <img src="author.jpg" alt="著者名">
-  <p><strong>著者名</strong> - SEOコンサルタント</p>
-  <p>10年以上のSEO経験。Google認定パートナー。
-  これまで200社以上の企業のSEO支援を実施。</p>
-  <a href="/author/profile">著者プロフィール</a>
+  <img src="author.jpg" alt="Author Name">
+  <p><strong>Author Name</strong> - SEO Consultant</p>
+  <p>10+ years of SEO experience. Google certified partner.
+  Has supported 200+ companies with SEO.</p>
+  <a href="/author/profile">Author Profile</a>
 </div>
 ```
 
-**Authoritativeness（権威性）:**
+**Authoritativeness:**
 ```html
-<!-- 引用・出典の明記 -->
+<!-- Citations/sources -->
 <blockquote cite="https://developers.google.com/search">
-  <p>「高品質なコンテンツを作成することが、検索結果で上位表示される
-  最も重要な要因の一つです。」</p>
+  <p>"Creating high-quality content is one of the most important factors
+  for ranking well in search results."</p>
   <footer>— Google Search Central</footer>
 </blockquote>
 ```
 
-**Trustworthiness（信頼性）:**
+**Trustworthiness:**
 ```html
-<!-- 更新日の明記 -->
-<time datetime="2025-01-15">最終更新: 2025年1月15日</time>
+<!-- Update date -->
+<time datetime="2025-01-15">Last updated: January 15, 2025</time>
 
-<!-- ファクトチェック -->
-<p>この記事は<a href="/author/expert">専門家名</a>が監修しています。</p>
+<!-- Fact check -->
+<p>This article was reviewed by <a href="/author/expert">Expert Name</a>.</p>
 
-<!-- 情報源の開示 -->
+<!-- Source disclosure -->
 <section class="sources">
-  <h2>参考文献</h2>
+  <h2>References</h2>
   <ul>
     <li><a href="...">Google Search Central Documentation</a></li>
     <li><a href="...">Web.dev - Core Web Vitals</a></li>
@@ -224,243 +223,243 @@
 
 ---
 
-## 内部リンク戦略
+## Internal Linking Strategy
 
-### アンカーテキストのベストプラクティス
+### Anchor Text Best Practices
 
 ```html
-<!-- ✅ 良い例：説明的なアンカーテキスト -->
-<p>詳しくは<a href="/seo-guide">SEO対策の基礎ガイド</a>をご覧ください。</p>
+<!-- Good: Descriptive anchor text -->
+<p>For details, see our <a href="/seo-guide">SEO basics guide</a>.</p>
 
-<!-- ✅ 良い例：コンテキストが明確 -->
-<p>Core Web Vitalsの改善については、
-<a href="/core-web-vitals">LCP・INP・CLSの最適化方法</a>で解説しています。</p>
+<!-- Good: Clear context -->
+<p>For Core Web Vitals improvements,
+check our <a href="/core-web-vitals">LCP, INP, and CLS optimization guide</a>.</p>
 
-<!-- ❌ 悪い例：汎用的すぎる -->
-<p>詳しくは<a href="/seo-guide">こちら</a>をご覧ください。</p>
-<p><a href="/core-web-vitals">クリックしてください</a></p>
+<!-- Bad: Too generic -->
+<p>For details, click <a href="/seo-guide">here</a>.</p>
+<p><a href="/core-web-vitals">Click here</a></p>
 
-<!-- ❌ 悪い例：過度なキーワード -->
-<p><a href="/seo-guide">SEO SEO対策 Google SEO 検索エンジン最適化</a></p>
+<!-- Bad: Over-optimized -->
+<p><a href="/seo-guide">SEO SEO Guide Google SEO Search Engine Optimization</a></p>
 ```
 
-### リンク構造の設計
+### Link Structure Design
 
 ```
-トップページ
-├── カテゴリA
-│   ├── 記事A-1 ← サイロ構造内でリンク
-│   ├── 記事A-2
-│   └── 記事A-3
-├── カテゴリB
-│   ├── 記事B-1
-│   └── 記事B-2
-└── 重要ページ（複数カテゴリからリンク）
+Homepage
+├── Category A
+│   ├── Article A-1 ← Link within silo structure
+│   ├── Article A-2
+│   └── Article A-3
+├── Category B
+│   ├── Article B-1
+│   └── Article B-2
+└── Important Page (linked from multiple categories)
 ```
 
-**実装のポイント:**
+**Implementation Points:**
 
-1. **重要ページへのリンク増加**
-   - サイドバー、フッターからリンク
-   - 関連記事セクションで紹介
+1. **Increase links to important pages**
+   - Link from sidebar, footer
+   - Feature in related articles section
 
-2. **サイロ構造の活用**
-   - 同カテゴリ内でのリンクを優先
-   - カテゴリをまたぐリンクは戦略的に
+2. **Use silo structure**
+   - Prioritize links within same category
+   - Cross-category links should be strategic
 
-3. **孤立ページの防止**
-   - すべてのページに最低1つの内部リンク
-   - パンくずリストで階層を明示
+3. **Prevent orphan pages**
+   - Every page should have at least one internal link
+   - Use breadcrumbs to show hierarchy
 
 ---
 
-## 画像最適化
+## Image Optimization
 
-### alt属性
+### Alt Attribute
 
 ```html
-<!-- ✅ 良い例：具体的で説明的 -->
-<img src="chart.png" alt="2024年のSEOトレンドを示す棒グラフ。AIコンテンツが40%で1位">
+<!-- Good: Specific and descriptive -->
+<img src="chart.png" alt="Bar chart showing 2024 SEO trends. AI content at 40% ranks first">
 
-<!-- ✅ 良い例：商品画像 -->
-<img src="product.jpg" alt="Apple MacBook Pro 14インチ M3チップ シルバー">
+<!-- Good: Product image -->
+<img src="product.jpg" alt="Apple MacBook Pro 14-inch M3 chip Silver">
 
-<!-- ❌ 悪い例：キーワード詰め込み -->
-<img src="chart.png" alt="SEO SEO対策 Google 検索エンジン 最適化 グラフ 統計">
+<!-- Bad: Keyword stuffing -->
+<img src="chart.png" alt="SEO SEO guide Google search engine optimization chart statistics">
 
-<!-- ❌ 悪い例：説明不足 -->
-<img src="chart.png" alt="グラフ">
-<img src="product.jpg" alt="商品画像">
+<!-- Bad: Not descriptive -->
+<img src="chart.png" alt="Chart">
+<img src="product.jpg" alt="Product image">
 
-<!-- 装飾画像はalt空欄 -->
+<!-- Decorative images: empty alt -->
 <img src="decorative-line.png" alt="">
 ```
 
-### ファイル名
+### File Names
 
 ```
-✅ 良い例:
+Good:
 seo-trends-2024-chart.webp
 macbook-pro-14-m3-silver.jpg
 
-❌ 悪い例:
+Bad:
 IMG_1234.jpg
 screenshot-2025-01-15.png
 image1.webp
 ```
 
-### 画像形式の選択
+### Image Format Selection
 
-| 形式 | 用途 | 圧縮 |
-|------|------|------|
-| WebP | 写真、イラスト全般 | 非可逆/可逆 |
-| AVIF | 次世代（高圧縮） | 非可逆/可逆 |
-| PNG | 透過が必要な画像 | 可逆 |
-| SVG | ロゴ、アイコン | ベクター |
-| JPEG | レガシーサポート | 非可逆 |
+| Format | Use Case | Compression |
+|--------|----------|-------------|
+| WebP | Photos, illustrations general | Lossy/Lossless |
+| AVIF | Next-gen (high compression) | Lossy/Lossless |
+| PNG | Images requiring transparency | Lossless |
+| SVG | Logos, icons | Vector |
+| JPEG | Legacy support | Lossy |
 
-### レスポンシブ画像
+### Responsive Images
 
 ```html
 <picture>
   <source media="(min-width: 1024px)" srcset="large.webp" type="image/webp">
   <source media="(min-width: 640px)" srcset="medium.webp" type="image/webp">
   <source srcset="small.webp" type="image/webp">
-  <img src="fallback.jpg" alt="説明" width="800" height="600" loading="lazy">
+  <img src="fallback.jpg" alt="Description" width="800" height="600" loading="lazy">
 </picture>
 ```
 
 ---
 
-## URL設計
+## URL Design
 
-### ベストプラクティス
+### Best Practices
 
 ```
-✅ 良い例:
+Good:
 https://example.com/seo/technical-guide
 https://example.com/products/laptop/macbook-pro
 https://example.com/blog/2025/01/seo-trends
 
-❌ 悪い例:
+Bad:
 https://example.com/p?id=12345
 https://example.com/category1/subcategory2/page
 https://example.com/seo-seo-optimization-guide-tips-tricks
 ```
 
-**ルール:**
+**Rules:**
 
-| 項目 | 推奨 |
-|------|------|
-| 長さ | 50〜60文字以内 |
-| 区切り文字 | ハイフン `-` を使用 |
-| 文字 | 小文字英数字のみ |
-| 階層 | 3階層以内 |
-| キーワード | 主要キーワードを含む |
+| Item | Recommendation |
+|------|----------------|
+| Length | Under 50-60 characters |
+| Separator | Use hyphens `-` |
+| Characters | Lowercase alphanumeric only |
+| Depth | Within 3 levels |
+| Keywords | Include main keyword |
 
-### 避けるべきパターン
+### Patterns to Avoid
 
 ```
-# アンダースコア
-example.com/seo_guide ❌
-example.com/seo-guide ✅
+# Underscores
+example.com/seo_guide    Bad
+example.com/seo-guide    Good
 
-# 大文字混在
-example.com/SEO-Guide ❌
-example.com/seo-guide ✅
+# Mixed case
+example.com/SEO-Guide    Bad
+example.com/seo-guide    Good
 
-# 不要なパラメータ
-example.com/page?session=abc123 ❌
+# Unnecessary parameters
+example.com/page?session=abc123    Bad
 
-# 日本語URL
-example.com/SEO対策 △（エンコードで長くなる）
+# Non-ASCII URLs
+example.com/seo-guide    Good (encodes to long string)
 ```
 
 ---
 
-## コンテンツ更新戦略
+## Content Update Strategy
 
-### 更新すべきコンテンツの特定
+### Identifying Content to Update
 
-1. **トラフィック減少ページ**
-   - 過去3〜6ヶ月で20%以上減少
-   
-2. **古い情報を含むページ**
-   - 日付、統計データ、ツールのバージョン
+1. **Traffic declining pages**
+   - 20%+ decrease over past 3-6 months
 
-3. **検索順位が下降したページ**
-   - 上位10位 → 20位以下に下降
+2. **Pages with outdated information**
+   - Dates, statistics, tool versions
 
-4. **CTR が低いページ**
-   - 表示回数に対してクリック率が低い
+3. **Ranking dropped pages**
+   - Dropped from top 10 to 20+ position
 
-### 更新のベストプラクティス
+4. **Low CTR pages**
+   - Low click rate relative to impressions
+
+### Update Best Practices
 
 ```html
-<!-- 更新日を明記 -->
-<meta property="article:modified_time" content="2025-01-15T10:30:00+09:00">
+<!-- Mark update date -->
+<meta property="article:modified_time" content="2025-01-15T10:30:00+00:00">
 
-<!-- 本文にも表示 -->
+<!-- Display in content -->
 <p class="last-updated">
-  <time datetime="2025-01-15">最終更新: 2025年1月15日</time>
-  （初回公開: 2024年6月1日）
+  <time datetime="2025-01-15">Last updated: January 15, 2025</time>
+  (Originally published: June 1, 2024)
 </p>
 
-<!-- 更新履歴を記載 -->
+<!-- Include update history -->
 <details>
-  <summary>更新履歴</summary>
+  <summary>Update History</summary>
   <ul>
-    <li>2025-01-15: 2025年のトレンドを追加</li>
-    <li>2024-10-01: Core Web Vitals情報を更新</li>
-    <li>2024-06-01: 初回公開</li>
+    <li>2025-01-15: Added 2025 trends</li>
+    <li>2024-10-01: Updated Core Web Vitals info</li>
+    <li>2024-06-01: Initial publication</li>
   </ul>
 </details>
 ```
 
 ---
 
-## 検索意図（Search Intent）
+## Search Intent
 
-### 4つの検索意図タイプ
+### Four Types of Search Intent
 
-| タイプ | 意図 | 例 | 最適コンテンツ |
-|--------|------|-----|----------------|
-| Informational | 情報を知りたい | 「SEOとは」 | 解説記事、ガイド |
-| Navigational | 特定サイトに行きたい | 「Gmail ログイン」 | ブランドページ |
-| Commercial | 購入前に比較検討 | 「SEOツール おすすめ」 | 比較記事、レビュー |
-| Transactional | 購入・申込したい | 「SEOツール 申込」 | 商品・サービスページ |
+| Type | Intent | Example | Best Content |
+|------|--------|---------|--------------|
+| Informational | Want information | "What is SEO" | Guides, tutorials |
+| Navigational | Go to specific site | "Gmail login" | Brand pages |
+| Commercial | Research before purchase | "Best SEO tools" | Comparisons, reviews |
+| Transactional | Want to buy/sign up | "SEO tool signup" | Product/service pages |
 
-### 検索意図に合わせたコンテンツ設計
+### Content Design by Intent
 
-**Informational の例:**
+**Informational Example:**
 ```markdown
-# SEOとは？初心者でもわかる基礎知識
+# What is SEO? Basics for Beginners
 
-## SEOの定義
-SEO（Search Engine Optimization）とは...
+## Definition of SEO
+SEO (Search Engine Optimization) is...
 
-## なぜSEOが重要なのか
-1. 継続的なトラフィック獲得
-2. 広告費の削減
-3. ブランド認知度向上
+## Why SEO Matters
+1. Continuous traffic acquisition
+2. Reduced advertising costs
+3. Brand awareness improvement
 
-## SEOの基本要素
-### 技術SEO
+## Core SEO Elements
+### Technical SEO
 ...
-### コンテンツSEO
+### Content SEO
 ...
 ```
 
-**Commercial の例:**
+**Commercial Example:**
 ```markdown
-# 【2025年版】SEOツール比較10選
+# Top 10 SEO Tools Compared [2025]
 
-| ツール名 | 価格 | 機能 | おすすめ度 |
-|----------|------|------|------------|
-| ツールA | ¥10,000/月 | ... | ★★★★★ |
-| ツールB | ¥5,000/月 | ... | ★★★★☆ |
+| Tool | Price | Features | Rating |
+|------|-------|----------|--------|
+| Tool A | $100/mo | ... | 5 stars |
+| Tool B | $50/mo | ... | 4 stars |
 
-## 各ツールの詳細レビュー
-### ツールA
-実際に使ってみた感想...
+## Detailed Reviews
+### Tool A
+My experience after using it...
 ```

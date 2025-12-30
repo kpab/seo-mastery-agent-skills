@@ -1,44 +1,44 @@
-# Core Web Vitals Reference
+# Core Web Vitals リファレンス
 
-Detailed optimization guide for Core Web Vitals, Google's ranking factors.
+Googleのランキング要因となるCore Web Vitalsの詳細な最適化ガイド。
 
-## Overview
+## 概要
 
-Core Web Vitals are three key metrics measuring user experience.
+Core Web Vitalsは、ユーザー体験を測定する3つの主要指標です。
 
-| Metric | Measures | Good | Needs Improvement | Poor |
-|--------|----------|------|-------------------|------|
-| LCP | Loading speed | ≤ 2.5s | 2.5-4s | > 4s |
-| INP | Interactivity | ≤ 200ms | 200-500ms | > 500ms |
-| CLS | Visual stability | ≤ 0.1 | 0.1-0.25 | > 0.25 |
+| 指標 | 測定内容 | 良好 | 改善が必要 | 不良 |
+|------|----------|------|------------|------|
+| LCP | 読み込み速度 | ≤ 2.5秒 | 2.5-4秒 | > 4秒 |
+| INP | インタラクティブ性 | ≤ 200ms | 200-500ms | > 500ms |
+| CLS | 視覚的安定性 | ≤ 0.1 | 0.1-0.25 | > 0.25 |
 
 ---
 
-## LCP (Largest Contentful Paint)
+## LCP（Largest Contentful Paint）
 
-### What is LCP?
-Time until the largest content element within the viewport is displayed.
+### LCPとは
+ビューポート内で最も大きなコンテンツ要素が表示されるまでの時間。
 
-**LCP Element Candidates:**
-- `<img>` elements
-- `<image>` elements within `<svg>`
-- `<video>` elements (poster image)
-- Elements with `background-image`
-- Block-level elements containing text
+**LCP要素の候補:**
+- `<img>`要素
+- `<svg>`内の`<image>`要素
+- `<video>`要素（ポスター画像）
+- `background-image`を持つ要素
+- テキストを含むブロックレベル要素
 
-### Main Causes and Solutions
+### 主な原因と対策
 
-#### 1. Slow Server Response
+#### 1. 遅いサーバーレスポンス
 
-**Diagnosis:**
+**診断:**
 ```bash
-# Measure TTFB (Time to First Byte)
+# TTFB (Time to First Byte) の測定
 curl -o /dev/null -s -w "TTFB: %{time_starttransfer}s\n" https://example.com/
 ```
 
-**Solutions:**
+**対策:**
 ```nginx
-# Nginx cache configuration
+# Nginxでのキャッシュ設定
 proxy_cache_path /tmp/nginx levels=1:2 keys_zone=my_cache:10m max_size=1g;
 
 location / {
@@ -49,59 +49,59 @@ location / {
 ```
 
 ```javascript
-// CDN (Cloudflare) configuration example
-// Cache-Control header
+// CDN (Cloudflare) の設定例
+// Cache-Control ヘッダー
 res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
 ```
 
-#### 2. Render-Blocking Resources
+#### 2. レンダーブロッキングリソース
 
-**Diagnosis:**
+**診断:**
 ```html
-<!-- Blocking resource examples -->
-<link rel="stylesheet" href="styles.css"> <!-- Blocking -->
-<script src="app.js"></script> <!-- Blocking -->
+<!-- ブロッキングリソースの例 -->
+<link rel="stylesheet" href="styles.css"> <!-- ブロッキング -->
+<script src="app.js"></script> <!-- ブロッキング -->
 ```
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Inline Critical CSS -->
+<!-- Critical CSSのインライン化 -->
 <style>
-  /* Minimum CSS needed for first view */
+  /* ファーストビューに必要な最小限のCSS */
   .hero { ... }
   .nav { ... }
 </style>
 
-<!-- Defer non-critical CSS -->
+<!-- 非クリティカルCSSの遅延読み込み -->
 <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="styles.css"></noscript>
 
-<!-- Defer JavaScript execution -->
+<!-- JavaScriptの遅延実行 -->
 <script src="app.js" defer></script>
-<!-- or -->
+<!-- または -->
 <script src="analytics.js" async></script>
 ```
 
-#### 3. Slow Image Loading
+#### 3. 遅い画像読み込み
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Preload LCP image -->
+<!-- LCP画像のプリロード -->
 <link rel="preload" as="image" href="hero.webp" fetchpriority="high">
 
-<!-- Optimal image formats -->
+<!-- 最適な画像形式 -->
 <picture>
   <source srcset="hero.avif" type="image/avif">
   <source srcset="hero.webp" type="image/webp">
-  <img src="hero.jpg" alt="Hero image"
+  <img src="hero.jpg" alt="ヒーロー画像" 
        width="1200" height="600"
        fetchpriority="high"
        decoding="async">
 </picture>
 
-<!-- Responsive images -->
+<!-- レスポンシブ画像 -->
 <img srcset="hero-400.webp 400w,
              hero-800.webp 800w,
              hero-1200.webp 1200w"
@@ -109,58 +109,58 @@ res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
             (max-width: 1000px) 800px,
             1200px"
      src="hero-1200.webp"
-     alt="Description">
+     alt="説明">
 ```
 
-#### 4. Client-Side Rendering
+#### 4. クライアントサイドレンダリング
 
-**Solutions:**
+**対策:**
 
 ```javascript
-// Next.js: SSR implementation
+// Next.js: SSRの実装
 export async function getServerSideProps() {
   const data = await fetchData();
   return { props: { data } };
 }
 
-// Next.js: SSG implementation
+// Next.js: SSGの実装
 export async function getStaticProps() {
   const data = await fetchData();
-  return {
+  return { 
     props: { data },
-    revalidate: 3600 // Regenerate every hour
+    revalidate: 3600 // 1時間ごとに再生成
   };
 }
 ```
 
-### LCP Optimization Checklist
+### LCP最適化チェックリスト
 
-- [ ] TTFB under 200ms
-- [ ] LCP image is preloaded
-- [ ] Images are WebP/AVIF format
-- [ ] Critical CSS is inlined
-- [ ] Unnecessary JavaScript is deferred
-- [ ] Using CDN
-- [ ] Server caching is properly configured
+- [ ] TTFBが200ms以下
+- [ ] LCP画像がプリロードされている
+- [ ] 画像がWebP/AVIF形式
+- [ ] クリティカルCSSがインライン化
+- [ ] 不要なJavaScriptが遅延読み込み
+- [ ] CDNを使用している
+- [ ] サーバーキャッシュが適切に設定
 
 ---
 
-## INP (Interaction to Next Paint)
+## INP（Interaction to Next Paint）
 
-### What is INP?
-Delay time from user interaction (click, tap, key input) to the next paint.
+### INPとは
+ユーザーのインタラクション（クリック、タップ、キー入力）から次のペイントまでの遅延時間。
 
-**Difference from FID:**
-- FID: Measures only first interaction
-- INP: Measures all interactions during page session
+**FIDとの違い:**
+- FID: 最初のインタラクションのみ測定
+- INP: ページ滞在中のすべてのインタラクションを測定
 
-### Main Causes and Solutions
+### 主な原因と対策
 
-#### 1. Heavy JavaScript Execution
+#### 1. 重いJavaScript実行
 
-**Diagnosis:**
+**診断:**
 ```javascript
-// Detect long tasks
+// 長いタスクの検出
 const observer = new PerformanceObserver((list) => {
   for (const entry of list.getEntries()) {
     console.log('Long Task:', entry.duration, 'ms');
@@ -169,24 +169,24 @@ const observer = new PerformanceObserver((list) => {
 observer.observe({ entryTypes: ['longtask'] });
 ```
 
-**Solution: Task Splitting**
+**対策: タスクの分割**
 
 ```javascript
-// Bad: Blocks main thread
+// ❌ メインスレッドをブロック
 function processItems(items) {
   items.forEach(item => heavyProcess(item));
 }
 
-// Good: Yield to main thread
+// ✅ yieldを使用してメインスレッドに制御を返す
 async function processItemsAsync(items) {
   for (const item of items) {
     heavyProcess(item);
-    // Yield control to main thread
+    // メインスレッドに制御を返す
     await new Promise(resolve => setTimeout(resolve, 0));
   }
 }
 
-// Good: Using scheduler.yield() (Chrome 129+)
+// ✅ scheduler.yield() を使用（Chrome 129+）
 async function processItemsWithYield(items) {
   for (const item of items) {
     heavyProcess(item);
@@ -197,10 +197,10 @@ async function processItemsWithYield(items) {
 }
 ```
 
-**Solution: Web Workers**
+**対策: Web Workerの活用**
 
 ```javascript
-// Main thread
+// メインスレッド
 const worker = new Worker('worker.js');
 
 worker.postMessage({ items: largeDataset });
@@ -217,18 +217,18 @@ self.onmessage = (e) => {
 };
 ```
 
-#### 2. Large DOM Size
+#### 2. 大きなDOMサイズ
 
-**Diagnosis:**
+**診断:**
 ```javascript
-// Check DOM element count
+// DOM要素数の確認
 console.log('DOM Elements:', document.querySelectorAll('*').length);
 ```
 
-**Solutions:**
+**対策:**
 
 ```javascript
-// Virtual scrolling implementation (React example)
+// 仮想スクロールの実装（React例）
 import { FixedSizeList as List } from 'react-window';
 
 function VirtualizedList({ items }) {
@@ -248,21 +248,21 @@ function VirtualizedList({ items }) {
 ```
 
 ```css
-/* Lazy rendering with content-visibility */
+/* content-visibility による遅延レンダリング */
 .below-fold-content {
   content-visibility: auto;
   contain-intrinsic-size: 0 500px;
 }
 ```
 
-#### 3. Third-Party Scripts
+#### 3. サードパーティスクリプト
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Lazy loading -->
+<!-- 遅延読み込み -->
 <script>
-  // Load after user interaction
+  // ユーザーインタラクション後に読み込み
   let loaded = false;
   function loadAnalytics() {
     if (loaded) return;
@@ -271,49 +271,49 @@ function VirtualizedList({ items }) {
     script.src = 'https://analytics.example.com/script.js';
     document.body.appendChild(script);
   }
-
+  
   document.addEventListener('scroll', loadAnalytics, { once: true });
   document.addEventListener('click', loadAnalytics, { once: true });
 </script>
 
-<!-- Execute in worker with Partytown -->
+<!-- Partytown によるワーカー実行 -->
 <script type="text/partytown" src="https://analytics.example.com/script.js"></script>
 ```
 
-### INP Optimization Checklist
+### INP最適化チェックリスト
 
-- [ ] No long tasks (50ms+)
-- [ ] Event handlers are lightweight
-- [ ] DOM element count under 1500
-- [ ] Third-party scripts are lazy loaded
-- [ ] Heavy processing runs in Web Workers
-- [ ] Using requestIdleCallback
+- [ ] 長いタスク（50ms以上）がない
+- [ ] イベントハンドラが軽量
+- [ ] DOM要素数が1500以下
+- [ ] サードパーティスクリプトが遅延読み込み
+- [ ] 重い処理はWeb Workerで実行
+- [ ] requestIdleCallbackを活用
 
 ---
 
-## CLS (Cumulative Layout Shift)
+## CLS（Cumulative Layout Shift）
 
-### What is CLS?
-Cumulative score of unexpected layout shifts during page load.
+### CLSとは
+ページ読み込み中に発生する予期しないレイアウトシフトの累積スコア。
 
-**Formula:**
+**計算式:**
 ```
-CLS = Impact Fraction × Distance Fraction
-Impact Fraction = Area affected by shift / Viewport area
-Distance Fraction = Distance moved / Viewport height
+CLS = 影響率 × 距離率
+影響率 = シフトした要素の影響面積 / ビューポート面積
+距離率 = 移動距離 / ビューポート高さ
 ```
 
-### Main Causes and Solutions
+### 主な原因と対策
 
-#### 1. Images/Videos Without Dimensions
+#### 1. サイズ未指定の画像・動画
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Specify width/height attributes -->
-<img src="image.jpg" width="800" height="600" alt="Description">
+<!-- ✅ width/height属性を指定 -->
+<img src="image.jpg" width="800" height="600" alt="説明">
 
-<!-- Maintain aspect ratio with CSS -->
+<!-- ✅ CSSでアスペクト比を維持 -->
 <style>
   img {
     width: 100%;
@@ -322,14 +322,14 @@ Distance Fraction = Distance moved / Viewport height
   }
 </style>
 
-<!-- For video -->
+<!-- ✅ 動画の場合 -->
 <video width="1280" height="720" poster="poster.jpg">
   <source src="video.mp4" type="video/mp4">
 </video>
 
-<!-- For iframe -->
+<!-- ✅ iframeの場合 -->
 <div style="position: relative; padding-bottom: 56.25%; height: 0;">
-  <iframe
+  <iframe 
     src="https://www.youtube.com/embed/xxxxx"
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
     frameborder="0"
@@ -338,24 +338,24 @@ Distance Fraction = Distance moved / Viewport height
 </div>
 ```
 
-#### 2. Dynamically Inserted Content
+#### 2. 動的に挿入されるコンテンツ
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Bad: Suddenly inserted banner -->
+<!-- ❌ 突然挿入されるバナー -->
 <div id="banner-container"></div>
 <script>
   fetch('/api/banner').then(...)
 </script>
 
-<!-- Good: Reserve space in advance -->
+<!-- ✅ 事前にスペースを確保 -->
 <div id="banner-container" style="min-height: 250px;">
-  <!-- Skeleton UI -->
+  <!-- スケルトンUI -->
   <div class="skeleton" style="height: 250px; background: #eee;"></div>
 </div>
 
-<!-- Good: Reserve space with CSS -->
+<!-- ✅ CSSでスペース確保 -->
 <style>
   .ad-slot {
     min-height: 250px;
@@ -364,19 +364,19 @@ Distance Fraction = Distance moved / Viewport height
 </style>
 ```
 
-#### 3. Web Fonts (FOUT/FOIT)
+#### 3. Webフォント（FOUT/FOIT）
 
-**Solutions:**
+**対策:**
 
 ```css
-/* Use font-display: swap */
+/* font-display: swap を使用 */
 @font-face {
   font-family: 'CustomFont';
   src: url('custom-font.woff2') format('woff2');
   font-display: swap;
 }
 
-/* Adjust fallback with size-adjust */
+/* size-adjust でフォールバックを調整 */
 @font-face {
   font-family: 'CustomFont-Fallback';
   src: local('Arial');
@@ -388,57 +388,57 @@ Distance Fraction = Distance moved / Viewport height
 ```
 
 ```html
-<!-- Preload fonts -->
+<!-- フォントのプリロード -->
 <link rel="preload" href="custom-font.woff2" as="font" type="font/woff2" crossorigin>
 ```
 
-#### 4. Ads/Embedded Content
+#### 4. 広告・埋め込みコンテンツ
 
-**Solutions:**
+**対策:**
 
 ```html
-<!-- Fixed-size container -->
+<!-- 固定サイズのコンテナ -->
 <div class="ad-container" style="width: 300px; height: 250px; contain: strict;">
-  <!-- Ad script -->
+  <!-- 広告スクリプト -->
 </div>
 
-<!-- Set minimum height -->
+<!-- 最小高さの設定 -->
 <style>
   .ad-container {
     min-height: 250px;
     background: #f0f0f0;
   }
-
-  /* After ad loads */
+  
+  /* 広告読み込み後 */
   .ad-container.loaded {
     min-height: auto;
   }
 </style>
 ```
 
-### CLS Optimization Checklist
+### CLS最適化チェックリスト
 
-- [ ] All images have width/height specified
-- [ ] Videos/iframes have aspect ratio set
-- [ ] Ad space is reserved in advance
-- [ ] Web fonts have font-display: swap set
-- [ ] Dynamic content has min-height set
-- [ ] Animations use transform
+- [ ] すべての画像にwidth/heightが指定されている
+- [ ] 動画・iframeにアスペクト比が設定されている
+- [ ] 広告スペースが事前に確保されている
+- [ ] Webフォントにfont-display: swapが設定
+- [ ] 動的コンテンツにmin-heightが設定
+- [ ] アニメーションがtransformを使用
 
 ---
 
-## Measurement Tools
+## 測定ツール
 
 ### Lighthouse
 
 ```bash
-# CLI measurement
-npx lighthouse https://example.com --output=json --output-path=./report.json --preset=mobile
+# CLI での測定
+npx lighthouse https://example.com --output=json --output-path=./report.json
 
-# Specific categories only
+# 特定のカテゴリのみ
 npx lighthouse https://example.com --only-categories=performance
 
-# Mobile/Desktop switch
+# モバイル/デスクトップ切り替え
 npx lighthouse https://example.com --preset=desktop
 ```
 
@@ -455,8 +455,8 @@ function sendToAnalytics(metric) {
     id: metric.id,
     navigationType: metric.navigationType,
   });
-
-  // Send to analytics with Navigator.sendBeacon
+  
+  // Navigator.sendBeacon でアナリティクスに送信
   navigator.sendBeacon('/analytics', body);
 }
 
@@ -468,23 +468,23 @@ onCLS(sendToAnalytics);
 ### Chrome DevTools
 
 ```
-1. Open DevTools (F12)
-2. Go to Performance tab
-3. Click Record button to record page load
-4. Enable Web Vitals checkbox
-5. Each metric appears on timeline
+1. DevTools を開く (F12)
+2. Performance タブ
+3. Record ボタンでページ読み込みを記録
+4. Web Vitals チェックボックスを有効化
+5. 各指標がタイムラインに表示される
 ```
 
 ### PageSpeed Insights API
 
 ```bash
-# API measurement
+# API での測定
 curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://example.com&key=YOUR_API_KEY&strategy=mobile"
 ```
 
 ---
 
-## Framework-Specific Optimization
+## フレームワーク別最適化
 
 ### Next.js
 
@@ -500,17 +500,17 @@ module.exports = {
   },
 };
 
-// Image component
+// 画像コンポーネント
 import Image from 'next/image';
 
 function Hero() {
   return (
     <Image
       src="/hero.jpg"
-      alt="Hero"
+      alt="ヒーロー"
       width={1200}
       height={600}
-      priority // Set for LCP image
+      priority // LCP画像に設定
       placeholder="blur"
       blurDataURL="data:image/jpeg;base64,..."
     />
@@ -547,19 +547,19 @@ export default {
 
 ---
 
-## Monitoring and Continuous Improvement
+## 監視と継続的改善
 
-### Search Console Monitoring
+### Search Console での監視
 
-1. Access Search Console
-2. Check "Core Web Vitals" report
-3. Identify "Poor" and "Needs Improvement" URLs
-4. Analyze individual URLs with PageSpeed Insights
+1. Search Console にアクセス
+2. 「ウェブに関する主な指標」レポートを確認
+3. 「不良」「改善が必要」なURLを特定
+4. 個別URLをPageSpeed Insightsで詳細分析
 
-### Alert Setup
+### アラート設定
 
 ```javascript
-// Automated monitoring script example
+// 自動監視スクリプト例
 const threshold = {
   LCP: 2500,
   INP: 200,
@@ -571,12 +571,12 @@ async function checkWebVitals(url) {
     `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${url}&key=API_KEY`
   );
   const data = await response.json();
-
+  
   const metrics = data.lighthouseResult.audits;
-
+  
   if (metrics['largest-contentful-paint'].numericValue > threshold.LCP) {
     sendAlert('LCP exceeds threshold');
   }
-  // ... check other metrics similarly
+  // ... 他の指標も同様にチェック
 }
 ```

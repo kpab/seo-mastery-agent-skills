@@ -1,199 +1,199 @@
-# SEO監査ワークフロー
+# SEO Audit Workflow
 
-サイト全体のSEO監査を実施するための体系的なプロセス。
+Systematic process for conducting comprehensive site-wide SEO audits.
 
-## 監査の全体像
+## Audit Overview
 
 ```
-Phase 1: クロール診断（30分）
-    ↓
-Phase 2: 技術SEO診断（1-2時間）
-    ↓
-Phase 3: コンテンツ診断（1-2時間）
-    ↓
-Phase 4: パフォーマンス診断（30分）
-    ↓
-Phase 5: 競合分析（1時間）
-    ↓
-Phase 6: 改善計画策定（1時間）
+Phase 1: Crawl Diagnosis
+    |
+Phase 2: Technical SEO Diagnosis
+    |
+Phase 3: Content Diagnosis
+    |
+Phase 4: Performance Diagnosis
+    |
+Phase 5: Competitive Analysis
+    |
+Phase 6: Improvement Plan
 ```
 
 ---
 
-## Phase 1: クロール診断
+## Phase 1: Crawl Diagnosis
 
-### 1.1 robots.txt 確認
+### 1.1 robots.txt Check
 
 ```bash
-# robots.txt の取得
+# Get robots.txt
 curl -s https://example.com/robots.txt
 
-# 確認ポイント:
-# - 重要ページがDisallowされていないか
-# - サイトマップへの参照があるか
-# - Crawl-delay が過度に設定されていないか
+# Check points:
+# - Are important pages Disallowed?
+# - Is there a sitemap reference?
+# - Is Crawl-delay set too high?
 ```
 
-**チェックリスト:**
-- [ ] robots.txt が存在する
-- [ ] 重要ページ（/, /products/, /services/）がブロックされていない
-- [ ] CSS/JS/画像がブロックされていない
-- [ ] サイトマップへの参照がある
+**Checklist:**
+- [ ] robots.txt exists
+- [ ] Important pages (/, /products/, /services/) are not blocked
+- [ ] CSS/JS/images are not blocked
+- [ ] Sitemap reference exists
 
-### 1.2 サイトマップ確認
+### 1.2 Sitemap Check
 
 ```bash
-# サイトマップの取得
+# Get sitemap
 curl -s https://example.com/sitemap.xml | head -100
 
-# URL数の確認
+# Count URLs
 curl -s https://example.com/sitemap.xml | grep -c "<loc>"
 
-# lastmod の確認
+# Check lastmod
 curl -s https://example.com/sitemap.xml | grep "<lastmod>" | sort | uniq -c
 ```
 
-**チェックリスト:**
-- [ ] サイトマップが存在する
-- [ ] 主要ページがすべて含まれている
-- [ ] 404ページが含まれていない
-- [ ] lastmod が正確に更新されている
-- [ ] Search Console に送信済み
+**Checklist:**
+- [ ] Sitemap exists
+- [ ] All main pages are included
+- [ ] No 404 pages are included
+- [ ] lastmod is accurately updated
+- [ ] Submitted to Search Console
 
-### 1.3 インデックス状況
+### 1.3 Index Status
 
 ```bash
-# site: 検索でインデックス数を確認
-# Google で「site:example.com」を検索
+# Check index count with site: search
+# Search "site:example.com" on Google
 
-# 特定ディレクトリのインデックス
+# Check specific directory index
 # site:example.com/blog/
 ```
 
-**チェックリスト:**
-- [ ] インデックス数が想定と一致
-- [ ] 重要ページがインデックスされている
-- [ ] 不要なページ（管理画面等）がインデックスされていない
+**Checklist:**
+- [ ] Index count matches expectations
+- [ ] Important pages are indexed
+- [ ] Unnecessary pages (admin, etc.) are not indexed
 
 ---
 
-## Phase 2: 技術SEO診断
+## Phase 2: Technical SEO Diagnosis
 
-### 2.1 HTTPS/セキュリティ
+### 2.1 HTTPS/Security
 
 ```bash
-# SSL証明書の確認
+# Check SSL certificate
 curl -vI https://example.com 2>&1 | grep -E 'SSL|certificate|expire'
 
-# HTTPからのリダイレクト確認
+# Check redirect from HTTP
 curl -I http://example.com
 
-# Mixed Content の検出
+# Detect Mixed Content
 curl -s https://example.com | grep -E 'http://'
 ```
 
-**チェックリスト:**
-- [ ] HTTPS化されている
-- [ ] HTTPからHTTPSへ301リダイレクト
-- [ ] Mixed Content がない
-- [ ] SSL証明書が有効期限内
+**Checklist:**
+- [ ] HTTPS enabled
+- [ ] HTTP redirects to HTTPS with 301
+- [ ] No Mixed Content
+- [ ] SSL certificate is valid
 
-### 2.2 リダイレクト診断
+### 2.2 Redirect Diagnosis
 
 ```bash
-# リダイレクトチェーンの確認
+# Check redirect chain
 curl -L -I https://example.com 2>&1 | grep -E 'HTTP/|Location:'
 
-# wwwの統一確認
+# Check www unification
 curl -I https://www.example.com
 curl -I https://example.com
 ```
 
-**チェックリスト:**
-- [ ] リダイレクトチェーンが2ホップ以内
-- [ ] 302ではなく301を使用
-- [ ] www/non-wwwが統一されている
+**Checklist:**
+- [ ] Redirect chain is 2 hops or less
+- [ ] Using 301, not 302
+- [ ] www/non-www is unified
 
-### 2.3 メタタグ診断
+### 2.3 Meta Tag Diagnosis
 
 ```bash
-# メタ情報の抽出
+# Extract meta information
 curl -s https://example.com | grep -E '<title>|<meta name="description"|<meta name="robots"|<link rel="canonical"'
 
-# 複数ページを一括チェック（例）
+# Batch check multiple pages (example)
 for url in "/" "/about" "/products"; do
   echo "=== $url ==="
   curl -s "https://example.com$url" | grep -E '<title>'
 done
 ```
 
-**チェックリスト:**
-- [ ] 各ページにユニークなtitleがある
-- [ ] titleが60文字以内
-- [ ] meta descriptionが120文字以内
-- [ ] canonical URLが正しく設定
-- [ ] 不要なnoindex/nofollowがない
+**Checklist:**
+- [ ] Each page has unique title
+- [ ] Title is under 60 characters
+- [ ] Meta description is under 160 characters
+- [ ] Canonical URL is correctly set
+- [ ] No unnecessary noindex/nofollow
 
-### 2.4 構造化データ診断
+### 2.4 Structured Data Diagnosis
 
 ```bash
-# JSON-LD の抽出
+# Extract JSON-LD
 curl -s https://example.com | grep -oP '<script type="application/ld\+json">.*?</script>'
 
-# Rich Results Test（ブラウザで確認）
+# Rich Results Test (check in browser)
 # https://search.google.com/test/rich-results?url=https://example.com
 ```
 
-**チェックリスト:**
-- [ ] 適切な構造化データが実装されている
-- [ ] エラーがない（Rich Results Test）
-- [ ] ページ内容と一致している
+**Checklist:**
+- [ ] Appropriate structured data is implemented
+- [ ] No errors (Rich Results Test)
+- [ ] Matches page content
 
-### 2.5 モバイル対応
+### 2.5 Mobile Compatibility
 
 ```bash
-# viewport の確認
+# Check viewport
 curl -s https://example.com | grep 'viewport'
 
-# Mobile-Friendly Test（ブラウザで確認）
+# Mobile-Friendly Test (check in browser)
 # https://search.google.com/test/mobile-friendly?url=https://example.com
 ```
 
-**チェックリスト:**
-- [ ] レスポンシブデザインまたは動的配信
-- [ ] viewport meta tagが設定
-- [ ] タップターゲットが適切なサイズ
-- [ ] テキストが読みやすいサイズ
+**Checklist:**
+- [ ] Responsive design or dynamic serving
+- [ ] viewport meta tag is set
+- [ ] Tap targets are appropriate size
+- [ ] Text is readable size
 
 ---
 
-## Phase 3: コンテンツ診断
+## Phase 3: Content Diagnosis
 
-### 3.1 見出し構造
+### 3.1 Heading Structure
 
 ```bash
-# 見出しタグの抽出
+# Extract heading tags
 curl -s https://example.com | grep -oP '<h[1-6][^>]*>.*?</h[1-6]>'
 
-# H1タグの数
+# Count H1 tags
 curl -s https://example.com | grep -c '<h1'
 ```
 
-**チェックリスト:**
-- [ ] H1タグが1つのみ
-- [ ] 見出し階層が論理的（H1→H2→H3）
-- [ ] 見出しにキーワードが含まれる
+**Checklist:**
+- [ ] Only one H1 tag
+- [ ] Heading hierarchy is logical (H1→H2→H3)
+- [ ] Headings contain keywords
 
-### 3.2 リンク診断
+### 3.2 Link Diagnosis
 
 ```bash
-# 内部リンクの抽出
+# Extract internal links
 curl -s https://example.com | grep -oP 'href="[^"]*"' | grep -v 'http' | head -20
 
-# 外部リンクの抽出
+# Extract external links
 curl -s https://example.com | grep -oP 'href="https?://[^"]*"' | grep -v 'example.com'
 
-# リンク切れチェック（簡易版）
+# Check broken links (simple version)
 curl -s https://example.com | grep -oP 'href="[^"]*"' | while read href; do
   url=$(echo $href | sed 's/href="\(.*\)"/\1/')
   status=$(curl -o /dev/null -s -w "%{http_code}" "$url")
@@ -201,40 +201,40 @@ curl -s https://example.com | grep -oP 'href="[^"]*"' | while read href; do
 done
 ```
 
-**チェックリスト:**
-- [ ] 内部リンクが適切に設定
-- [ ] アンカーテキストが説明的
-- [ ] リンク切れがない
-- [ ] 外部リンクに適切なrel属性
+**Checklist:**
+- [ ] Internal links are properly set
+- [ ] Anchor text is descriptive
+- [ ] No broken links
+- [ ] External links have appropriate rel attributes
 
-### 3.3 画像診断
+### 3.3 Image Diagnosis
 
 ```bash
-# alt属性のチェック
+# Check alt attributes
 curl -s https://example.com | grep -oP '<img[^>]*>' | grep -v 'alt='
 
-# 画像サイズの確認
+# Check image dimensions
 curl -s https://example.com | grep -oP '<img[^>]*>' | grep -v 'width\|height'
 ```
 
-**チェックリスト:**
-- [ ] すべての画像にalt属性がある
-- [ ] alt属性が説明的（空でない）
-- [ ] 画像サイズ（width/height）が指定
-- [ ] 適切なフォーマット（WebP等）
+**Checklist:**
+- [ ] All images have alt attributes
+- [ ] Alt attributes are descriptive (not empty)
+- [ ] Image dimensions (width/height) are specified
+- [ ] Using appropriate formats (WebP, etc.)
 
-### 3.4 コンテンツ品質
+### 3.4 Content Quality
 
-**手動チェック:**
-- [ ] コンテンツがオリジナル
-- [ ] ユーザーの検索意図に合致
-- [ ] 十分な情報量がある
-- [ ] 定期的に更新されている
-- [ ] 著者情報が明記されている
+**Manual Checks:**
+- [ ] Content is original
+- [ ] Matches user search intent
+- [ ] Sufficient information volume
+- [ ] Regularly updated
+- [ ] Author information is stated
 
 ---
 
-## Phase 4: パフォーマンス診断
+## Phase 4: Performance Diagnosis
 
 ### 4.1 Core Web Vitals
 
@@ -242,164 +242,164 @@ curl -s https://example.com | grep -oP '<img[^>]*>' | grep -v 'width\|height'
 # Lighthouse CLI
 npx lighthouse https://example.com --output=json --output-path=./report.json --preset=mobile
 
-# 結果の抽出
+# Extract results
 cat report.json | jq '.audits["largest-contentful-paint"].numericValue'
 cat report.json | jq '.audits["cumulative-layout-shift"].numericValue'
 ```
 
-**チェックリスト:**
-- [ ] LCP ≤ 2.5秒
+**Checklist:**
+- [ ] LCP ≤ 2.5 seconds
 - [ ] INP ≤ 200ms
 - [ ] CLS ≤ 0.1
-- [ ] パフォーマンススコア ≥ 80
+- [ ] Performance score ≥ 80
 
-### 4.2 リソース最適化
+### 4.2 Resource Optimization
 
 ```bash
-# ページサイズの確認
+# Check page size
 curl -s -o /dev/null -w "%{size_download}\n" https://example.com
 
-# 圧縮の確認
+# Check compression
 curl -H "Accept-Encoding: gzip, deflate, br" -sI https://example.com | grep -i 'content-encoding'
 ```
 
-**チェックリスト:**
-- [ ] Gzip/Brotli圧縮が有効
-- [ ] 画像が最適化されている
-- [ ] CSS/JSがミニファイされている
-- [ ] 不要なリソースがない
+**Checklist:**
+- [ ] Gzip/Brotli compression enabled
+- [ ] Images are optimized
+- [ ] CSS/JS are minified
+- [ ] No unnecessary resources
 
 ---
 
-## Phase 5: 競合分析
+## Phase 5: Competitive Analysis
 
-### 5.1 競合特定
+### 5.1 Identify Competitors
 
-**手順:**
-1. 主要キーワードで検索
-2. 上位5〜10サイトをリストアップ
-3. 直接競合と間接競合を分類
+**Steps:**
+1. Search for main keywords
+2. List top 5-10 sites
+3. Classify direct vs indirect competitors
 
-### 5.2 比較項目
+### 5.2 Comparison Items
 
-| 項目 | 自社 | 競合A | 競合B |
-|------|------|-------|-------|
-| ドメイン年齢 | | | |
-| インデックス数 | | | |
-| コンテンツ量 | | | |
-| 更新頻度 | | | |
-| 構造化データ | | | |
+| Item | Our Site | Competitor A | Competitor B |
+|------|----------|--------------|--------------|
+| Domain age | | | |
+| Index count | | | |
+| Content volume | | | |
+| Update frequency | | | |
+| Structured data | | | |
 | Core Web Vitals | | | |
-| 被リンク数 | | | |
+| Backlink count | | | |
 
-### 5.3 ギャップ分析
+### 5.3 Gap Analysis
 
 ```markdown
-## キーワードギャップ
-競合がランキングしているが自社がしていないキーワード:
-1. キーワードA（検索ボリューム: X）
-2. キーワードB（検索ボリューム: Y）
+## Keyword Gap
+Keywords competitors rank for but we don't:
+1. Keyword A (Search volume: X)
+2. Keyword B (Search volume: Y)
 
-## コンテンツギャップ
-競合にあって自社にないコンテンツタイプ:
-1. ハウツーガイド
-2. 比較記事
-3. ケーススタディ
+## Content Gap
+Content types competitors have but we don't:
+1. How-to guides
+2. Comparison articles
+3. Case studies
 
-## 技術ギャップ
-競合が実装しているが自社にない機能:
-1. FAQ構造化データ
-2. サイト内検索
-3. 多言語対応
+## Technical Gap
+Features competitors have but we don't:
+1. FAQ structured data
+2. Site search
+3. Multilingual support
 ```
 
 ---
 
-## Phase 6: 改善計画策定
+## Phase 6: Improvement Plan
 
-### 6.1 優先度マトリクス
+### 6.1 Priority Matrix
 
-| 優先度 | 影響度 | 工数 | 施策例 |
-|--------|--------|------|--------|
-| 🔴 最高 | 高 | 低 | noindex修正、404修正、title重複解消 |
-| 🟠 高 | 高 | 中 | 構造化データ追加、メタタグ最適化 |
-| 🟡 中 | 中 | 中 | Core Web Vitals改善、コンテンツ追加 |
-| 🟢 低 | 低 | 高 | サイト構造変更、ドメイン移行 |
+| Priority | Impact | Effort | Example Actions |
+|----------|--------|--------|-----------------|
+| Critical | High | Low | Fix noindex, fix 404s, resolve title duplicates |
+| High | High | Medium | Add structured data, optimize meta tags |
+| Medium | Medium | Medium | Improve Core Web Vitals, add content |
+| Low | Low | High | Site structure changes, domain migration |
 
-### 6.2 改善レポートテンプレート
+### 6.2 Improvement Report Template
 
 ```markdown
-# SEO監査レポート
+# SEO Audit Report
 
-## エグゼクティブサマリー
-- 監査日: YYYY-MM-DD
-- 対象サイト: https://example.com
-- 総合評価: B（改善の余地あり）
+## Executive Summary
+- Audit date: YYYY-MM-DD
+- Target site: https://example.com
+- Overall assessment: B (Room for improvement)
 
-## 重要な問題点
-1. **[緊急] 複数ページでnoindexが設定されている**
-   - 影響: 重要ページがインデックスされていない
-   - 対策: 該当ページのnoindex削除
-   - 工数: 1時間
+## Critical Issues
+1. **[Critical] noindex set on multiple pages**
+   - Impact: Important pages not indexed
+   - Action: Remove noindex from affected pages
+   - Effort: 1 hour
 
-2. **[高] LCPが4.2秒（目標: 2.5秒以下）**
-   - 影響: ユーザー体験とランキングに悪影響
-   - 対策: 画像最適化、Critical CSS実装
-   - 工数: 8時間
+2. **[High] LCP is 4.2 seconds (Target: under 2.5s)**
+   - Impact: Negative effect on UX and ranking
+   - Action: Image optimization, Critical CSS implementation
+   - Effort: 8 hours
 
-## 改善ロードマップ
+## Improvement Roadmap
 
-### Week 1-2（緊急対応）
-- [ ] noindex問題の修正
-- [ ] 404ページの修正
-- [ ] リダイレクトチェーンの解消
+### Week 1-2 (Critical Response)
+- [ ] Fix noindex issues
+- [ ] Fix 404 pages
+- [ ] Resolve redirect chains
 
-### Week 3-4（技術SEO改善）
-- [ ] 構造化データの追加
-- [ ] メタタグの最適化
-- [ ] サイトマップの更新
+### Week 3-4 (Technical SEO Improvements)
+- [ ] Add structured data
+- [ ] Optimize meta tags
+- [ ] Update sitemap
 
-### Month 2（パフォーマンス改善）
-- [ ] LCP最適化
-- [ ] CLS最適化
-- [ ] 画像形式の変換
+### Month 2 (Performance Improvements)
+- [ ] LCP optimization
+- [ ] CLS optimization
+- [ ] Convert image formats
 
-### Month 3（コンテンツ改善）
-- [ ] 既存コンテンツの更新
-- [ ] 新規コンテンツの追加
-- [ ] 内部リンクの最適化
+### Month 3 (Content Improvements)
+- [ ] Update existing content
+- [ ] Add new content
+- [ ] Optimize internal links
 
-## 期待される効果
-- オーガニックトラフィック: +30%（3ヶ月後）
-- Core Web Vitals: すべて「良好」判定
-- インデックス数: +50ページ
+## Expected Results
+- Organic traffic: +30% (after 3 months)
+- Core Web Vitals: All "Good" ratings
+- Index count: +50 pages
 ```
 
 ---
 
-## 監査ツールリスト
+## Audit Tools List
 
-### 無料ツール
+### Free Tools
 - Google Search Console
 - Google PageSpeed Insights
 - Google Rich Results Test
 - Lighthouse
 - Chrome DevTools
-- Screaming Frog（500 URL まで）
+- Screaming Frog (up to 500 URLs)
 
-### 有料ツール
-- Screaming Frog（有料版）
+### Paid Tools
+- Screaming Frog (paid version)
 - Ahrefs / SEMrush
 - Moz Pro
 - DeepCrawl
 
-### CLI ツール
+### CLI Tools
 
 ```bash
 # Lighthouse CLI
 npm install -g lighthouse
 
-# 一括監査スクリプト
+# Batch audit script
 for url in "https://example.com/" "https://example.com/about" "https://example.com/products"; do
   npx lighthouse "$url" --output=html --output-path="./reports/$(echo $url | md5sum | cut -c1-8).html"
 done
@@ -407,11 +407,11 @@ done
 
 ---
 
-## 定期監査スケジュール
+## Regular Audit Schedule
 
-| 頻度 | 監査内容 |
-|------|----------|
-| 週次 | Search Console エラーチェック、インデックス状況 |
-| 月次 | Core Web Vitals、ランキング変動、競合動向 |
-| 四半期 | フル技術監査、コンテンツ監査 |
-| 年次 | サイト構造見直し、SEO戦略レビュー |
+| Frequency | Audit Content |
+|-----------|---------------|
+| Weekly | Search Console error check, index status |
+| Monthly | Core Web Vitals, ranking changes, competitor trends |
+| Quarterly | Full technical audit, content audit |
+| Yearly | Site structure review, SEO strategy review |

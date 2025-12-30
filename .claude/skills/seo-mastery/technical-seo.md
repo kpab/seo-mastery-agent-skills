@@ -1,57 +1,57 @@
-# 技術SEO リファレンス
+# Technical SEO Reference
 
-技術的なSEO設定の詳細ガイド。クローラビリティ、インデクサビリティ、レンダリングの最適化を網羅。
+Detailed guide for technical SEO configuration. Covers crawlability, indexability, and rendering optimization.
 
 ## robots.txt
 
-### 基本構文
+### Basic Syntax
 
 ```txt
-# すべてのクローラーに適用
+# Apply to all crawlers
 User-agent: *
 Disallow: /admin/
 Disallow: /private/
 Allow: /admin/public/
 
-# Googlebotのみに適用
+# Apply only to Googlebot
 User-agent: Googlebot
 Disallow: /temp/
 
-# サイトマップの場所
+# Sitemap location
 Sitemap: https://example.com/sitemap.xml
 ```
 
-### 重要ルール
+### Important Rules
 
-1. **Disallow はインデックス制御ではない**
-   - robots.txt はクロールのブロックのみ
-   - インデックス除外には `noindex` メタタグを使用
+1. **Disallow is NOT Index Control**
+   - robots.txt only blocks crawling
+   - Use `noindex` meta tag to exclude from index
 
-2. **パス指定の注意点**
+2. **Path Specification Notes**
    ```txt
-   Disallow: /admin   # /admin, /admin/, /admin123 すべてブロック
-   Disallow: /admin/  # /admin/ 配下のみブロック
+   Disallow: /admin   # Blocks /admin, /admin/, /admin123
+   Disallow: /admin/  # Blocks only under /admin/
    ```
 
-3. **ワイルドカード使用**
+3. **Wildcard Usage**
    ```txt
-   Disallow: /*.pdf$   # すべてのPDFをブロック
-   Disallow: /*/temp/  # 任意のパス下のtemp/をブロック
+   Disallow: /*.pdf$   # Block all PDFs
+   Disallow: /*/temp/  # Block temp/ under any path
    ```
 
-### よくある間違い
+### Common Mistakes
 
 ```txt
-# ❌ 間違い: サイト全体をブロック
+# Mistake: Blocking entire site
 User-agent: *
 Disallow: /
 
-# ❌ 間違い: 重要なリソースをブロック
+# Mistake: Blocking important resources
 Disallow: /css/
 Disallow: /js/
 Disallow: /images/
 
-# ✅ 正しい: 必要最小限のブロック
+# Correct: Minimal blocking
 User-agent: *
 Disallow: /admin/
 Disallow: /api/internal/
@@ -59,9 +59,9 @@ Disallow: /api/internal/
 
 ---
 
-## XML サイトマップ
+## XML Sitemap
 
-### 基本構造
+### Basic Structure
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -81,7 +81,7 @@ Disallow: /api/internal/
 </urlset>
 ```
 
-### サイトマップインデックス（大規模サイト用）
+### Sitemap Index (For Large Sites)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -97,156 +97,156 @@ Disallow: /api/internal/
 </sitemapindex>
 ```
 
-### ベストプラクティス
+### Best Practices
 
-| 項目 | 推奨 |
-|------|------|
-| URL数上限 | 50,000 URL / ファイル |
-| ファイルサイズ上限 | 50MB（非圧縮） |
-| lastmod | 実際の更新日時を正確に記載 |
-| priority | 相対的な重要度（0.0-1.0） |
-| 送信先 | Google Search Console |
+| Item | Recommendation |
+|------|----------------|
+| URL limit | 50,000 URLs per file |
+| File size limit | 50MB (uncompressed) |
+| lastmod | Accurate update datetime |
+| priority | Relative importance (0.0-1.0) |
+| Submission | Google Search Console |
 
 ---
 
 ## Canonical URL
 
-### 実装方法
+### Implementation Methods
 
 ```html
-<!-- HTMLで指定 -->
+<!-- Specify in HTML -->
 <link rel="canonical" href="https://example.com/page/">
 
-<!-- HTTPヘッダーで指定（PDF等に有効） -->
+<!-- Specify in HTTP header (useful for PDFs) -->
 Link: <https://example.com/page/>; rel="canonical"
 ```
 
-### 使用シナリオ
+### Use Cases
 
-1. **パラメータ付きURL**
+1. **URLs with Parameters**
    ```html
    <!-- https://example.com/product?color=red&size=L -->
    <link rel="canonical" href="https://example.com/product">
    ```
 
-2. **www / non-www の統一**
+2. **www / non-www Unification**
    ```html
-   <!-- すべてのページで一貫して使用 -->
+   <!-- Use consistently across all pages -->
    <link rel="canonical" href="https://www.example.com/page/">
    ```
 
-3. **ページネーション**
+3. **Pagination**
    ```html
-   <!-- 各ページにそのページ自体のcanonicalを設定 -->
-   <!-- ページ2の場合 -->
+   <!-- Each page has its own canonical -->
+   <!-- For page 2 -->
    <link rel="canonical" href="https://example.com/articles?page=2">
    ```
 
-4. **モバイル/PC別URL**
+4. **Separate Mobile/Desktop URLs**
    ```html
-   <!-- PC版 -->
+   <!-- Desktop version -->
    <link rel="canonical" href="https://example.com/page">
    <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.example.com/page">
-   
-   <!-- モバイル版 -->
+
+   <!-- Mobile version -->
    <link rel="canonical" href="https://example.com/page">
    ```
 
-### 注意点
+### Notes
 
-- canonical は「ヒント」であり強制ではない
-- 自己参照canonical を推奨
-- 301リダイレクトとの併用が望ましい
-- クロスドメインcanonicalは慎重に
+- Canonical is a "hint," not a directive
+- Self-referencing canonical recommended
+- Best combined with 301 redirects
+- Use cross-domain canonicals carefully
 
 ---
 
-## hreflang（多言語・多地域対応）
+## hreflang (Multilingual/Multi-regional)
 
-### 基本実装
+### Basic Implementation
 
 ```html
-<link rel="alternate" hreflang="ja" href="https://example.com/ja/">
 <link rel="alternate" hreflang="en" href="https://example.com/en/">
 <link rel="alternate" hreflang="en-US" href="https://example.com/en-us/">
 <link rel="alternate" hreflang="en-GB" href="https://example.com/en-gb/">
+<link rel="alternate" hreflang="es" href="https://example.com/es/">
 <link rel="alternate" hreflang="x-default" href="https://example.com/">
 ```
 
-### 言語・地域コード
+### Language/Region Codes
 
-| コード | 意味 |
-|--------|------|
-| ja | 日本語 |
-| en | 英語（地域指定なし） |
-| en-US | アメリカ英語 |
-| en-GB | イギリス英語 |
-| zh-Hans | 簡体字中国語 |
-| zh-Hant | 繁体字中国語 |
-| x-default | デフォルト / 言語セレクター |
+| Code | Meaning |
+|------|---------|
+| en | English (no region) |
+| en-US | American English |
+| en-GB | British English |
+| es | Spanish |
+| zh-Hans | Simplified Chinese |
+| zh-Hant | Traditional Chinese |
+| x-default | Default / language selector |
 
-### サイトマップでの指定
+### Sitemap Specification
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.com/ja/</loc>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://example.com/ja/"/>
+    <loc>https://example.com/en/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://example.com/es/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://example.com/"/>
   </url>
 </urlset>
 ```
 
-### 重要ルール
+### Important Rules
 
-1. **双方向リンク必須**
-   - 日本語ページ → 英語ページ
-   - 英語ページ → 日本語ページ
-   - 両方に設定がないとGoogleは無視する
+1. **Bidirectional Links Required**
+   - English page -> Spanish page
+   - Spanish page -> English page
+   - Google ignores incomplete hreflang
 
-2. **自己参照を含める**
-   - 現在のページも hreflang に含める
+2. **Include Self-Reference**
+   - Include current page in hreflang list
 
-3. **x-default の使用**
-   - 該当する言語がない場合のフォールバック
-   - 言語選択ページにも使用
+3. **x-default Usage**
+   - Fallback when no language matches
+   - Also used for language selector pages
 
 ---
 
 ## JavaScript SEO
 
-### Google のレンダリングプロセス
+### Google's Rendering Process
 
 ```
-1. クロール (HTML取得)
-      ↓
-2. レンダリングキュー待機 (数秒〜数日)
-      ↓
-3. レンダリング (JS実行)
-      ↓
-4. インデックス登録
+1. Crawl (Fetch HTML)
+      |
+2. Render Queue Wait (seconds to days)
+      |
+3. Rendering (Execute JS)
+      |
+4. Index
 ```
 
-### ベストプラクティス
+### Best Practices
 
-**サーバーサイドレンダリング（SSR）推奨ケース:**
-- コンテンツがSEO的に重要
-- 頻繁に更新されるコンテンツ
-- ソーシャルシェア用のメタタグが必要
+**Recommended SSR Cases:**
+- SEO-critical content
+- Frequently updated content
+- Social share meta tags needed
 
-**実装パターン:**
+**Implementation Patterns:**
 
 ```javascript
-// Next.js での SSR
+// Next.js SSR
 export async function getServerSideProps() {
   const data = await fetchData();
   return { props: { data } };
 }
 
-// Nuxt.js での SSR
+// Nuxt.js SSR
 export default {
   async asyncData({ $axios }) {
     const data = await $axios.$get('/api/data');
@@ -255,56 +255,56 @@ export default {
 }
 ```
 
-### リンクの実装
+### Link Implementation
 
 ```html
-<!-- ✅ クローラブル -->
+<!-- Crawlable -->
 <a href="/page">Link</a>
 <a href="https://example.com/page">Link</a>
 
-<!-- ❌ クローラブルでない可能性 -->
+<!-- May not be crawlable -->
 <a onclick="goto('/page')">Link</a>
 <span onclick="navigate('/page')">Link</span>
 <a href="javascript:void(0)">Link</a>
 ```
 
-### 遅延読み込みコンテンツ
+### Lazy-Loaded Content
 
 ```html
-<!-- ✅ ネイティブ lazy loading（Googlebot対応） -->
-<img src="image.jpg" loading="lazy" alt="説明">
+<!-- Native lazy loading (Googlebot compatible) -->
+<img src="image.jpg" loading="lazy" alt="Description">
 
-<!-- ❌ スクロールトリガーの動的読み込み -->
+<!-- Scroll-triggered dynamic loading (problematic) -->
 <div data-src="/content" class="load-on-scroll"></div>
 ```
 
 ---
 
-## HTTPステータスコード
+## HTTP Status Codes
 
-### SEO関連の主要コード
+### SEO-Related Codes
 
-| コード | 意味 | SEOへの影響 |
-|--------|------|-------------|
-| 200 | 成功 | 正常にインデックス |
-| 301 | 恒久的リダイレクト | リンク評価を転送 |
-| 302 | 一時的リダイレクト | リンク評価は元URLに保持 |
-| 304 | 未更新 | クロール効率向上 |
-| 404 | ページなし | インデックスから削除 |
-| 410 | 完全に削除済み | 404より早くインデックス削除 |
-| 500 | サーバーエラー | 一時的なら問題なし、継続するとインデックス低下 |
-| 503 | サービス利用不可 | メンテナンス時に使用 |
+| Code | Meaning | SEO Impact |
+|------|---------|------------|
+| 200 | Success | Indexed normally |
+| 301 | Permanent redirect | Link equity transferred |
+| 302 | Temporary redirect | Link equity stays with original |
+| 304 | Not modified | Improved crawl efficiency |
+| 404 | Not found | Removed from index |
+| 410 | Gone | Removed from index faster than 404 |
+| 500 | Server error | Temporary is OK, persistent causes index decline |
+| 503 | Service unavailable | Use during maintenance |
 
-### リダイレクトの使い分け
+### Redirect Usage
 
 ```nginx
-# 301: ドメイン変更、恒久的なURL変更
+# 301: Domain change, permanent URL change
 server {
     server_name old-domain.com;
     return 301 https://new-domain.com$request_uri;
 }
 
-# 302: A/Bテスト、一時的なメンテナンス
+# 302: A/B testing, temporary maintenance
 location /old-page {
     return 302 /new-page;
 }
@@ -312,14 +312,14 @@ location /old-page {
 
 ---
 
-## クロールバジェット最適化
+## Crawl Budget Optimization
 
-### クロールバジェットとは
-Googlebotがサイトをクロールする「予算」（時間・リソース）
+### What is Crawl Budget?
+The "budget" (time/resources) Googlebot allocates to crawl your site.
 
-### 最適化のポイント
+### Optimization Points
 
-1. **不要なページをブロック**
+1. **Block Unnecessary Pages**
    ```txt
    # robots.txt
    Disallow: /search?
@@ -327,90 +327,90 @@ Googlebotがサイトをクロールする「予算」（時間・リソース�
    Disallow: /tag/*
    ```
 
-2. **重複コンテンツの整理**
-   - canonical設定
-   - パラメータハンドリング（Search Console）
+2. **Handle Duplicate Content**
+   - Canonical settings
+   - Parameter handling (Search Console)
 
-3. **サーバーレスポンス高速化**
-   - TTFB 200ms以下目標
-   - キャッシュ活用
+3. **Improve Server Response**
+   - Target TTFB under 200ms
+   - Use caching
 
-4. **内部リンク最適化**
-   - 重要ページへのリンクを増やす
-   - 深い階層を避ける（3クリック以内）
+4. **Optimize Internal Links**
+   - Increase links to important pages
+   - Avoid deep hierarchies (within 3 clicks)
 
-5. **サイトマップ更新**
-   - 新規・更新ページを優先
-   - 削除済みページを除外
+5. **Update Sitemap**
+   - Prioritize new/updated pages
+   - Exclude deleted pages
 
 ---
 
-## モバイルファーストインデックス
+## Mobile-First Indexing
 
-### チェックリスト
+### Checklist
 
-- [ ] レスポンシブデザイン または 動的配信 を採用
-- [ ] モバイル版に同じコンテンツが存在
-- [ ] 同じ構造化データがモバイル版に存在
-- [ ] 同じメタタグ（title, description）がモバイル版に存在
-- [ ] 画像・動画がモバイル版で適切に表示
-- [ ] モバイル版でリソースがブロックされていない
+- [ ] Using responsive design or dynamic serving
+- [ ] Mobile version has the same content
+- [ ] Same structured data on mobile version
+- [ ] Same meta tags (title, description) on mobile
+- [ ] Images/videos display properly on mobile
+- [ ] Resources not blocked on mobile version
 
-### レスポンシブデザイン設定
+### Responsive Design Setup
 
 ```html
-<!-- ビューポート設定 -->
+<!-- Viewport setting -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- レスポンシブ画像 -->
+<!-- Responsive images -->
 <picture>
   <source media="(max-width: 640px)" srcset="small.webp">
   <source media="(max-width: 1024px)" srcset="medium.webp">
-  <img src="large.webp" alt="説明">
+  <img src="large.webp" alt="Description">
 </picture>
 ```
 
 ---
 
-## HTTPS / セキュリティ
+## HTTPS / Security
 
-### 必須設定
+### Required Configuration
 
 ```nginx
-# HTTPからHTTPSへリダイレクト
+# Redirect HTTP to HTTPS
 server {
     listen 80;
     server_name example.com;
     return 301 https://$server_name$request_uri;
 }
 
-# HSTS設定
+# HSTS setting
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 ```
 
-### SEOへの影響
+### SEO Impact
 
-- HTTPS はランキングシグナル（軽微だが正の影響）
-- Chrome で「保護されていない通信」警告を回避
-- HTTP/2 利用可能（パフォーマンス向上）
+- HTTPS is a ranking signal (minor but positive)
+- Avoids "Not Secure" warning in Chrome
+- Enables HTTP/2 (performance boost)
 
 ---
 
-## デバッグ用コマンド集
+## Debug Commands
 
 ```bash
-# robots.txt確認
+# Check robots.txt
 curl -s https://example.com/robots.txt
 
-# HTTPヘッダー確認
+# Check HTTP headers
 curl -I https://example.com/
 
-# canonical / hreflang 抽出
+# Extract canonical / hreflang
 curl -s https://example.com/ | grep -E 'rel="canonical"|hreflang'
 
-# リダイレクトチェーン確認
+# Check redirect chain
 curl -L -v https://example.com/ 2>&1 | grep -E 'Location:|< HTTP'
 
-# レンダリング後のHTML取得（Puppeteer使用）
+# Get rendered HTML (using Puppeteer)
 npx puppeteer screenshot https://example.com --fullPage
 ```

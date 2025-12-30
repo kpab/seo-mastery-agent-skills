@@ -1,28 +1,28 @@
-# Structured Data Reference
+# 構造化データ リファレンス
 
-Implementation guide for structured data supporting Google Search rich results. JSON-LD format recommended.
+Google検索のリッチリザルトに対応する構造化データの実装ガイド。JSON-LD形式を推奨。
 
-## Implementation Basics
+## 実装の基本
 
-### JSON-LD Placement
+### JSON-LD の配置
 
 ```html
 <head>
-  <!-- Can be placed in head or body -->
+  <!-- headまたはbody内に配置可能 -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Article Title"
+    "headline": "記事タイトル"
   }
   </script>
 </head>
 ```
 
-### Multiple Structured Data
+### 複数の構造化データ
 
 ```html
-<!-- Method 1: Multiple script tags -->
+<!-- 方法1: 複数のscriptタグ -->
 <script type="application/ld+json">
 { "@type": "Article", ... }
 </script>
@@ -30,7 +30,7 @@ Implementation guide for structured data supporting Google Search rich results. 
 { "@type": "BreadcrumbList", ... }
 </script>
 
-<!-- Method 2: Combine with @graph (recommended) -->
+<!-- 方法2: @graphで統合（推奨） -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -44,7 +44,7 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## Article
+## Article（記事）
 
 ### NewsArticle
 
@@ -52,18 +52,18 @@ Implementation guide for structured data supporting Google Search rich results. 
 {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
-  "headline": "News article headline (max 110 characters)",
-  "description": "Article summary",
+  "headline": "ニュース記事のタイトル（最大110文字）",
+  "description": "記事の要約",
   "image": [
     "https://example.com/photos/1x1/photo.jpg",
     "https://example.com/photos/4x3/photo.jpg",
     "https://example.com/photos/16x9/photo.jpg"
   ],
-  "datePublished": "2025-01-15T08:00:00+00:00",
-  "dateModified": "2025-01-15T10:30:00+00:00",
+  "datePublished": "2025-01-15T08:00:00+09:00",
+  "dateModified": "2025-01-15T10:30:00+09:00",
   "author": [{
     "@type": "Person",
-    "name": "Author Name",
+    "name": "著者名",
     "url": "https://example.com/author/profile",
     "sameAs": [
       "https://twitter.com/author",
@@ -72,7 +72,7 @@ Implementation guide for structured data supporting Google Search rich results. 
   }],
   "publisher": {
     "@type": "Organization",
-    "name": "Publication Name",
+    "name": "メディア名",
     "logo": {
       "@type": "ImageObject",
       "url": "https://example.com/logo.png",
@@ -93,23 +93,23 @@ Implementation guide for structured data supporting Google Search rich results. 
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Blog post title",
-  "description": "Post summary",
+  "headline": "ブログ記事のタイトル",
+  "description": "記事の要約",
   "image": "https://example.com/blog-image.jpg",
-  "datePublished": "2025-01-15T08:00:00+00:00",
-  "dateModified": "2025-01-15T10:30:00+00:00",
+  "datePublished": "2025-01-15T08:00:00+09:00",
+  "dateModified": "2025-01-15T10:30:00+09:00",
   "author": {
     "@type": "Person",
-    "name": "Author Name"
+    "name": "著者名"
   },
   "wordCount": 2500,
-  "keywords": ["SEO", "content marketing", "Google"]
+  "keywords": ["SEO", "コンテンツマーケティング", "Google"]
 }
 ```
 
 ---
 
-## FAQ (Frequently Asked Questions)
+## FAQ（よくある質問）
 
 ```json
 {
@@ -118,26 +118,26 @@ Implementation guide for structured data supporting Google Search rich results. 
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is SEO?",
+      "name": "SEOとは何ですか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "SEO (Search Engine Optimization) is the practice of optimizing websites to rank higher in search engine results. It involves technical optimizations, content creation, and link building to improve visibility and drive organic traffic."
+        "text": "SEO（Search Engine Optimization）とは、検索エンジン最適化のことです。Webサイトを検索エンジンに適切に評価してもらい、検索結果の上位に表示させるための施策を指します。"
       }
     },
     {
       "@type": "Question",
-      "name": "How long does SEO take to work?",
+      "name": "SEO対策にはどのくらい時間がかかりますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Generally, SEO results take 3-6 months to appear. For highly competitive keywords, it may take a year or more. Results depend on factors like competition, content quality, and technical implementation."
+        "text": "一般的に、SEO対策の効果が現れるまでには3〜6ヶ月程度かかります。競争の激しいキーワードでは1年以上かかることもあります。"
       }
     },
     {
       "@type": "Question",
-      "name": "Can I do SEO myself?",
+      "name": "SEO対策は自分でできますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, basic SEO can be done yourself. Meta tag optimization, content improvement, and internal link structure are accessible without expert knowledge. However, for technical issues or competitive niches, professional support is beneficial."
+        "text": "基本的なSEO対策は自分で行うことができます。メタタグの最適化、コンテンツの改善、内部リンクの整備などは専門知識がなくても取り組めます。ただし、技術的な問題や競争が激しい分野では専門家の支援が有効です。"
       }
     }
   ]
@@ -146,50 +146,50 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## HowTo
+## HowTo（ハウツー）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "How to Configure robots.txt",
-  "description": "Step-by-step guide to properly configure your website's robots.txt file.",
+  "name": "robots.txtの設定方法",
+  "description": "Webサイトのrobots.txtファイルを正しく設定する手順を解説します。",
   "image": "https://example.com/howto-image.jpg",
   "totalTime": "PT15M",
   "estimatedCost": {
     "@type": "MonetaryAmount",
-    "currency": "USD",
+    "currency": "JPY",
     "value": "0"
   },
   "tool": [
     {
       "@type": "HowToTool",
-      "name": "Text editor"
+      "name": "テキストエディタ"
     },
     {
       "@type": "HowToTool",
-      "name": "FTP client"
+      "name": "FTPクライアント"
     }
   ],
   "step": [
     {
       "@type": "HowToStep",
-      "name": "Create robots.txt file",
-      "text": "Open your text editor and create a new file.",
+      "name": "robots.txtファイルを作成",
+      "text": "テキストエディタを開き、新規ファイルを作成します。",
       "image": "https://example.com/step1.jpg",
       "url": "https://example.com/howto#step1"
     },
     {
       "@type": "HowToStep",
-      "name": "Write the rules",
-      "text": "Write crawl control rules like User-agent: * and Disallow: /admin/.",
+      "name": "ルールを記述",
+      "text": "User-agent: *とDisallow: /admin/のようにクロール制御ルールを記述します。",
       "image": "https://example.com/step2.jpg",
       "url": "https://example.com/howto#step2"
     },
     {
       "@type": "HowToStep",
-      "name": "Upload to server",
-      "text": "Use FTP client to upload robots.txt to your root directory.",
+      "name": "サーバーにアップロード",
+      "text": "FTPクライアントを使用して、ルートディレクトリにrobots.txtをアップロードします。",
       "image": "https://example.com/step3.jpg",
       "url": "https://example.com/howto#step3"
     }
@@ -199,19 +199,19 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## Product
+## Product（商品）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "SEO Analytics Tool Pro",
+  "name": "SEO分析ツール Pro",
   "image": [
     "https://example.com/product-1x1.jpg",
     "https://example.com/product-4x3.jpg",
     "https://example.com/product-16x9.jpg"
   ],
-  "description": "Professional SEO analysis tool with comprehensive features. Includes keyword research, competitor analysis, and site audit capabilities.",
+  "description": "包括的なSEO分析機能を備えたプロフェッショナル向けツール。キーワード調査、競合分析、サイト監査機能を搭載。",
   "sku": "SEO-PRO-001",
   "mpn": "925872",
   "brand": {
@@ -221,8 +221,8 @@ Implementation guide for structured data supporting Google Search rich results. 
   "offers": {
     "@type": "Offer",
     "url": "https://example.com/product/seo-pro",
-    "priceCurrency": "USD",
-    "price": "99.00",
+    "priceCurrency": "JPY",
+    "price": "9800",
     "priceValidUntil": "2025-12-31",
     "availability": "https://schema.org/InStock",
     "itemCondition": "https://schema.org/NewCondition",
@@ -235,7 +235,7 @@ Implementation guide for structured data supporting Google Search rich results. 
       "shippingRate": {
         "@type": "MonetaryAmount",
         "value": "0",
-        "currency": "USD"
+        "currency": "JPY"
       },
       "deliveryTime": {
         "@type": "ShippingDeliveryTime",
@@ -271,10 +271,10 @@ Implementation guide for structured data supporting Google Search rich results. 
       },
       "author": {
         "@type": "Person",
-        "name": "John Smith"
+        "name": "田中太郎"
       },
       "datePublished": "2025-01-10",
-      "reviewBody": "Very easy to use and makes SEO analysis efficient."
+      "reviewBody": "非常に使いやすく、SEO分析が効率的に行えます。"
     }
   ]
 }
@@ -282,13 +282,13 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## LocalBusiness
+## LocalBusiness（ローカルビジネス）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Restaurant",
-  "name": "The Italian Kitchen",
+  "name": "寿司 太郎",
   "image": [
     "https://example.com/store-1x1.jpg",
     "https://example.com/store-4x3.jpg",
@@ -296,21 +296,21 @@ Implementation guide for structured data supporting Google Search rich results. 
   ],
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "123 Main Street",
-    "addressLocality": "New York",
-    "addressRegion": "NY",
-    "postalCode": "10001",
-    "addressCountry": "US"
+    "streetAddress": "中区本町1-2-3",
+    "addressLocality": "横浜市",
+    "addressRegion": "神奈川県",
+    "postalCode": "231-0005",
+    "addressCountry": "JP"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 40.7128,
-    "longitude": -74.0060
+    "latitude": 35.4437,
+    "longitude": 139.6380
   },
   "url": "https://example.com/",
-  "telephone": "+1-212-555-1234",
-  "priceRange": "$$$",
-  "servesCuisine": "Italian",
+  "telephone": "+81-45-123-4567",
+  "priceRange": "¥¥¥",
+  "servesCuisine": "寿司",
   "openingHoursSpecification": [
     {
       "@type": "OpeningHoursSpecification",
@@ -343,7 +343,7 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## BreadcrumbList
+## BreadcrumbList（パンくずリスト）
 
 ```json
 {
@@ -353,7 +353,7 @@ Implementation guide for structured data supporting Google Search rich results. 
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "Home",
+      "name": "ホーム",
       "item": "https://example.com/"
     },
     {
@@ -365,38 +365,38 @@ Implementation guide for structured data supporting Google Search rich results. 
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "Technical SEO",
+      "name": "技術SEO",
       "item": "https://example.com/seo/technical/"
     },
     {
       "@type": "ListItem",
       "position": 4,
-      "name": "robots.txt Guide"
+      "name": "robots.txtガイド"
     }
   ]
 }
 ```
 
-**Note:** The `item` property can be omitted for the last item (current page).
+**注意:** 最後の項目（現在のページ）には `item` プロパティを省略可能。
 
 ---
 
-## VideoObject
+## VideoObject（動画）
 
-### Basic Implementation
+### 基本実装
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "SEO Beginner Course - Part 1",
-  "description": "Learn SEO basics in 15 minutes. Understand how crawling, indexing, and ranking work.",
+  "name": "SEO入門講座 - 第1回",
+  "description": "SEOの基礎知識を15分で解説します。クロール、インデックス、ランキングの仕組みを理解しましょう。",
   "thumbnailUrl": [
     "https://example.com/thumb-1x1.jpg",
     "https://example.com/thumb-4x3.jpg",
     "https://example.com/thumb-16x9.jpg"
   ],
-  "uploadDate": "2025-01-15T08:00:00+00:00",
+  "uploadDate": "2025-01-15T08:00:00+09:00",
   "duration": "PT15M30S",
   "contentUrl": "https://example.com/videos/seo-intro.mp4",
   "embedUrl": "https://example.com/embed/seo-intro",
@@ -408,68 +408,68 @@ Implementation guide for structured data supporting Google Search rich results. 
 }
 ```
 
-### Live Streaming (LIVE badge)
+### ライブ配信（LIVE badge）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "SEO Webinar LIVE",
-  "description": "Real-time coverage of the latest SEO trends",
+  "name": "SEOウェビナー LIVE",
+  "description": "リアルタイムでSEOの最新トレンドを解説",
   "thumbnailUrl": "https://example.com/live-thumb.jpg",
-  "uploadDate": "2025-01-20T19:00:00+00:00",
+  "uploadDate": "2025-01-20T19:00:00+09:00",
   "publication": {
     "@type": "BroadcastEvent",
     "isLiveBroadcast": true,
-    "startDate": "2025-01-20T19:00:00+00:00",
-    "endDate": "2025-01-20T20:30:00+00:00"
+    "startDate": "2025-01-20T19:00:00+09:00",
+    "endDate": "2025-01-20T20:30:00+09:00"
   }
 }
 ```
 
-### Key Moments (Clip)
+### キーモーメント（Clip）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "Complete SEO Guide",
-  "description": "Master SEO in 60 minutes",
+  "name": "SEO完全ガイド",
+  "description": "60分でSEOを完全マスター",
   "thumbnailUrl": "https://example.com/thumb.jpg",
-  "uploadDate": "2025-01-15T08:00:00+00:00",
+  "uploadDate": "2025-01-15T08:00:00+09:00",
   "duration": "PT60M",
   "hasPart": [
     {
       "@type": "Clip",
-      "name": "Introduction",
+      "name": "イントロダクション",
       "startOffset": 0,
       "endOffset": 120,
       "url": "https://example.com/video?t=0"
     },
     {
       "@type": "Clip",
-      "name": "Technical SEO Basics",
+      "name": "技術SEOの基礎",
       "startOffset": 120,
       "endOffset": 900,
       "url": "https://example.com/video?t=120"
     },
     {
       "@type": "Clip",
-      "name": "Content Optimization",
+      "name": "コンテンツ最適化",
       "startOffset": 900,
       "endOffset": 1800,
       "url": "https://example.com/video?t=900"
     },
     {
       "@type": "Clip",
-      "name": "Link Strategy",
+      "name": "リンク戦略",
       "startOffset": 1800,
       "endOffset": 2700,
       "url": "https://example.com/video?t=1800"
     },
     {
       "@type": "Clip",
-      "name": "Summary and Q&A",
+      "name": "まとめとQ&A",
       "startOffset": 2700,
       "endOffset": 3600,
       "url": "https://example.com/video?t=2700"
@@ -488,16 +488,16 @@ Implementation guide for structured data supporting Google Search rich results. 
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "SEO Master Inc.",
-  "alternateName": "SEO Master",
+  "name": "株式会社SEOマスター",
+  "alternateName": "SEO Master Inc.",
   "url": "https://example.com/",
   "logo": "https://example.com/logo.png",
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+1-800-555-1234",
+    "telephone": "+81-3-1234-5678",
     "contactType": "customer service",
-    "areaServed": "US",
-    "availableLanguage": ["English", "Spanish"]
+    "areaServed": "JP",
+    "availableLanguage": ["Japanese", "English"]
   },
   "sameAs": [
     "https://twitter.com/seomaster",
@@ -507,7 +507,7 @@ Implementation guide for structured data supporting Google Search rich results. 
 }
 ```
 
-### WebSite (Sitelinks Search Box)
+### WebSite（サイト内検索）
 
 ```json
 {
@@ -528,34 +528,34 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ---
 
-## Event
+## Event（イベント）
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "name": "SEO Conference 2025",
-  "description": "The largest SEO conference. Learn the latest trends and practical techniques.",
+  "name": "SEOカンファレンス 2025",
+  "description": "国内最大級のSEOカンファレンス。最新トレンドと実践テクニックを学べます。",
   "image": "https://example.com/event-image.jpg",
-  "startDate": "2025-03-15T10:00:00-05:00",
-  "endDate": "2025-03-15T18:00:00-05:00",
+  "startDate": "2025-03-15T10:00:00+09:00",
+  "endDate": "2025-03-15T18:00:00+09:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
   "location": {
     "@type": "Place",
-    "name": "Convention Center",
+    "name": "東京国際フォーラム",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "100 Convention Blvd",
-      "addressLocality": "New York",
-      "addressRegion": "NY",
-      "postalCode": "10001",
-      "addressCountry": "US"
+      "streetAddress": "丸の内3-5-1",
+      "addressLocality": "千代田区",
+      "addressRegion": "東京都",
+      "postalCode": "100-0005",
+      "addressCountry": "JP"
     }
   },
   "performer": {
     "@type": "Person",
-    "name": "SEO Expert John Doe"
+    "name": "SEO専門家 山田太郎"
   },
   "organizer": {
     "@type": "Organization",
@@ -565,45 +565,45 @@ Implementation guide for structured data supporting Google Search rich results. 
   "offers": {
     "@type": "Offer",
     "url": "https://example.com/event/register",
-    "price": "150.00",
-    "priceCurrency": "USD",
+    "price": "15000",
+    "priceCurrency": "JPY",
     "availability": "https://schema.org/InStock",
-    "validFrom": "2025-01-01T00:00:00-05:00"
+    "validFrom": "2025-01-01T00:00:00+09:00"
   }
 }
 ```
 
 ---
 
-## Validation Tools
+## 検証ツール
 
 ### Rich Results Test
 https://search.google.com/test/rich-results
 
 ```bash
-# CLI validation (using Puppeteer)
+# CLI での検証（Puppeteer使用）
 npx puppeteer screenshot "https://search.google.com/test/rich-results?url=https://example.com"
 ```
 
 ### Schema Markup Validator
 https://validator.schema.org/
 
-### Common Errors and Fixes
+### よくあるエラーと対処
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| Missing field | Required field missing | Add required property |
-| Invalid URL | URL format is wrong | Specify complete URL |
-| Invalid date | Date format is wrong | Use ISO 8601 format |
-| Image too small | Image is too small | Ensure minimum 1200px |
-| Unsupported type | Type not supported | Check supported types |
+| エラー | 原因 | 対処法 |
+|--------|------|--------|
+| Missing field | 必須フィールドの欠落 | 必須プロパティを追加 |
+| Invalid URL | URLの形式が不正 | 完全なURLを指定 |
+| Invalid date | 日付形式が不正 | ISO 8601形式を使用 |
+| Image too small | 画像が小さすぎる | 最低1200pxを確保 |
+| Unsupported type | 非対応のタイプ | 対応タイプを確認 |
 
 ---
 
-## Best Practices
+## ベストプラクティス
 
-1. **Use JSON-LD** (Preferred over Microdata/RDFa)
-2. **Validate in test environment** before production deployment
-3. **Only markup information matching page content**
-4. **Regular validation** (Monitor in Search Console)
-5. **Avoid excessive markup** (Risk of spam classification)
+1. **JSON-LD を使用**（Microdata/RDFaより推奨）
+2. **テスト環境で検証**してから本番デプロイ
+3. **ページ内容と一致**する情報のみマークアップ
+4. **定期的な検証**（Search Consoleで監視）
+5. **過度なマークアップを避ける**（スパム判定リスク）
