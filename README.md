@@ -1,116 +1,130 @@
-# 🚀 SEO Mastery Agent Skills
+# SEO Mastery Agent Skills
 
-Claude/Codex向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
+Comprehensive SEO optimization Agent Skills for Claude/Codex. Based on Google's official documentation, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, and site audits.
 
-## ✨ 特徴
+[日本語版 README はこちら](docs/README.ja.md)
 
-- 📋 **技術SEOチェックリスト** - robots.txt、sitemap、canonical、hreflang等
-- 📝 **コンテンツSEO最適化** - メタタグ、見出し構造、E-E-A-T対策
-- 🏗️ **構造化データテンプレート** - Article、FAQ、Product、LocalBusiness等
-- ⚡ **Core Web Vitals対応** - LCP、INP、CLSの詳細な最適化手法
-- 🔍 **サイト監査ワークフロー** - 体系的な監査プロセスとレポート形式
-- 🎯 **実践的なコード例** - コピペで使えるテンプレート多数
+## Features
 
-## 📦 インストール
+- **Technical SEO Checklist** - robots.txt, sitemap, canonical, hreflang, etc.
+- **Content SEO Optimization** - Meta tags, heading structure, E-E-A-T strategies
+- **Structured Data Templates** - Article, FAQ, Product, LocalBusiness, etc.
+- **Core Web Vitals Support** - Detailed optimization techniques for LCP, INP, CLS
+- **Site Audit Workflow** - Systematic audit process and report formats
+- **Practical Code Examples** - Ready-to-use templates
+
+## Installation
 
 ### Claude Code / Claude.ai
 
 ```bash
-# プロジェクトにインストール
+# Install English version
 mkdir -p .claude/skills/seo-mastery
-curl -o .claude/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/YOUR_USERNAME/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+curl -o .claude/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+
+# Install Japanese version
+mkdir -p .claude/skills/seo-mastery-jp
+curl -o .claude/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
 ```
 
 ### Codex
 
 ```bash
-# プロジェクトローカル
+# Project local (English)
 mkdir -p .codex/skills/seo-mastery
-curl -o .codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/YOUR_USERNAME/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+curl -o .codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
 
-# ユーザーグローバル
+# Project local (Japanese)
+mkdir -p .codex/skills/seo-mastery-jp
+curl -o .codex/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
+
+# User global
 mkdir -p ~/.codex/skills/seo-mastery
-curl -o ~/.codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/YOUR_USERNAME/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+curl -o ~/.codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
 ```
 
-## 📁 ファイル構成
+## File Structure
 
 ```
-.claude/skills/seo-mastery/
-├── SKILL.md              # メインスキルファイル
-├── technical-seo.md      # 技術SEO詳細
-├── content-seo.md        # コンテンツSEO詳細
-├── structured-data.md    # 構造化データ詳細
-├── core-web-vitals.md    # Core Web Vitals詳細
-└── audit-workflow.md     # 監査ワークフロー詳細
+.claude/skills/
+├── seo-mastery/              # English version
+│   ├── SKILL.md              # Main skill file
+│   ├── technical-seo.md      # Technical SEO details
+│   ├── content-seo.md        # Content SEO details
+│   ├── structured-data.md    # Structured data details
+│   ├── core-web-vitals.md    # Core Web Vitals details
+│   └── audit-workflow.md     # Audit workflow details
+└── seo-mastery-jp/           # Japanese version
+    ├── SKILL.md              # Main skill file
+    ├── technical-seo.md      # Technical SEO details
+    ├── content-seo.md        # Content SEO details
+    ├── structured-data.md    # Structured data details
+    ├── core-web-vitals.md    # Core Web Vitals details
+    └── audit-workflow.md     # Audit workflow details
 ```
 
-## 💡 使用例
+## Usage Examples
 
 ```
-# メタタグ最適化を依頼
-「このページのメタタグを最適化して」
+# Request meta tag optimization
+"Optimize the meta tags for this page"
 
-# 構造化データ生成
-「この記事にArticle構造化データを追加して」
+# Generate structured data
+"Add Article structured data to this blog post"
 
-# サイト監査実行
-「このサイトのSEO監査をして」
+# Run site audit
+"Perform an SEO audit on this site"
 
-# Core Web Vitals改善
-「LCPを改善する方法を教えて」
+# Improve Core Web Vitals
+"How can I improve LCP?"
 
-# FAQの構造化データを生成
-「このFAQページにJSON-LDを追加して」
+# Generate FAQ structured data
+"Add JSON-LD to this FAQ page"
 ```
 
-## 📚 含まれるテンプレート
+## Included Templates
 
-### 構造化データ
+### Structured Data
 - Article / NewsArticle / BlogPosting
-- FAQ（よくある質問）
-- HowTo（ハウツー）
-- Product（商品）
-- LocalBusiness（ローカルビジネス）
-- BreadcrumbList（パンくずリスト）
-- VideoObject（動画）
+- FAQ (Frequently Asked Questions)
+- HowTo
+- Product
+- LocalBusiness
+- BreadcrumbList
+- VideoObject
 - Organization / WebSite
-- Event（イベント）
+- Event
 
-### 技術SEO
-- robots.txt テンプレート
-- sitemap.xml テンプレート
-- hreflang 実装パターン
-- canonical URL 設定例
+### Technical SEO
+- robots.txt template
+- sitemap.xml template
+- hreflang implementation patterns
+- canonical URL configuration
 
 ### Core Web Vitals
-- LCP最適化コード
-- INP最適化コード
-- CLS最適化コード
-- 測定・監視スクリプト
+- LCP optimization code
+- INP optimization code
+- CLS optimization code
+- Measurement & monitoring scripts
 
-## 🔧 対応フレームワーク
+## Supported Frameworks
 
 - Next.js
 - Nuxt.js
-- 静的HTML
-- WordPress（参考）
+- Static HTML
+- WordPress (reference)
 
-## 📖 参考リソース
+## Resources
 
 - [Google Search Central](https://developers.google.com/search)
 - [SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
 - [Web.dev - Core Web Vitals](https://web.dev/vitals/)
 - [Schema.org](https://schema.org/)
 
-## 🤝 コントリビューション
+## Contributing
 
-プルリクエストや Issue の報告を歓迎します！
+Pull requests and issue reports are welcome!
 
-## 📄 ライセンス
+## License
 
 MIT License
-
----
-
-**Note:** このスキルは [google-official-seo-guide](https://github.com/Hieubkav/wincellarCloneBackend/tree/master/.claude/skills/optimize/google-official-seo-guide) を参考に、より実践的で強化された内容を追加して作成されました。
