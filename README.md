@@ -1,6 +1,10 @@
 # SEO Mastery Agent Skills
 
-Comprehensive SEO optimization Agent Skills for Claude/Codex. Based on Google's official documentation, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, and site audits.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
+[![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](docs/README.ja.md)
+
+Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Google's official documentation, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T, and site audits.
 
 [日本語版 README はこちら](docs/README.ja.md)
 
@@ -15,32 +19,39 @@ Comprehensive SEO optimization Agent Skills for Claude/Codex. Based on Google's 
 
 ## Installation
 
-### Claude Code / Claude.ai
+Each skill is made up of `SKILL.md` plus several reference files (`technical-seo.md`, `content-seo.md`, etc.). Install **all** files in a skill folder — fetching only `SKILL.md` leaves the skill incomplete.
+
+### Recommended: clone the whole repo
 
 ```bash
-# Install English version
-mkdir -p .claude/skills/seo-mastery
-curl -o .claude/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+git clone https://github.com/kpab/seo-mastery-agent-skills.git
+# Then copy the skill folder(s) you want:
+cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery     .claude/skills/      # English
+cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery-jp  .claude/skills/      # Japanese
+```
 
-# Install Japanese version
-mkdir -p .claude/skills/seo-mastery-jp
-curl -o .claude/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
+### Claude Code / Claude.ai (download all files)
+
+```bash
+SKILL=seo-mastery   # or seo-mastery-jp
+BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
+mkdir -p .claude/skills/$SKILL
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+  curl -fsSL -o .claude/skills/$SKILL/$f "$BASE/$f"
+done
 ```
 
 ### Codex
 
 ```bash
-# Project local (English)
-mkdir -p .codex/skills/seo-mastery
-curl -o .codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
-
-# Project local (Japanese)
-mkdir -p .codex/skills/seo-mastery-jp
-curl -o .codex/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
-
-# User global
-mkdir -p ~/.codex/skills/seo-mastery
-curl -o ~/.codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+# Same as above, but target a Codex skills directory.
+# Project local: .codex/skills/$SKILL   |   User global: ~/.codex/skills/$SKILL
+SKILL=seo-mastery   # or seo-mastery-jp
+BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
+mkdir -p .codex/skills/$SKILL
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+  curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
+done
 ```
 
 ## File Structure
