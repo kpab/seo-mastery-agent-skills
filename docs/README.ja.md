@@ -1,6 +1,10 @@
 # SEO Mastery Agent Skills
 
-Claude/Codex向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
+[![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](../README.md)
+
+Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、サイト監査を統合的にサポートします。
 
 ## 特徴
 
@@ -13,32 +17,39 @@ Claude/Codex向けの包括的なSEO最適化Agent Skills。Google公式ドキ�
 
 ## インストール
 
-### Claude Code / Claude.ai
+各スキルは `SKILL.md` と複数の参照ファイル（`technical-seo.md`、`content-seo.md` 等）で構成されています。`SKILL.md` だけを取得するとスキルが不完全になるため、スキルフォルダ内の**すべてのファイル**をインストールしてください。
+
+### 推奨: リポジトリをクローン
 
 ```bash
-# 英語版をインストール
-mkdir -p .claude/skills/seo-mastery
-curl -o .claude/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+git clone https://github.com/kpab/seo-mastery-agent-skills.git
+# 使いたいスキルフォルダをコピー:
+cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery     .claude/skills/      # 英語版
+cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery-jp  .claude/skills/      # 日本語版
+```
 
-# 日本語版をインストール
-mkdir -p .claude/skills/seo-mastery-jp
-curl -o .claude/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
+### Claude Code / Claude.ai（全ファイルをダウンロード）
+
+```bash
+SKILL=seo-mastery   # または seo-mastery-jp
+BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
+mkdir -p .claude/skills/$SKILL
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+  curl -fsSL -o .claude/skills/$SKILL/$f "$BASE/$f"
+done
 ```
 
 ### Codex
 
 ```bash
-# プロジェクトローカル（英語版）
-mkdir -p .codex/skills/seo-mastery
-curl -o .codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
-
-# プロジェクトローカル（日本語版）
-mkdir -p .codex/skills/seo-mastery-jp
-curl -o .codex/skills/seo-mastery-jp/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery-jp/SKILL.md
-
-# ユーザーグローバル
-mkdir -p ~/.codex/skills/seo-mastery
-curl -o ~/.codex/skills/seo-mastery/SKILL.md https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/seo-mastery/SKILL.md
+# 上記と同様。ターゲットを Codex のスキルディレクトリに変更:
+# プロジェクトローカル: .codex/skills/$SKILL  |  ユーザーグローバル: ~/.codex/skills/$SKILL
+SKILL=seo-mastery   # または seo-mastery-jp
+BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
+mkdir -p .codex/skills/$SKILL
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+  curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
+done
 ```
 
 ## ファイル構成

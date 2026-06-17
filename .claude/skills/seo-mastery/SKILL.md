@@ -2,7 +2,7 @@
 name: seo-mastery
 description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T strategies, practical code generation, and site audit workflows.
 version: 1.1.0
-author: pani
+author: kpab
 ---
 
 # SEO Mastery Agent Skills
