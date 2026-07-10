@@ -1,11 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.skills.sh)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Update stale Google Search guidance \\(Mobile-Friendly Test, FAQ/HowTo rich results\\) *)"
+    ]
+  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "sequential-thinking"
-  ],
-  "permissions": {
-    "allow": [
-      "WebFetch(domain:www.skills.sh)"
-    ]
-  }
+  ]
 }

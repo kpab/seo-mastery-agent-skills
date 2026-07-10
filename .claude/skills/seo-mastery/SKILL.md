@@ -28,7 +28,8 @@ Comprehensive SEO optimization skill based on Google's official documentation. P
 
 ### Structured Data
 - JSON-LD schema.org implementation
-- Rich results support (FAQ, How-to, Article, Product, etc.)
+- Rich results support (Article, Product, Breadcrumb, Video, etc.)
+  - Note: FAQ rich results are limited to well-known government/health sites, and HowTo rich results were discontinued (Google, 2023). Templates are still provided for semantic markup purposes.
 - VideoObject, BroadcastEvent implementation
 - BreadcrumbList configuration
 - LocalBusiness / Organization setup
@@ -121,6 +122,8 @@ Comprehensive SEO optimization skill based on Google's official documentation. P
 ```
 
 ### FAQ
+
+> **Note:** Since August 2023, Google shows FAQ rich results only for well-known, authoritative government and health websites. The markup remains valid schema.org and can still help search engines understand your content.
 
 ```json
 {
@@ -477,7 +480,7 @@ This skill includes the following detailed documents:
 - [Google Search Console](https://search.google.com/search-console) - Index status & search performance
 - [PageSpeed Insights](https://pagespeed.web.dev/) - Core Web Vitals measurement
 - [Rich Results Test](https://search.google.com/test/rich-results) - Structured data validation
-- [Mobile-Friendly Test](https://search.google.com/test/mobile-friendly) - Mobile compatibility check
+- [Lighthouse](https://developer.chrome.com/docs/lighthouse) - Mobile compatibility check (the standalone Mobile-Friendly Test was retired in December 2023)
 
 ### CLI/Development Tools
 - Lighthouse CLI - Performance auditing

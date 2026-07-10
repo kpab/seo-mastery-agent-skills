@@ -157,8 +157,8 @@ curl -s https://example.com | grep -oP '<script type="application/ld\+json">.*?<
 # viewport の確認
 curl -s https://example.com | grep 'viewport'
 
-# Mobile-Friendly Test（ブラウザで確認）
-# https://search.google.com/test/mobile-friendly?url=https://example.com
+# モバイル対応確認: Lighthouseを使用（単体のMobile-Friendly Testは2023年12月に廃止）
+npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 ```
 
 **チェックリスト:**

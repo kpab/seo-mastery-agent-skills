@@ -28,7 +28,8 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 ### 📊 構造化データ（Structured Data）
 - JSON-LD形式のschema.org実装
-- リッチリザルト対応（FAQ, How-to, Article, Product等）
+- リッチリザルト対応（Article, Product, パンくずリスト, 動画等）
+  - 注意: FAQリッチリザルトは著名な政府機関・医療機関サイト限定、HowToリッチリザルトは廃止（Google, 2023年）。テンプレートはセマンティックマークアップ用途として引き続き提供
 - VideoObject, BroadcastEvent実装
 - パンくずリスト（BreadcrumbList）設定
 - LocalBusiness / Organization設定
@@ -121,6 +122,8 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 ```
 
 ### FAQ（よくある質問）
+
+> **注意:** 2023年8月以降、GoogleはFAQリッチリザルトを著名で権威ある政府機関・医療機関サイトにのみ表示します。マークアップ自体は有効なschema.orgであり、検索エンジンのコンテンツ理解には引き続き役立ちます。
 
 ```json
 {
@@ -477,7 +480,7 @@ npx lighthouse https://example.com --output=json --output-path=./report.json
 - [Google Search Console](https://search.google.com/search-console) - インデックス状況・検索パフォーマンス
 - [PageSpeed Insights](https://pagespeed.web.dev/) - Core Web Vitals測定
 - [Rich Results Test](https://search.google.com/test/rich-results) - 構造化データ検証
-- [Mobile-Friendly Test](https://search.google.com/test/mobile-friendly) - モバイル対応確認
+- [Lighthouse](https://developer.chrome.com/docs/lighthouse) - モバイル対応確認（単体のMobile-Friendly Testは2023年12月に廃止）
 
 ### CLI/開発ツール
 - Lighthouse CLI - パフォーマンス監査

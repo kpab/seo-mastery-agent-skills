@@ -97,14 +97,16 @@ done
 
 ### Structured Data
 - Article / NewsArticle / BlogPosting
-- FAQ (Frequently Asked Questions)
-- HowTo
+- FAQ (Frequently Asked Questions)*
+- HowTo*
 - Product
 - LocalBusiness
 - BreadcrumbList
 - VideoObject
 - Organization / WebSite
 - Event
+
+\* FAQ rich results are limited to well-known government/health sites and HowTo rich results were discontinued by Google in 2023. Templates are kept for semantic markup purposes.
 
 ### Technical SEO
 - robots.txt template

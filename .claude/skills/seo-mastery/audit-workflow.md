@@ -157,8 +157,8 @@ curl -s https://example.com | grep -oP '<script type="application/ld\+json">.*?<
 # Check viewport
 curl -s https://example.com | grep 'viewport'
 
-# Mobile-Friendly Test (check in browser)
-# https://search.google.com/test/mobile-friendly?url=https://example.com
+# Mobile compatibility: use Lighthouse (the standalone Mobile-Friendly Test was retired in December 2023)
+npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 ```
 
 **Checklist:**

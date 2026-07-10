@@ -95,14 +95,16 @@ done
 
 ### 構造化データ
 - Article / NewsArticle / BlogPosting
-- FAQ（よくある質問）
-- HowTo（ハウツー）
+- FAQ（よくある質問）*
+- HowTo（ハウツー）*
 - Product（商品）
 - LocalBusiness（ローカルビジネス）
 - BreadcrumbList（パンくずリスト）
 - VideoObject（動画）
 - Organization / WebSite
 - Event（イベント）
+
+\* FAQリッチリザルトは著名な政府機関・医療機関サイト限定、HowToリッチリザルトはGoogleが2023年に廃止済み。テンプレートはセマンティックマークアップ用途として提供しています。
 
 ### 技術SEO
 - robots.txt テンプレート
