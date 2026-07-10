@@ -111,6 +111,8 @@ Implementation guide for structured data supporting Google Search rich results. 
 
 ## FAQ (Frequently Asked Questions)
 
+> **Note:** Since August 2023, Google shows FAQ rich results only for well-known, authoritative government and health websites. The markup remains valid schema.org and can still help search engines understand your content, but do not expect rich results on general sites.
+
 ```json
 {
   "@context": "https://schema.org",
@@ -147,6 +149,8 @@ Implementation guide for structured data supporting Google Search rich results. 
 ---
 
 ## HowTo
+
+> **Note:** Google discontinued HowTo rich results in September 2023 — this markup no longer produces rich results in Google Search. It remains valid schema.org and is kept here for semantic markup and other consumers.
 
 ```json
 {

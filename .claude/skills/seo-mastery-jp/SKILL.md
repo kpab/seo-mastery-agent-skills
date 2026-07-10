@@ -1,13 +1,25 @@
 ---
 name: seo-mastery-jp
-description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T対策を網羅し、実践的なコード生成とサイト監査ワークフローを提供
-version: 1.1.0
+description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策を網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコアに関する相談や、サイト監査の依頼があったときに使用する。
+version: 1.2.0
 author: kpab
 ---
 
 # SEO Mastery Agent Skills
 
 Google公式ドキュメントに基づく包括的なSEO最適化スキル。技術SEO、コンテンツ最適化、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
+
+## 📁 このスキルの構成
+
+このファイルにはチェックリスト・目標値・ワークフロー概要を記載しています。作業対象の領域に応じて参照ファイルを読み込んでください。テンプレート全文・コード例・詳細手順は参照ファイル側にあります。
+
+| ファイル | 内容 | 使用場面 |
+|----------|------|----------|
+| [technical-seo.md](technical-seo.md) | robots.txt、sitemap、canonical、hreflang、JavaScript SEO、ステータスコード、クロールバジェット | 技術的なSEO設定時 |
+| [content-seo.md](content-seo.md) | メタタグ、見出し構造、E-E-A-Tコンテンツ設計、内部リンク、URL設計 | コンテンツ最適化時 |
+| [structured-data.md](structured-data.md) | 全構造化データタイプのJSON-LDテンプレート、検証、よくあるエラー | 構造化データ実装時 |
+| [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLSの詳細な原因と対策、測定、Next.js/Nuxt.jsコード | パフォーマンス改善時 |
+| [audit-workflow.md](audit-workflow.md) | 6フェーズの監査手順、診断コマンド、レポートテンプレート | サイト監査実施時 |
 
 ## このスキルを使うタイミング
 
@@ -28,7 +40,8 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 ### 📊 構造化データ（Structured Data）
 - JSON-LD形式のschema.org実装
-- リッチリザルト対応（FAQ, How-to, Article, Product等）
+- リッチリザルト対応（Article, Product, パンくずリスト, 動画等）
+  - 注意: FAQリッチリザルトは著名な政府機関・医療機関サイト限定、HowToリッチリザルトは廃止（Google, 2023年）。テンプレートはセマンティックマークアップ用途として引き続き提供
 - VideoObject, BroadcastEvent実装
 - パンくずリスト（BreadcrumbList）設定
 - LocalBusiness / Organization設定
@@ -85,261 +98,36 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 - [ ] 重要なコンテンツがHTMLに含まれる
 - [ ] 遅延読み込みが適切に実装されている
 
----
-
-## 🏗️ 構造化データ テンプレート集
-
-### Article（記事）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "記事のタイトル（最大110文字推奨）",
-  "description": "記事の説明文",
-  "image": [
-    "https://example.com/photos/1x1/photo.jpg",
-    "https://example.com/photos/4x3/photo.jpg",
-    "https://example.com/photos/16x9/photo.jpg"
-  ],
-  "datePublished": "2025-01-01T08:00:00+09:00",
-  "dateModified": "2025-01-15T10:30:00+09:00",
-  "author": {
-    "@type": "Person",
-    "name": "著者名",
-    "url": "https://example.com/author/profile"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "サイト名",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://example.com/logo.png"
-    }
-  }
-}
-```
-
-### FAQ（よくある質問）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "質問1のテキスト",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "回答1のテキスト"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "質問2のテキスト",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "回答2のテキスト"
-      }
-    }
-  ]
-}
-```
-
-### BreadcrumbList（パンくずリスト）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "ホーム",
-      "item": "https://example.com/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "カテゴリ",
-      "item": "https://example.com/category/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "現在のページ"
-    }
-  ]
-}
-```
-
-### Product（商品）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "商品名",
-  "image": "https://example.com/product.jpg",
-  "description": "商品の説明",
-  "brand": {
-    "@type": "Brand",
-    "name": "ブランド名"
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "https://example.com/product",
-    "priceCurrency": "JPY",
-    "price": "9800",
-    "availability": "https://schema.org/InStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "販売者名"
-    }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.5",
-    "reviewCount": "128"
-  }
-}
-```
-
-### LocalBusiness（ローカルビジネス）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "店舗名",
-  "image": "https://example.com/store.jpg",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "○○区△△1-2-3",
-    "addressLocality": "横浜市",
-    "addressRegion": "神奈川県",
-    "postalCode": "220-0001",
-    "addressCountry": "JP"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 35.4437,
-    "longitude": 139.6380
-  },
-  "telephone": "+81-45-XXX-XXXX",
-  "openingHoursSpecification": [
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      "opens": "09:00",
-      "closes": "18:00"
-    }
-  ],
-  "priceRange": "¥¥"
-}
-```
-
-### VideoObject（動画）
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "VideoObject",
-  "name": "動画タイトル",
-  "description": "動画の説明",
-  "thumbnailUrl": [
-    "https://example.com/thumb-1x1.jpg",
-    "https://example.com/thumb-4x3.jpg",
-    "https://example.com/thumb-16x9.jpg"
-  ],
-  "uploadDate": "2025-01-01T08:00:00+09:00",
-  "duration": "PT5M30S",
-  "contentUrl": "https://example.com/video.mp4",
-  "embedUrl": "https://example.com/embed/video123",
-  "interactionStatistic": {
-    "@type": "InteractionCounter",
-    "interactionType": { "@type": "WatchAction" },
-    "userInteractionCount": 12345
-  },
-  "hasPart": [
-    {
-      "@type": "Clip",
-      "name": "イントロ",
-      "startOffset": 0,
-      "endOffset": 30,
-      "url": "https://example.com/video?t=0"
-    },
-    {
-      "@type": "Clip",
-      "name": "メインコンテンツ",
-      "startOffset": 30,
-      "endOffset": 300,
-      "url": "https://example.com/video?t=30"
-    }
-  ]
-}
-```
+実装の詳細（robots.txtの書き方、sitemapの構造、hreflangのルール、JavaScript SEO、リダイレクト）は [technical-seo.md](technical-seo.md) を参照。
 
 ---
 
-## ⚡ Core Web Vitals 最適化ガイド
+## 🏗️ 構造化データ
 
-### LCP（Largest Contentful Paint）- 2.5秒以下が目標
+推奨形式はJSON-LDです。以下すべてのタイプのコピペで使えるテンプレート・配置ルール・検証手順・よくあるエラーは [structured-data.md](structured-data.md) にあります：
 
-**主な原因と対策:**
+- Article / NewsArticle / BlogPosting
+- FAQ / HowTo（上記リッチリザルトの注意を参照）
+- Product（商品）
+- LocalBusiness（ローカルビジネス）
+- BreadcrumbList（パンくずリスト）
+- VideoObject（動画・ライブ配信・キーモーメント含む）
+- Organization / WebSite
+- Event（イベント）
 
-| 原因 | 対策 |
-|------|------|
-| 遅いサーバーレスポンス | CDN導入、キャッシュ最適化、サーバースペック向上 |
-| レンダーブロッキングリソース | CSS/JSの遅延読み込み、Critical CSSのインライン化 |
-| 遅い画像読み込み | WebP/AVIF使用、適切なサイズ指定、preload設定 |
-| クライアントサイドレンダリング | SSR/SSG導入、重要コンテンツの事前レンダリング |
+実装後は必ず [Rich Results Test](https://search.google.com/test/rich-results) で検証してください。
 
-**実装例: 画像のプリロード**
-```html
-<link rel="preload" as="image" href="hero-image.webp" fetchpriority="high">
-```
+---
 
-### INP（Interaction to Next Paint）- 200ms以下が目標
+## ⚡ Core Web Vitals 目標値
 
-**主な原因と対策:**
+| 指標 | 良好 | 主な改善手段 |
+|------|------|--------------|
+| LCP（Largest Contentful Paint） | 2.5秒以下 | サーバーレスポンス/CDN、レンダーブロッキングリソース削減、画像最適化（WebP/AVIF、preload）、SSR/SSG |
+| INP（Interaction to Next Paint） | 200ms以下 | コード分割、長いタスクの分割（yield to main thread）、DOMサイズ削減、サードパーティスクリプトの遅延 |
+| CLS（Cumulative Layout Shift） | 0.1以下 | 画像/動画のサイズ明示、動的コンテンツ・広告のスペース事前確保、font-display: swap + プリロード |
 
-| 原因 | 対策 |
-|------|------|
-| 重いJavaScript | コード分割、不要なJSの削除、遅延実行 |
-| 長いタスク | タスクの分割（yield to main thread） |
-| 大きなDOMサイズ | DOM要素の削減、仮想スクロール導入 |
-| サードパーティスクリプト | 遅延読み込み、必要性の見直し |
-
-**実装例: 長いタスクの分割**
-```javascript
-async function processLargeArray(items) {
-  for (const item of items) {
-    processItem(item);
-    // メインスレッドに制御を返す
-    await new Promise(resolve => setTimeout(resolve, 0));
-  }
-}
-```
-
-### CLS（Cumulative Layout Shift）- 0.1以下が目標
-
-**主な原因と対策:**
-
-| 原因 | 対策 |
-|------|------|
-| サイズ未指定の画像/動画 | width/height属性を明示、aspect-ratio CSS使用 |
-| 動的に挿入されるコンテンツ | 事前にスペースを確保、スケルトンUI使用 |
-| Webフォント（FOUT/FOIT） | font-display: swap、フォントのプリロード |
-| 広告・埋め込みコンテンツ | 固定サイズのコンテナを事前配置 |
-
-**実装例: 画像のアスペクト比確保**
-```html
-<img src="image.jpg" width="800" height="600" alt="説明" 
-     style="aspect-ratio: 4/3; width: 100%; height: auto;">
-```
+詳細な原因と対策、コード例、測定ツール、フレームワーク別（Next.js / Nuxt.js）最適化は [core-web-vitals.md](core-web-vitals.md) を参照。
 
 ---
 
@@ -393,60 +181,16 @@ async function processLargeArray(items) {
 
 ## 🔍 サイト監査ワークフロー
 
-### Phase 1: クロール診断（15分）
+全6フェーズ。診断コマンド・チェックリスト・レポートテンプレートの全文は [audit-workflow.md](audit-workflow.md) を参照：
 
-```bash
-# robots.txtの確認
-curl -s https://example.com/robots.txt
+1. **クロール診断** - robots.txt、sitemap、インデックス状況
+2. **技術SEO診断** - HTTPS、リダイレクト、メタタグ、構造化データ、モバイル対応
+3. **コンテンツ診断** - 見出し構造、リンク、画像、コンテンツ品質
+4. **パフォーマンス診断** - Core Web Vitals、リソース最適化
+5. **競合分析** - コンテンツ量、被リンク、構造化データ、速度比較
+6. **改善計画** - 優先度マトリクス、改善レポート
 
-# サイトマップの確認
-curl -s https://example.com/sitemap.xml | head -50
-
-# インデックス状況（site:検索）
-# Google検索で site:example.com を実行
-```
-
-**チェック項目:**
-1. robots.txt で重要ページがブロックされていないか
-2. sitemap.xml が存在し、主要ページを含んでいるか
-3. インデックス数が想定と一致するか
-
-### Phase 2: ページ単位診断（30分/ページ）
-
-**HTMLヘッド要素:**
-```bash
-# メタ情報の抽出
-curl -s https://example.com/ | grep -E '<title>|<meta name="description"|<link rel="canonical"'
-```
-
-**チェック項目:**
-1. タイトルタグ（60文字以内、キーワード含む）
-2. メタディスクリプション（120文字以内）
-3. canonical URL
-4. OGP / Twitter Cardタグ
-5. 構造化データの有無
-
-### Phase 3: パフォーマンス診断（20分）
-
-**Lighthouse CLI:**
-```bash
-npx lighthouse https://example.com --output=json --output-path=./report.json
-```
-
-**チェック項目:**
-1. Core Web Vitals スコア
-2. アクセシビリティスコア
-3. SEOスコア
-4. パフォーマンス改善提案
-
-### Phase 4: 競合分析（30分）
-
-1. 上位表示サイトのコンテンツ量・構成
-2. 被リンクプロファイル
-3. 使用している構造化データ
-4. ページ速度比較
-
-### Phase 5: 改善優先度マトリクス
+### 改善優先度マトリクス
 
 | 優先度 | 影響度 | 実装難易度 | 例 |
 |--------|--------|------------|-----|
@@ -457,27 +201,13 @@ npx lighthouse https://example.com --output=json --output-path=./report.json
 
 ---
 
-## 📁 関連リファレンスファイル
-
-このスキルには以下の詳細ドキュメントが含まれます：
-
-| ファイル | 内容 | 使用場面 |
-|----------|------|----------|
-| [technical-seo.md](technical-seo.md) | robots.txt、sitemap、canonical、hreflang等 | 技術的なSEO設定時 |
-| [content-seo.md](content-seo.md) | メタタグ、見出し構造、コンテンツ設計 | コンテンツ最適化時 |
-| [structured-data.md](structured-data.md) | 全構造化データタイプの詳細 | リッチリザルト実装時 |
-| [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLS詳細な最適化手法 | パフォーマンス改善時 |
-| [audit-workflow.md](audit-workflow.md) | 監査手順、ツール、レポート形式 | サイト監査実施時 |
-
----
-
 ## 🛠️ 推奨ツール
 
 ### Google公式
 - [Google Search Console](https://search.google.com/search-console) - インデックス状況・検索パフォーマンス
 - [PageSpeed Insights](https://pagespeed.web.dev/) - Core Web Vitals測定
 - [Rich Results Test](https://search.google.com/test/rich-results) - 構造化データ検証
-- [Mobile-Friendly Test](https://search.google.com/test/mobile-friendly) - モバイル対応確認
+- [Lighthouse](https://developer.chrome.com/docs/lighthouse) - モバイル対応確認（単体のMobile-Friendly Testは2023年12月に廃止）
 
 ### CLI/開発ツール
 - Lighthouse CLI - パフォーマンス監査
@@ -520,14 +250,4 @@ npx lighthouse https://example.com --output=json --output-path=./report.json
 
 ---
 
-## 更新履歴
-
-- **v1.1.0** (2026-06) - セキュリティ強化
-  - 取得ページからの間接プロンプトインジェクション対策として「信頼できない外部コンテンツの扱い」を追加
-  - 取得コンテンツを境界マーカー付きの信頼できないデータとして扱う方針を明記
-- **v1.0.0** (2025-01) - 初版リリース
-  - Googleの公式SEOガイドを基に作成
-  - 技術SEO、コンテンツSEO、構造化データ網羅
-  - Core Web Vitals（2024年INP対応版）
-  - E-E-A-T対策チェックリスト追加
-  - サイト監査ワークフロー追加
+更新履歴はリポジトリの [CHANGELOG.md](https://github.com/kpab/seo-mastery-agent-skills/blob/main/CHANGELOG.md) を参照してください。

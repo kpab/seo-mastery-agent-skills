@@ -21,7 +21,16 @@ Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Go
 
 Each skill is made up of `SKILL.md` plus several reference files (`technical-seo.md`, `content-seo.md`, etc.). Install **all** files in a skill folder — fetching only `SKILL.md` leaves the skill incomplete.
 
-### Recommended: clone the whole repo
+### Recommended: Claude Code plugin
+
+```bash
+claude plugin marketplace add kpab/seo-mastery-agent-skills
+claude plugin install seo-mastery@seo-mastery-agent-skills
+```
+
+This installs both the English and Japanese skills and keeps them updatable via the plugin manager.
+
+### Alternative: clone the whole repo
 
 ```bash
 git clone https://github.com/kpab/seo-mastery-agent-skills.git
@@ -97,14 +106,16 @@ done
 
 ### Structured Data
 - Article / NewsArticle / BlogPosting
-- FAQ (Frequently Asked Questions)
-- HowTo
+- FAQ (Frequently Asked Questions)*
+- HowTo*
 - Product
 - LocalBusiness
 - BreadcrumbList
 - VideoObject
 - Organization / WebSite
 - Event
+
+\* FAQ rich results are limited to well-known government/health sites and HowTo rich results were discontinued by Google in 2023. Templates are kept for semantic markup purposes.
 
 ### Technical SEO
 - robots.txt template
@@ -134,7 +145,7 @@ done
 
 ## Contributing
 
-Pull requests and issue reports are welcome!
+Pull requests and issue reports are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) — in particular, the English and Japanese versions must be kept in sync (English is the source of truth).
 
 ## License
 
