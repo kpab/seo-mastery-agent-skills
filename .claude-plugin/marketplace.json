@@ -9,7 +9,7 @@
       "name": "seo-mastery",
       "source": "./",
       "description": "Comprehensive SEO optimization skills (English & Japanese) based on Google's official guidelines: technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T, and site audits.",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "skills": [
         "./.claude/skills/seo-mastery",
         "./.claude/skills/seo-mastery-jp"

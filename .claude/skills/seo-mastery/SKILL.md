@@ -1,7 +1,7 @@
 ---
 name: seo-mastery
 description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, or requests a site audit.
-version: 1.1.0
+version: 1.2.0
 author: kpab
 ---
 
