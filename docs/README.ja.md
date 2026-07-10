@@ -19,7 +19,16 @@ Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式
 
 各スキルは `SKILL.md` と複数の参照ファイル（`technical-seo.md`、`content-seo.md` 等）で構成されています。`SKILL.md` だけを取得するとスキルが不完全になるため、スキルフォルダ内の**すべてのファイル**をインストールしてください。
 
-### 推奨: リポジトリをクローン
+### 推奨: Claude Code プラグイン
+
+```bash
+claude plugin marketplace add kpab/seo-mastery-agent-skills
+claude plugin install seo-mastery@seo-mastery-agent-skills
+```
+
+英語版・日本語版の両スキルがインストールされ、プラグインマネージャー経由で更新できます。
+
+### 代替: リポジトリをクローン
 
 ```bash
 git clone https://github.com/kpab/seo-mastery-agent-skills.git
