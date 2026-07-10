@@ -9,6 +9,18 @@ author: kpab
 
 Comprehensive SEO optimization skill based on Google's official documentation. Provides integrated support for technical SEO, content optimization, structured data, Core Web Vitals, and site audits.
 
+## How This Skill Is Organized
+
+This file contains the checklists, targets, and workflow overview. Load the reference file for the area you are working on — full templates, code examples, and detailed procedures live there:
+
+| File | Content | Use Case |
+|------|---------|----------|
+| [technical-seo.md](technical-seo.md) | robots.txt, sitemap, canonical, hreflang, JavaScript SEO, status codes, crawl budget | Technical SEO configuration |
+| [content-seo.md](content-seo.md) | Meta tags, heading structure, E-E-A-T content design, internal linking, URL design | Content optimization |
+| [structured-data.md](structured-data.md) | Full JSON-LD templates for all supported types, validation, common errors | Structured data implementation |
+| [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS causes and fixes, measurement, Next.js/Nuxt.js code | Performance improvement |
+| [audit-workflow.md](audit-workflow.md) | 6-phase audit procedure, diagnostic commands, report templates | Site audit execution |
+
 ## When to Use This Skill
 
 ### Technical SEO
@@ -86,263 +98,36 @@ Comprehensive SEO optimization skill based on Google's official documentation. P
 - [ ] Critical content is included in HTML
 - [ ] Lazy loading is properly implemented
 
----
-
-## Structured Data Templates
-
-### Article
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "Article title (max 110 characters recommended)",
-  "description": "Article description",
-  "image": [
-    "https://example.com/photos/1x1/photo.jpg",
-    "https://example.com/photos/4x3/photo.jpg",
-    "https://example.com/photos/16x9/photo.jpg"
-  ],
-  "datePublished": "2025-01-01T08:00:00+00:00",
-  "dateModified": "2025-01-15T10:30:00+00:00",
-  "author": {
-    "@type": "Person",
-    "name": "Author Name",
-    "url": "https://example.com/author/profile"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Site Name",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://example.com/logo.png"
-    }
-  }
-}
-```
-
-### FAQ
-
-> **Note:** Since August 2023, Google shows FAQ rich results only for well-known, authoritative government and health websites. The markup remains valid schema.org and can still help search engines understand your content.
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Question 1 text",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Answer 1 text"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Question 2 text",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Answer 2 text"
-      }
-    }
-  ]
-}
-```
-
-### BreadcrumbList
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://example.com/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Category",
-      "item": "https://example.com/category/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Current Page"
-    }
-  ]
-}
-```
-
-### Product
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Product Name",
-  "image": "https://example.com/product.jpg",
-  "description": "Product description",
-  "brand": {
-    "@type": "Brand",
-    "name": "Brand Name"
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "https://example.com/product",
-    "priceCurrency": "USD",
-    "price": "99.00",
-    "availability": "https://schema.org/InStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "Seller Name"
-    }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.5",
-    "reviewCount": "128"
-  }
-}
-```
-
-### LocalBusiness
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Business Name",
-  "image": "https://example.com/store.jpg",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "123 Main Street",
-    "addressLocality": "New York",
-    "addressRegion": "NY",
-    "postalCode": "10001",
-    "addressCountry": "US"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 40.7128,
-    "longitude": -74.0060
-  },
-  "telephone": "+1-212-555-1234",
-  "openingHoursSpecification": [
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      "opens": "09:00",
-      "closes": "18:00"
-    }
-  ],
-  "priceRange": "$$"
-}
-```
-
-### VideoObject
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "VideoObject",
-  "name": "Video Title",
-  "description": "Video description",
-  "thumbnailUrl": [
-    "https://example.com/thumb-1x1.jpg",
-    "https://example.com/thumb-4x3.jpg",
-    "https://example.com/thumb-16x9.jpg"
-  ],
-  "uploadDate": "2025-01-01T08:00:00+00:00",
-  "duration": "PT5M30S",
-  "contentUrl": "https://example.com/video.mp4",
-  "embedUrl": "https://example.com/embed/video123",
-  "interactionStatistic": {
-    "@type": "InteractionCounter",
-    "interactionType": { "@type": "WatchAction" },
-    "userInteractionCount": 12345
-  },
-  "hasPart": [
-    {
-      "@type": "Clip",
-      "name": "Introduction",
-      "startOffset": 0,
-      "endOffset": 30,
-      "url": "https://example.com/video?t=0"
-    },
-    {
-      "@type": "Clip",
-      "name": "Main Content",
-      "startOffset": 30,
-      "endOffset": 300,
-      "url": "https://example.com/video?t=30"
-    }
-  ]
-}
-```
+Implementation details (robots.txt syntax, sitemap structure, hreflang rules, JavaScript SEO, redirects): see [technical-seo.md](technical-seo.md).
 
 ---
 
-## Core Web Vitals Optimization Guide
+## Structured Data
 
-### LCP (Largest Contentful Paint) - Target: Under 2.5 seconds
+JSON-LD is the recommended format. Copy-paste templates for every type below are in [structured-data.md](structured-data.md), along with placement rules, validation steps, and common errors:
 
-**Common Causes and Solutions:**
+- Article / NewsArticle / BlogPosting
+- FAQ / HowTo (see rich-results note above)
+- Product
+- LocalBusiness
+- BreadcrumbList
+- VideoObject (including live streaming and key moments)
+- Organization / WebSite
+- Event
 
-| Cause | Solution |
-|-------|----------|
-| Slow server response | CDN implementation, cache optimization, server upgrades |
-| Render-blocking resources | Defer CSS/JS loading, inline Critical CSS |
-| Slow image loading | Use WebP/AVIF, specify proper sizes, preload settings |
-| Client-side rendering | Implement SSR/SSG, pre-render critical content |
+Always validate with the [Rich Results Test](https://search.google.com/test/rich-results) before shipping.
 
-**Example: Image Preloading**
-```html
-<link rel="preload" as="image" href="hero-image.webp" fetchpriority="high">
-```
+---
 
-### INP (Interaction to Next Paint) - Target: Under 200ms
+## Core Web Vitals Targets
 
-**Common Causes and Solutions:**
+| Metric | Good | Main levers |
+|--------|------|-------------|
+| LCP (Largest Contentful Paint) | ≤ 2.5s | Server response/CDN, remove render-blocking resources, image optimization (WebP/AVIF, preload), SSR/SSG |
+| INP (Interaction to Next Paint) | ≤ 200ms | Code splitting, break up long tasks (yield to main thread), reduce DOM size, defer third-party scripts |
+| CLS (Cumulative Layout Shift) | ≤ 0.1 | Set image/video dimensions, reserve space for dynamic content and ads, font-display: swap + preload |
 
-| Cause | Solution |
-|-------|----------|
-| Heavy JavaScript | Code splitting, remove unnecessary JS, defer execution |
-| Long tasks | Split tasks (yield to main thread) |
-| Large DOM size | Reduce DOM elements, implement virtual scrolling |
-| Third-party scripts | Lazy load, review necessity |
-
-**Example: Splitting Long Tasks**
-```javascript
-async function processLargeArray(items) {
-  for (const item of items) {
-    processItem(item);
-    // Yield to main thread
-    await new Promise(resolve => setTimeout(resolve, 0));
-  }
-}
-```
-
-### CLS (Cumulative Layout Shift) - Target: Under 0.1
-
-**Common Causes and Solutions:**
-
-| Cause | Solution |
-|-------|----------|
-| Images/videos without dimensions | Specify width/height attributes, use aspect-ratio CSS |
-| Dynamically inserted content | Reserve space in advance, use skeleton UI |
-| Web fonts (FOUT/FOIT) | font-display: swap, preload fonts |
-| Ads/embeds | Pre-position fixed-size containers |
-
-**Example: Image Aspect Ratio**
-```html
-<img src="image.jpg" width="800" height="600" alt="Description"
-     style="aspect-ratio: 4/3; width: 100%; height: auto;">
-```
+Detailed causes, code examples, measurement tools, and framework-specific (Next.js / Nuxt.js) optimizations: see [core-web-vitals.md](core-web-vitals.md).
 
 ---
 
@@ -396,60 +181,16 @@ Site audits fetch content from external, user-provided URLs (robots.txt, sitemap
 
 ## Site Audit Workflow
 
-### Phase 1: Crawl Diagnosis
+Six phases — full diagnostic commands, checklists, and report templates are in [audit-workflow.md](audit-workflow.md):
 
-```bash
-# Check robots.txt
-curl -s https://example.com/robots.txt
+1. **Crawl Diagnosis** - robots.txt, sitemap, index status
+2. **Technical SEO Diagnosis** - HTTPS, redirects, meta tags, structured data, mobile compatibility
+3. **Content Diagnosis** - heading structure, links, images, content quality
+4. **Performance Diagnosis** - Core Web Vitals, resource optimization
+5. **Competitive Analysis** - content, backlinks, structured data, speed comparison
+6. **Improvement Plan** - priority matrix, improvement report
 
-# Check sitemap
-curl -s https://example.com/sitemap.xml | head -50
-
-# Index status (site: search)
-# Search "site:example.com" on Google
-```
-
-**Check Items:**
-1. Are important pages blocked by robots.txt?
-2. Does sitemap.xml exist and include main pages?
-3. Does index count match expectations?
-
-### Phase 2: Page-Level Diagnosis
-
-**HTML Head Elements:**
-```bash
-# Extract meta information
-curl -s https://example.com/ | grep -E '<title>|<meta name="description"|<link rel="canonical"'
-```
-
-**Check Items:**
-1. Title tag (under 60 characters, includes keywords)
-2. Meta description (under 160 characters)
-3. Canonical URL
-4. OGP / Twitter Card tags
-5. Structured data presence
-
-### Phase 3: Performance Diagnosis
-
-**Lighthouse CLI:**
-```bash
-npx lighthouse https://example.com --output=json --output-path=./report.json
-```
-
-**Check Items:**
-1. Core Web Vitals scores
-2. Accessibility score
-3. SEO score
-4. Performance improvement suggestions
-
-### Phase 4: Competitive Analysis
-
-1. Content volume/structure of top-ranking sites
-2. Backlink profiles
-3. Structured data usage
-4. Page speed comparison
-
-### Phase 5: Improvement Priority Matrix
+### Improvement Priority Matrix
 
 | Priority | Impact | Difficulty | Examples |
 |----------|--------|------------|----------|
@@ -457,20 +198,6 @@ npx lighthouse https://example.com --output=json --output-path=./report.json
 | High | High | Medium | Add structured data, optimize meta tags |
 | Medium | Medium | Medium | Core Web Vitals improvements |
 | Low | Low | High | Major site structure changes |
-
----
-
-## Related Reference Files
-
-This skill includes the following detailed documents:
-
-| File | Content | Use Case |
-|------|---------|----------|
-| [technical-seo.md](technical-seo.md) | robots.txt, sitemap, canonical, hreflang, etc. | Technical SEO configuration |
-| [content-seo.md](content-seo.md) | Meta tags, heading structure, content design | Content optimization |
-| [structured-data.md](structured-data.md) | All structured data type details | Rich results implementation |
-| [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS optimization | Performance improvement |
-| [audit-workflow.md](audit-workflow.md) | Audit procedures, tools, report formats | Site audit execution |
 
 ---
 
@@ -523,14 +250,4 @@ This skill includes the following detailed documents:
 
 ---
 
-## Changelog
-
-- **v1.1.0** (2026-06) - Security hardening
-  - Added "Handling Untrusted External Content" guidance to mitigate indirect prompt injection from fetched pages
-  - Fetched content is now treated as untrusted data with explicit boundary markers
-- **v1.0.0** (2025-01) - Initial release
-  - Created based on Google's official SEO guides
-  - Comprehensive technical SEO, content SEO, structured data coverage
-  - Core Web Vitals (2024 INP-compliant version)
-  - E-E-A-T optimization checklist added
-  - Site audit workflow added
+Version history: see [CHANGELOG.md](https://github.com/kpab/seo-mastery-agent-skills/blob/main/CHANGELOG.md) in the repository.
