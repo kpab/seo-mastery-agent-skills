@@ -136,7 +136,7 @@ done
 
 ## Contributing
 
-Pull requests and issue reports are welcome!
+Pull requests and issue reports are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) — in particular, the English and Japanese versions must be kept in sync (English is the source of truth).
 
 ## License
 
