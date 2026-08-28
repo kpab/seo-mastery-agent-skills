@@ -2,6 +2,12 @@
 
 All notable changes to the `seo-mastery` and `seo-mastery-jp` skills are documented here. Both skills share version numbers.
 
+## v1.3.0 (2026-08) - AI search section
+
+- Added a new reference file `ai-search.md` (EN/JP): Google's official AI features guidance (AI Overviews / AI Mode prerequisites, snippet controls, measurement), the exact scope of `Google-Extended`, AI crawler UA list with robots.txt recipes (training opt-out vs. AI search citations), llms.txt positioning (Google does not use it), and AI-citable content design (#6)
+- Registered the new file in the SKILL.md file table and added an AI search overview section; added AI trigger words (AI Overviews / AIO, AI Mode, generative AI search, llms.txt, GPTBot, ClaudeBot, Google-Extended) to both skill descriptions
+- Added an "AI Search Readiness" phase (2.6) to the audit workflow: robots.txt AI crawler intent check and snippet control intent check
+
 ## v1.2.2 (2026-08) - Sitelinks Search Box retirement
 
 - Replaced the "WebSite (Sitelinks Search Box)" template with a plain WebSite template (`name` / `alternateName` / `url`): the Sitelinks Search Box (`potentialAction` / `SearchAction`) was retired in November 2024, while WebSite markup remains current for site name recognition (#5)

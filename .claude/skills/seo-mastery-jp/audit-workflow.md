@@ -168,6 +168,30 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] タップターゲットが適切なサイズ
 - [ ] テキストが読みやすいサイズ
 
+### 2.6 AI検索対応診断
+
+```bash
+# robots.txt のAIクローラー設定をグループ単位で確認 — 該当する各User-agentグループを
+# Allow/Disallow行ごと表示（ワイルドカード * のグループも含む）
+curl -s https://example.com/robots.txt | awk -v RS='' 'tolower($0) ~ /google-extended|gptbot|oai-searchbot|claudebot|claude-searchbot|perplexitybot|ccbot|applebot-extended|meta-externalagent|bytespider|user-agent: ?\*/ {print $0 "\n"}'
+
+# スニペットコントロールの確認（AI Overviews / AIモードの表示もこれで制御される）
+curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
+curl -s https://example.com | grep -c 'data-nosnippet'
+
+# スニペットコントロールはHTTPヘッダー（X-Robots-Tag）でも配信できる
+curl -sI https://example.com | grep -i 'x-robots-tag'
+
+# llms.txt の有無を確認（Googleは利用しない）
+curl -sI https://example.com/llms.txt | head -1
+```
+
+**チェックリスト:**
+- [ ] robots.txtのAIクローラー設定がサイトの意図と一致している（学習拒否かAI検索での引用か — [ai-search.md](ai-search.md) 参照）
+- [ ] `Google-Extended` をブロックしている場合、それが学習のみの制御だと理解されている（検索・AI Overviewsからは除外されない）
+- [ ] スニペットコントロール（`nosnippet` / `max-snippet` / `data-nosnippet`）が意図的な設定である — AI Overviews / AIモードの表示も抑制される
+- [ ] Google向けにllms.txtへ依存していない（Googleは利用しない）
+
 ---
 
 ## Phase 3: コンテンツ診断

@@ -4,6 +4,8 @@ Detailed guide for technical SEO configuration. Covers crawlability, indexabilit
 
 ## robots.txt
 
+For AI crawler control (`Google-Extended`, `GPTBot`, `ClaudeBot`, `PerplexityBot`, etc.) and its training-vs-citation trade-offs, see [ai-search.md](ai-search.md).
+
 ### Basic Syntax
 
 ```txt

@@ -45,7 +45,7 @@ cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery-jp  .claude/skills/   
 SKILL=seo-mastery   # or seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .claude/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
   curl -fsSL -o .claude/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -58,7 +58,7 @@ done
 SKILL=seo-mastery   # or seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .codex/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
   curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -73,6 +73,7 @@ done
 │   ├── content-seo.md        # Content SEO details
 │   ├── structured-data.md    # Structured data details
 │   ├── core-web-vitals.md    # Core Web Vitals details
+│   ├── ai-search.md          # AI search details
 │   └── audit-workflow.md     # Audit workflow details
 └── seo-mastery-jp/           # Japanese version
     ├── SKILL.md              # Main skill file
@@ -80,6 +81,7 @@ done
     ├── content-seo.md        # Content SEO details
     ├── structured-data.md    # Structured data details
     ├── core-web-vitals.md    # Core Web Vitals details
+    ├── ai-search.md          # AI search details
     └── audit-workflow.md     # Audit workflow details
 ```
 
@@ -115,7 +117,7 @@ done
 - Organization / WebSite
 - Event
 
-\* FAQ rich results are limited to well-known government/health sites and HowTo rich results were discontinued by Google in 2023. Templates are kept for semantic markup purposes.
+\* FAQ rich results were fully discontinued by Google on May 7, 2026, and HowTo rich results were discontinued in 2023. Templates are kept for semantic markup purposes.
 
 ### Technical SEO
 - robots.txt template

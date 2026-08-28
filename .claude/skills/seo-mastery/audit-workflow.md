@@ -168,6 +168,30 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] Tap targets are appropriate size
 - [ ] Text is readable size
 
+### 2.6 AI Search Readiness
+
+```bash
+# Check robots.txt AI crawler rules — paragraph mode prints each matching
+# User-agent group with its Allow/Disallow lines, including the catch-all * group
+curl -s https://example.com/robots.txt | awk -v RS='' 'tolower($0) ~ /google-extended|gptbot|oai-searchbot|claudebot|claude-searchbot|perplexitybot|ccbot|applebot-extended|meta-externalagent|bytespider|user-agent: ?\*/ {print $0 "\n"}'
+
+# Check snippet controls (these also govern AI Overviews / AI Mode appearance)
+curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
+curl -s https://example.com | grep -c 'data-nosnippet'
+
+# Snippet controls can also be served as HTTP headers
+curl -sI https://example.com | grep -i 'x-robots-tag'
+
+# Check whether llms.txt exists (Google does not use it)
+curl -sI https://example.com/llms.txt | head -1
+```
+
+**Checklist:**
+- [ ] robots.txt AI crawler rules match the site's intent (training opt-out vs. AI search citations — see [ai-search.md](ai-search.md))
+- [ ] `Google-Extended` blocking, if present, is understood as training-only (it does not remove the site from Search or AI Overviews)
+- [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance
+- [ ] No reliance on llms.txt for Google (Google does not use it)
+
 ---
 
 ## Phase 3: Content Diagnosis
