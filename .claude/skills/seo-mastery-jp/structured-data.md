@@ -511,22 +511,17 @@ Google検索のリッチリザルトに対応する構造化データの実装�
 }
 ```
 
-### WebSite（サイト内検索）
+### WebSite（サイト名）
+
+> **注意:** Sitelinks Search Box（`potentialAction` / `SearchAction`）は2024年11月に廃止され、Google検索には表示されません。追加しないでください。WebSiteマークアップ自体は現役で、Googleが検索結果に表示するサイト名の認識に利用します。`name`（短縮名がある場合は `alternateName` も）を指定してください。
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "SEO Master",
-  "url": "https://example.com/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://example.com/search?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
-  }
+  "name": "株式会社SEOマスター",
+  "alternateName": "SEOマスター",
+  "url": "https://example.com/"
 }
 ```
 
