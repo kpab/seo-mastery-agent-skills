@@ -2,6 +2,12 @@
 
 All notable changes to the `seo-mastery` and `seo-mastery-jp` skills are documented here. Both skills share version numbers.
 
+## v1.2.1 (2026-08) - FAQ rich results retirement
+
+- Updated FAQ rich results guidance: Google retired FAQ rich results entirely on May 7, 2026 (documentation and Search Console reports removed); FAQPage markup is now documented as semantic-only, matching the HowTo treatment (#4)
+- Added an audit checklist item to detect markup for deprecated rich results (FAQ, HowTo, Sitelinks Search Box) and propose removal or annotation
+- Replaced the FAQ structured data example in the competitive gap analysis template with video structured data
+
 ## v1.2.0 (2026-07) - Content freshness, restructure, and tooling
 
 - Updated stale Google Search guidance: replaced the retired Mobile-Friendly Test with Lighthouse-based checks; noted that FAQ rich results are restricted and HowTo rich results were discontinued (2023)

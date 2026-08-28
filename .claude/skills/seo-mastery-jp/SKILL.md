@@ -1,7 +1,7 @@
 ---
 name: seo-mastery-jp
 description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策を網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコアに関する相談や、サイト監査の依頼があったときに使用する。
-version: 1.2.0
+version: 1.2.1
 author: kpab
 ---
 
@@ -41,7 +41,7 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 ### 📊 構造化データ（Structured Data）
 - JSON-LD形式のschema.org実装
 - リッチリザルト対応（Article, Product, パンくずリスト, 動画等）
-  - 注意: FAQリッチリザルトは著名な政府機関・医療機関サイト限定、HowToリッチリザルトは廃止（Google, 2023年）。テンプレートはセマンティックマークアップ用途として引き続き提供
+  - 注意: FAQリッチリザルトは2026年5月7日に完全廃止（2023年以降は政府機関・医療機関サイト限定だった）、HowToリッチリザルトは2023年に廃止。マークアップ自体は有効なschema.orgとして残置可能（ペナルティなし）だがリッチリザルトは表示されない。テンプレートはセマンティックマークアップ用途としてのみ提供
 - VideoObject, BroadcastEvent実装
 - パンくずリスト（BreadcrumbList）設定
 - LocalBusiness / Organization設定

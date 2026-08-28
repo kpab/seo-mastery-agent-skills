@@ -1,7 +1,7 @@
 ---
 name: seo-mastery
 description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, or requests a site audit.
-version: 1.2.0
+version: 1.2.1
 author: kpab
 ---
 
@@ -41,7 +41,7 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 ### Structured Data
 - JSON-LD schema.org implementation
 - Rich results support (Article, Product, Breadcrumb, Video, etc.)
-  - Note: FAQ rich results are limited to well-known government/health sites, and HowTo rich results were discontinued (Google, 2023). Templates are still provided for semantic markup purposes.
+  - Note: FAQ rich results were fully discontinued on May 7, 2026 (after being limited to government/health sites since 2023), and HowTo rich results were discontinued in 2023. The markup remains valid schema.org (no penalty for keeping it) but no longer produces rich results — templates are provided for semantic markup purposes only.
 - VideoObject, BroadcastEvent implementation
 - BreadcrumbList configuration
 - LocalBusiness / Organization setup

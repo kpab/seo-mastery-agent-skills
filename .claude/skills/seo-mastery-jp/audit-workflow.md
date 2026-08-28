@@ -150,6 +150,7 @@ curl -s https://example.com | grep -oP '<script type="application/ld\+json">.*?<
 - [ ] 適切な構造化データが実装されている
 - [ ] エラーがない（Rich Results Test）
 - [ ] ページ内容と一致している
+- [ ] 廃止済みリッチリザルト（FAQ: 2026年5月廃止 / HowTo: 2023年廃止 / Sitelinks Search Box `SearchAction`: 2024年11月廃止）のマークアップがない。検出した場合は削除、またはセマンティック用途である旨の注記を提案
 
 ### 2.5 モバイル対応
 
@@ -310,7 +311,7 @@ curl -H "Accept-Encoding: gzip, deflate, br" -sI https://example.com | grep -i '
 
 ## 技術ギャップ
 競合が実装しているが自社にない機能:
-1. FAQ構造化データ
+1. 動画構造化データ
 2. サイト内検索
 3. 多言語対応
 ```

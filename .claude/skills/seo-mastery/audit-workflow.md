@@ -150,6 +150,7 @@ curl -s https://example.com | grep -oP '<script type="application/ld\+json">.*?<
 - [ ] Appropriate structured data is implemented
 - [ ] No errors (Rich Results Test)
 - [ ] Matches page content
+- [ ] No markup for deprecated rich results (FAQ — retired May 2026, HowTo — retired 2023, Sitelinks Search Box `SearchAction` — retired Nov 2024); if found, propose removing it or annotating it as semantic-only
 
 ### 2.5 Mobile Compatibility
 
@@ -310,7 +311,7 @@ Content types competitors have but we don't:
 
 ## Technical Gap
 Features competitors have but we don't:
-1. FAQ structured data
+1. Video structured data
 2. Site search
 3. Multilingual support
 ```
