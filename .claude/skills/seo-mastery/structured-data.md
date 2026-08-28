@@ -511,22 +511,17 @@ Implementation guide for structured data supporting Google Search rich results. 
 }
 ```
 
-### WebSite (Sitelinks Search Box)
+### WebSite
+
+> **Note:** The Sitelinks Search Box (`potentialAction` / `SearchAction`) was retired in November 2024 and no longer appears in Google Search — do not add it. WebSite markup itself is still current: Google uses it to determine the site name shown in search results, so provide `name` (and `alternateName` for a shorter variant).
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "SEO Master",
-  "url": "https://example.com/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://example.com/search?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
-  }
+  "name": "SEO Master Inc.",
+  "alternateName": "SEO Master",
+  "url": "https://example.com/"
 }
 ```
 

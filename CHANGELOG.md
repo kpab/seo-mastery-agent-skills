@@ -2,6 +2,10 @@
 
 All notable changes to the `seo-mastery` and `seo-mastery-jp` skills are documented here. Both skills share version numbers.
 
+## v1.2.2 (2026-08) - Sitelinks Search Box retirement
+
+- Replaced the "WebSite (Sitelinks Search Box)" template with a plain WebSite template (`name` / `alternateName` / `url`): the Sitelinks Search Box (`potentialAction` / `SearchAction`) was retired in November 2024, while WebSite markup remains current for site name recognition (#5)
+
 ## v1.2.1 (2026-08) - FAQ rich results retirement
 
 - Updated FAQ rich results guidance: Google retired FAQ rich results entirely on May 7, 2026 (documentation and Search Console reports removed); FAQPage markup is now documented as semantic-only, matching the HowTo treatment (#4)
