@@ -168,6 +168,23 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] Tap targets are appropriate size
 - [ ] Text is readable size
 
+### 2.6 AI Search Readiness
+
+```bash
+# Check robots.txt for AI crawler rules
+curl -s https://example.com/robots.txt | grep -iE 'Google-Extended|GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot|CCBot|Applebot-Extended|Meta-ExternalAgent|Bytespider'
+
+# Check snippet controls (these also govern AI Overviews / AI Mode appearance)
+curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
+curl -s https://example.com | grep -c 'data-nosnippet'
+```
+
+**Checklist:**
+- [ ] robots.txt AI crawler rules match the site's intent (training opt-out vs. AI search citations — see [ai-search.md](ai-search.md))
+- [ ] `Google-Extended` blocking, if present, is understood as training-only (it does not remove the site from Search or AI Overviews)
+- [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance
+- [ ] No reliance on llms.txt for Google (Google does not use it)
+
 ---
 
 ## Phase 3: Content Diagnosis

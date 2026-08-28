@@ -1,7 +1,7 @@
 ---
 name: seo-mastery-jp
-description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策を網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコアに関する相談や、サイト監査の依頼があったときに使用する。
-version: 1.2.2
+description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御を網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）に関する相談や、サイト監査の依頼があったときに使用する。
+version: 1.3.0
 author: kpab
 ---
 
@@ -20,6 +20,7 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 | [structured-data.md](structured-data.md) | 全構造化データタイプのJSON-LDテンプレート、検証、よくあるエラー | 構造化データ実装時 |
 | [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLSの詳細な原因と対策、測定、Next.js/Nuxt.jsコード | パフォーマンス改善時 |
 | [audit-workflow.md](audit-workflow.md) | 6フェーズの監査手順、診断コマンド、レポートテンプレート | サイト監査実施時 |
+| [ai-search.md](ai-search.md) | AI Overviews / AIモードの公式ガイダンス、AIクローラーのrobots.txtレシピ、llms.txt、AI引用されやすいコンテンツ設計、計測 | AI検索最適化・クローラー制御時 |
 
 ## このスキルを使うタイミング
 
@@ -51,6 +52,13 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 - INP（Interaction to Next Paint）改善
 - CLS（Cumulative Layout Shift）対策
 - パフォーマンス監視と改善
+
+### 🤖 AI検索（AI Overviews / AIモード）
+- AI Overviews / AIモードのコンテンツ選定の仕組み（インデックス可能＋スニペット表示可能以外の追加要件なし）
+- スニペットコントロール（nosnippet, data-nosnippet, max-snippet, noindex）によるAI表示制御
+- robots.txtによるAIクローラー制御（Google-Extended, GPTBot, ClaudeBot, PerplexityBot等）
+- llms.txtの扱い（Googleは利用しない）
+- AI検索に引用されやすいコンテンツ設計、AIトラフィックの計測
 
 ### 🔍 サイト監査
 - 包括的なSEO監査ワークフロー
@@ -128,6 +136,19 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 | CLS（Cumulative Layout Shift） | 0.1以下 | 画像/動画のサイズ明示、動的コンテンツ・広告のスペース事前確保、font-display: swap + プリロード |
 
 詳細な原因と対策、コード例、測定ツール、フレームワーク別（Next.js / Nuxt.js）最適化は [core-web-vitals.md](core-web-vitals.md) を参照。
+
+---
+
+## 🤖 AI検索（AI Overviews / AIモード）
+
+Google公式のAI機能ガイドで確認済みの要点:
+
+- 追加要件なし: インデックス可能かつスニペット表示可能なページは、そのままAI Overviews / AIモードの対象になる
+- 表示制御は既存のスニペットコントロール（`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`）で行う — 新しいファイルやマークアップは不要で、Googleはllms.txtを利用しない
+- `Google-Extended` はGeminiの学習・グラウンディング拒否のみを制御する。ブロックしても検索・AI Overviewsには影響せず、ランキングシグナルでもない
+- AI経由のトラフィックはSearch Consoleの検索タイプ「ウェブ」に含まれる（AIモードは2026年2月から集計）
+
+AIクローラーのUA一覧、robots.txtレシピ、llms.txtの書式、AI引用されやすいコンテンツ設計、計測の詳細は [ai-search.md](ai-search.md) を参照。
 
 ---
 

@@ -168,6 +168,23 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] タップターゲットが適切なサイズ
 - [ ] テキストが読みやすいサイズ
 
+### 2.6 AI検索対応診断
+
+```bash
+# robots.txt のAIクローラー設定を確認
+curl -s https://example.com/robots.txt | grep -iE 'Google-Extended|GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot|CCBot|Applebot-Extended|Meta-ExternalAgent|Bytespider'
+
+# スニペットコントロールの確認（AI Overviews / AIモードの表示もこれで制御される）
+curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
+curl -s https://example.com | grep -c 'data-nosnippet'
+```
+
+**チェックリスト:**
+- [ ] robots.txtのAIクローラー設定がサイトの意図と一致している（学習拒否かAI検索での引用か — [ai-search.md](ai-search.md) 参照）
+- [ ] `Google-Extended` をブロックしている場合、それが学習のみの制御だと理解されている（検索・AI Overviewsからは除外されない）
+- [ ] スニペットコントロール（`nosnippet` / `max-snippet` / `data-nosnippet`）が意図的な設定である — AI Overviews / AIモードの表示も抑制される
+- [ ] Google向けにllms.txtへ依存していない（Googleは利用しない）
+
 ---
 
 ## Phase 3: コンテンツ診断

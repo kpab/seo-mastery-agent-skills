@@ -1,7 +1,7 @@
 ---
 name: seo-mastery
-description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, or requests a site audit.
-version: 1.2.2
+description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, AI search (AI Overviews / AI Mode) and AI crawler control, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, AI Overviews / AIO, AI Mode, generative AI search, llms.txt, AI crawlers (GPTBot, ClaudeBot, Google-Extended), or requests a site audit.
+version: 1.3.0
 author: kpab
 ---
 
@@ -20,6 +20,7 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 | [structured-data.md](structured-data.md) | Full JSON-LD templates for all supported types, validation, common errors | Structured data implementation |
 | [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS causes and fixes, measurement, Next.js/Nuxt.js code | Performance improvement |
 | [audit-workflow.md](audit-workflow.md) | 6-phase audit procedure, diagnostic commands, report templates | Site audit execution |
+| [ai-search.md](ai-search.md) | AI Overviews / AI Mode guidance, AI crawler robots.txt recipes, llms.txt, AI-citable content design, measurement | AI search optimization and crawler control |
 
 ## When to Use This Skill
 
@@ -51,6 +52,13 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 - INP (Interaction to Next Paint) improvement
 - CLS (Cumulative Layout Shift) fixes
 - Performance monitoring and improvement
+
+### AI Search (AI Overviews / AI Mode)
+- Understanding how AI Overviews / AI Mode select content (no extra requirements beyond indexable + snippet-eligible)
+- Controlling AI appearance with snippet controls (nosnippet, data-nosnippet, max-snippet, noindex)
+- AI crawler control via robots.txt (Google-Extended, GPTBot, ClaudeBot, PerplexityBot, etc.)
+- llms.txt guidance (Google does not use it)
+- Designing content that AI search cites; measuring AI traffic
 
 ### Site Audit
 - Comprehensive SEO audit workflow
@@ -128,6 +136,19 @@ Always validate with the [Rich Results Test](https://search.google.com/test/rich
 | CLS (Cumulative Layout Shift) | ≤ 0.1 | Set image/video dimensions, reserve space for dynamic content and ads, font-display: swap + preload |
 
 Detailed causes, code examples, measurement tools, and framework-specific (Next.js / Nuxt.js) optimizations: see [core-web-vitals.md](core-web-vitals.md).
+
+---
+
+## AI Search (AI Overviews / AI Mode)
+
+Key facts from Google's official AI features guide:
+
+- No extra requirements: pages that are indexable and snippet-eligible are automatically eligible for AI Overviews / AI Mode
+- Appearance is controlled with the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt
+- `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
+- AI traffic is reported in Search Console's "Web" search type (AI Mode included since February 2026)
+
+AI crawler UA list, robots.txt recipes, llms.txt format, AI-citable content design, and measurement details: see [ai-search.md](ai-search.md).
 
 ---
 
