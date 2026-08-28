@@ -171,12 +171,19 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 ### 2.6 AI検索対応診断
 
 ```bash
-# robots.txt のAIクローラー設定を確認
-curl -s https://example.com/robots.txt | grep -iE 'Google-Extended|GPTBot|OAI-SearchBot|ClaudeBot|Claude-SearchBot|PerplexityBot|CCBot|Applebot-Extended|Meta-ExternalAgent|Bytespider'
+# robots.txt のAIクローラー設定をグループ単位で確認 — 該当する各User-agentグループを
+# Allow/Disallow行ごと表示（ワイルドカード * のグループも含む）
+curl -s https://example.com/robots.txt | awk -v RS='' 'tolower($0) ~ /google-extended|gptbot|oai-searchbot|claudebot|claude-searchbot|perplexitybot|ccbot|applebot-extended|meta-externalagent|bytespider|user-agent: ?\*/ {print $0 "\n"}'
 
 # スニペットコントロールの確認（AI Overviews / AIモードの表示もこれで制御される）
 curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
 curl -s https://example.com | grep -c 'data-nosnippet'
+
+# スニペットコントロールはHTTPヘッダー（X-Robots-Tag）でも配信できる
+curl -sI https://example.com | grep -i 'x-robots-tag'
+
+# llms.txt の有無を確認（Googleは利用しない）
+curl -sI https://example.com/llms.txt | head -1
 ```
 
 **チェックリスト:**

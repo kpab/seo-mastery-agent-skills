@@ -146,7 +146,7 @@ Google公式のAI機能ガイドで確認済みの要点:
 - 追加要件なし: インデックス可能かつスニペット表示可能なページは、そのままAI Overviews / AIモードの対象になる
 - 表示制御は既存のスニペットコントロール（`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`）で行う — 新しいファイルやマークアップは不要で、Googleはllms.txtを利用しない
 - `Google-Extended` はGeminiの学習・グラウンディング拒否のみを制御する。ブロックしても検索・AI Overviewsには影響せず、ランキングシグナルでもない
-- AI経由のトラフィックはSearch Consoleの検索タイプ「ウェブ」に含まれる（AIモードは2026年2月から集計）
+- AI経由のトラフィックはSearch Consoleの検索タイプ「ウェブ」に含まれる（AIモードは2025年6月から集計）
 
 AIクローラーのUA一覧、robots.txtレシピ、llms.txtの書式、AI引用されやすいコンテンツ設計、計測の詳細は [ai-search.md](ai-search.md) を参照。
 
@@ -205,7 +205,7 @@ AIクローラーのUA一覧、robots.txtレシピ、llms.txtの書式、AI引�
 全6フェーズ。診断コマンド・チェックリスト・レポートテンプレートの全文は [audit-workflow.md](audit-workflow.md) を参照：
 
 1. **クロール診断** - robots.txt、sitemap、インデックス状況
-2. **技術SEO診断** - HTTPS、リダイレクト、メタタグ、構造化データ、モバイル対応
+2. **技術SEO診断** - HTTPS、リダイレクト、メタタグ、構造化データ、モバイル対応、AI検索対応
 3. **コンテンツ診断** - 見出し構造、リンク、画像、コンテンツ品質
 4. **パフォーマンス診断** - Core Web Vitals、リソース最適化
 5. **競合分析** - コンテンツ量、被リンク、構造化データ、速度比較

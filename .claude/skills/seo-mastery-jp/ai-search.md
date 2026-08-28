@@ -1,6 +1,6 @@
 # AI検索リファレンス（AI Overviews / AIモード / AIクローラー）
 
-生成AI検索への最適化と制御の方法。GoogleのAI OverviewsとAIモード、およびサードパーティAIクローラー（OpenAI、Anthropic、Perplexity等）を扱います。Googleの公式AI機能ガイド（2026年5月公開）と公式クローラードキュメントに基づいています。
+生成AI検索への最適化と制御の方法。GoogleのAI OverviewsとAIモード、およびサードパーティAIクローラー（OpenAI、Anthropic、Perplexity等）を扱います。Googleの公式AI機能ガイド（2025年5月公開）と公式クローラードキュメントに基づいています。
 
 ## Googleの公式ガイダンス（AI Overviews / AIモード）
 
@@ -12,7 +12,7 @@
 - **新しい機械可読ファイルは不要。** Googleは「AI text files」や特別なマークアップは不要と明言している。つまり **Googleはllms.txtを利用しない**（後述のllms.txtセクションを参照）。
 - **標準的なSEOがそのまま最適化になる。** 上位表示され、質問に明確に答えるコンテンツがAI機能に引用される。「AI用ランキング」が別に存在するわけではない。
 - **表示制御は既存のスニペットコントロールで行う。** 新しいディレクティブはない（次セクション参照）。
-- **トラフィックはSearch Consoleで確認できる。** 検索タイプ「ウェブ」に含まれる。AIモードのデータは2026年2月からPerformanceレポートに集計されている。AI Overviews / AIモードからのクリックは通常のクリックとして計上され、機能別のAI内訳は提供されない。
+- **トラフィックはSearch Consoleで確認できる。** 検索タイプ「ウェブ」に含まれる。AIモードのデータは2025年6月からPerformanceレポートに集計されている。AI Overviews / AIモードからのクリックは「ウェブ」内で通常のクリックとして計上され、2026年6月からは専用の「生成AI」パフォーマンスレポート（表示回数のみ）も提供されている。
 
 ### AI機能への表示制御
 
@@ -30,8 +30,10 @@
 ```
 
 ```html
-<!-- ページの一部だけをスニペット・AI機能から除外 -->
-<p data-nosnippet>この段落はスニペットにもAI Overviewsにも表示されません。</p>
+<!-- ページの一部だけをスニペット・AI機能から除外。
+     data-nosnippet がサポートされるのは span / div / section 要素のみ —
+     それ以外の要素（<p> 等）では無視される。 -->
+<p><span data-nosnippet>このテキストはスニペットにもAI Overviewsにも表示されません。</span></p>
 ```
 
 トレードオフ: `nosnippet` や小さい `max-snippet` 値は通常の検索スニペットも消したり短くしたりするため、一般にCTRが下がります。本当に引用されたくないコンテンツにのみ使ってください。
@@ -61,12 +63,12 @@ Disallow: /
 | `Google-Extended` | Google | Gemini学習・グラウンディングの拒否トークン | 検索 / AI Overviewsには影響なし |
 | `GPTBot` | OpenAI | モデル学習 | 今後の学習データから除外 |
 | `OAI-SearchBot` | OpenAI | ChatGPT検索のインデックス | ChatGPT検索で引用されなくなる |
-| `ChatGPT-User` | OpenAI | ChatGPTからのユーザー起点アクセス | ChatGPTがページを開けなくなる |
+| `ChatGPT-User` | OpenAI | ChatGPTからのユーザー起点アクセス | 限定的 — OpenAIはユーザー起点のアクセスにはrobots.txtが「適用されない場合がある」と明記 |
 | `ClaudeBot` | Anthropic | モデル学習 | 今後の学習データから除外 |
 | `Claude-SearchBot` | Anthropic | Claude検索のインデックス | Claude検索で引用されなくなる |
 | `Claude-User` | Anthropic | Claudeからのユーザー起点アクセス | Claudeがページを開けなくなる |
 | `PerplexityBot` | Perplexity | 検索インデックス | Perplexityの回答で引用されなくなる |
-| `Perplexity-User` | Perplexity | ユーザー起点アクセス | Perplexityがページを開けなくなる |
+| `Perplexity-User` | Perplexity | ユーザー起点アクセス | 実質なし — Perplexityはこのフェッチャーがrobots.txtを一般に無視すると明記している |
 | `Applebot-Extended` | Apple | モデル学習の拒否トークン | Appleのモデル学習から除外 |
 | `CCBot` | Common Crawl | オープンなWebコーパス（多くの学習に利用） | Common Crawlデータセットから除外 |
 | `Meta-ExternalAgent` | Meta | モデル学習・インデックス | Metaの学習から除外 |
@@ -97,10 +99,17 @@ Disallow: /
 
 User-agent: CCBot
 Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
 ```
 
 ```txt
-# レシピB: AIアクセスを全面ブロック（学習もAI検索引用も拒否 — AI経由の流入はゼロになる前提）
+# レシピB: AIアクセスを全面ブロック（学習もAI検索引用も拒否 — AI経由の流入はほぼゼロになる前提。
+# 注意: Perplexity-User や ChatGPT-User などユーザー起点フェッチャーはrobots.txtを無視することがある）
 User-agent: GPTBot
 Disallow: /
 
@@ -186,7 +195,7 @@ AIの回答は、抽出と出典表示がしやすいコンテンツを好みま
 
 ### Search Console
 
-- AI Overviews / AIモードの表示回数・クリックはPerformanceレポートの**検索タイプ「ウェブ」**に含まれる（AIモードは2026年2月から集計）。機能別のAIフィルタは提供されていない。
+- AI Overviews / AIモードの表示回数・クリックはPerformanceレポートの**検索タイプ「ウェブ」**に含まれる（AIモードは2025年6月から集計）。2026年6月からは専用の**「生成AI」パフォーマンスレポート**も提供されている（表示回数のみ — クリックの内訳はない）。
 - 情報系クエリで「表示回数は横ばい、クリックは減少」というパターンに注意 — AI Overviewsがクリックを吸収している典型的な兆候。
 
 ### Analytics（参照元の分離）

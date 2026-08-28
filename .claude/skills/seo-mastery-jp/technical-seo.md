@@ -4,6 +4,8 @@
 
 ## robots.txt
 
+AIクローラーの制御（`Google-Extended`、`GPTBot`、`ClaudeBot`、`PerplexityBot` 等）と学習拒否・引用維持のトレードオフは [ai-search.md](ai-search.md) を参照。
+
 ### 基本構文
 
 ```txt

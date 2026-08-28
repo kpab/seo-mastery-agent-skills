@@ -1,6 +1,6 @@
 # AI Search Reference (AI Overviews / AI Mode / AI Crawlers)
 
-How to optimize for and control generative AI search experiences: Google's AI Overviews and AI Mode, plus third-party AI crawlers (OpenAI, Anthropic, Perplexity, etc.). Based on Google's official AI features guide (published May 2026) and the official crawler documentation.
+How to optimize for and control generative AI search experiences: Google's AI Overviews and AI Mode, plus third-party AI crawlers (OpenAI, Anthropic, Perplexity, etc.). Based on Google's official AI features guide (published May 2025) and the official crawler documentation.
 
 ## Google's Official Guidance (AI Overviews / AI Mode)
 
@@ -12,7 +12,7 @@ Key points, verified against the official guide:
 - **No new machine-readable files are needed.** Google explicitly states that no "AI text files" or special markup are required — i.e. **Google does not use llms.txt** (see the llms.txt section below).
 - **Standard SEO is the optimization.** Content that ranks well and answers questions clearly is what AI features cite. There is no separate "AI ranking" to optimize for.
 - **Appearance is controlled with existing snippet controls**, not new directives (see next section).
-- **Traffic is reported in Search Console** under the "Web" search type. AI Mode data has been included in the Performance report since February 2026. Clicks from AI Overviews/AI Mode count as ordinary clicks; there is no separate AI breakdown per feature.
+- **Traffic is reported in Search Console** under the "Web" search type. AI Mode data has been included in the Performance report since June 2025. Clicks from AI Overviews/AI Mode count as ordinary clicks within the "Web" type; since June 2026 Search Console also offers a dedicated Generative AI performance report (impressions only).
 
 ### Controlling Appearance in AI Features
 
@@ -30,8 +30,10 @@ Use the same controls that govern snippets and indexing:
 ```
 
 ```html
-<!-- Exclude only part of a page from snippets and AI features -->
-<p data-nosnippet>This paragraph will not appear in snippets or AI Overviews.</p>
+<!-- Exclude only part of a page from snippets and AI features.
+     data-nosnippet is only supported on span, div, and section elements —
+     on other elements (e.g. <p>) it is ignored. -->
+<p><span data-nosnippet>This text will not appear in snippets or AI Overviews.</span></p>
 ```
 
 Trade-off: `nosnippet` / aggressive `max-snippet` values also remove or shorten your regular search snippets, which typically lowers CTR. Use them only for content you genuinely do not want quoted.
@@ -61,12 +63,12 @@ Disallow: /
 | `Google-Extended` | Google | Gemini training/grounding opt-out token | No effect on Search / AI Overviews |
 | `GPTBot` | OpenAI | Model training | Content excluded from future training |
 | `OAI-SearchBot` | OpenAI | ChatGPT search index | Site not cited in ChatGPT search |
-| `ChatGPT-User` | OpenAI | User-initiated fetches from ChatGPT | ChatGPT cannot open your pages for users |
+| `ChatGPT-User` | OpenAI | User-initiated fetches from ChatGPT | Limited — OpenAI states robots.txt rules "may not apply" to user-initiated fetches |
 | `ClaudeBot` | Anthropic | Model training | Content excluded from future training |
 | `Claude-SearchBot` | Anthropic | Claude search index | Site not cited in Claude search |
 | `Claude-User` | Anthropic | User-initiated fetches from Claude | Claude cannot open your pages for users |
 | `PerplexityBot` | Perplexity | Search index | Site not cited in Perplexity answers |
-| `Perplexity-User` | Perplexity | User-initiated fetches | Perplexity cannot open your pages for users |
+| `Perplexity-User` | Perplexity | User-initiated fetches | None in practice — Perplexity documents that this fetcher generally ignores robots.txt |
 | `Applebot-Extended` | Apple | Model training opt-out token | Content excluded from Apple model training |
 | `CCBot` | Common Crawl | Open web corpus (used by many trainers) | Excluded from Common Crawl datasets |
 | `Meta-ExternalAgent` | Meta | Model training / indexing | Content excluded from Meta training |
@@ -97,10 +99,17 @@ Disallow: /
 
 User-agent: CCBot
 Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
 ```
 
 ```txt
-# Recipe B: block all AI access (training AND AI search citations — expect zero AI referrals)
+# Recipe B: block all AI access (training AND AI search citations — expect near-zero AI referrals;
+# note: user-initiated fetchers such as Perplexity-User and ChatGPT-User may ignore robots.txt)
 User-agent: GPTBot
 Disallow: /
 
@@ -186,7 +195,7 @@ Checklist:
 
 ### Search Console
 
-- AI Overviews / AI Mode impressions and clicks are included in the **"Web" search type** of the Performance report (AI Mode included since February 2026). There is no per-feature AI filter.
+- AI Overviews / AI Mode impressions and clicks are included in the **"Web" search type** of the Performance report (AI Mode included since June 2025). Since June 2026 there is also a dedicated **Generative AI performance report** (impressions only — no click breakdown).
 - Watch for the pattern "impressions stable, clicks down" on informational queries — a common signature of AI Overviews absorbing clicks.
 
 ### Analytics (Referral Segmentation)

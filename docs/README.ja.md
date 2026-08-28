@@ -43,7 +43,7 @@ cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery-jp  .claude/skills/   
 SKILL=seo-mastery   # または seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .claude/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
   curl -fsSL -o .claude/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -56,7 +56,7 @@ done
 SKILL=seo-mastery   # または seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .codex/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
   curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -71,6 +71,7 @@ done
 │   ├── content-seo.md        # コンテンツSEO詳細
 │   ├── structured-data.md    # 構造化データ詳細
 │   ├── core-web-vitals.md    # Core Web Vitals詳細
+│   ├── ai-search.md          # AI検索詳細
 │   └── audit-workflow.md     # 監査ワークフロー詳細
 └── seo-mastery-jp/           # 日本語版
     ├── SKILL.md              # メインスキルファイル
@@ -78,6 +79,7 @@ done
     ├── content-seo.md        # コンテンツSEO詳細
     ├── structured-data.md    # 構造化データ詳細
     ├── core-web-vitals.md    # Core Web Vitals詳細
+    ├── ai-search.md          # AI検索詳細
     └── audit-workflow.md     # 監査ワークフロー詳細
 ```
 
@@ -113,7 +115,7 @@ done
 - Organization / WebSite
 - Event（イベント）
 
-\* FAQリッチリザルトは著名な政府機関・医療機関サイト限定、HowToリッチリザルトはGoogleが2023年に廃止済み。テンプレートはセマンティックマークアップ用途として提供しています。
+\* FAQリッチリザルトはGoogleが2026年5月7日に完全廃止、HowToリッチリザルトは2023年に廃止済み。テンプレートはセマンティックマークアップ用途として提供しています。
 
 ### 技術SEO
 - robots.txt テンプレート

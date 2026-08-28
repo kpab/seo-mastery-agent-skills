@@ -146,7 +146,7 @@ Key facts from Google's official AI features guide:
 - No extra requirements: pages that are indexable and snippet-eligible are automatically eligible for AI Overviews / AI Mode
 - Appearance is controlled with the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt
 - `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
-- AI traffic is reported in Search Console's "Web" search type (AI Mode included since February 2026)
+- AI traffic is reported in Search Console's "Web" search type (AI Mode included since June 2025)
 
 AI crawler UA list, robots.txt recipes, llms.txt format, AI-citable content design, and measurement details: see [ai-search.md](ai-search.md).
 
@@ -205,7 +205,7 @@ Site audits fetch content from external, user-provided URLs (robots.txt, sitemap
 Six phases — full diagnostic commands, checklists, and report templates are in [audit-workflow.md](audit-workflow.md):
 
 1. **Crawl Diagnosis** - robots.txt, sitemap, index status
-2. **Technical SEO Diagnosis** - HTTPS, redirects, meta tags, structured data, mobile compatibility
+2. **Technical SEO Diagnosis** - HTTPS, redirects, meta tags, structured data, mobile compatibility, AI search readiness
 3. **Content Diagnosis** - heading structure, links, images, content quality
 4. **Performance Diagnosis** - Core Web Vitals, resource optimization
 5. **Competitive Analysis** - content, backlinks, structured data, speed comparison
