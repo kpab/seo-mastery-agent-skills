@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # Core Web Vitals リファレンス
 
 Googleのランキング要因となるCore Web Vitalsの詳細な最適化ガイド。
@@ -186,7 +190,8 @@ async function processItemsAsync(items) {
   }
 }
 
-// ✅ scheduler.yield() を使用（Chrome 129+）
+// ✅ scheduler.yield() を使用 — Chromium系とFirefoxのみ対応。
+// Safariは未対応でBaselineでもないため、機能検出は必須。
 async function processItemsWithYield(items) {
   for (const item of items) {
     heavyProcess(item);
@@ -521,28 +526,31 @@ function Hero() {
 ### Nuxt.js
 
 ```javascript
-// nuxt.config.js
-export default {
+// nuxt.config.ts（Nuxt 3+）
+export default defineNuxtConfig({
+  modules: ['@nuxt/image'],
   image: {
-    provider: 'ipx',
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
+    format: ['avif', 'webp'],
+    screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280 },
+  },
+  app: {
+    head: {
+      link: [
+        // LCP画像は明示的にpreloadする。HTTP/2 Server Pushに頼らない
+        //（Chromeから削除済み。Nuxt 2の `render.http2.push` オプションはもう存在しない）
+        { rel: 'preload', as: 'image', href: '/hero.webp', fetchpriority: 'high' },
+      ],
     },
   },
-  render: {
-    http2: {
-      push: true,
-      pushAssets: (req, res, publicPath, preloadFiles) =>
-        preloadFiles
-          .filter(f => f.asType === 'script' || f.asType === 'style')
-          .map(f => `<${publicPath}${f.file}>; rel=preload; as=${f.asType}`),
-    },
-  },
-};
+});
+```
+
+```vue
+<!-- LCP画像を高優先度としてマークする -->
+<template>
+  <NuxtImg src="/hero.jpg" width="1200" height="600" preload
+           fetchpriority="high" format="avif,webp" alt="Hero" />
+</template>
 ```
 
 ---

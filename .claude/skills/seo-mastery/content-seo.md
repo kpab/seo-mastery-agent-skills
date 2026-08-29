@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # Content SEO Reference
 
 Guide for creating content optimized for both search engines and users.

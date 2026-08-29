@@ -1,10 +1,14 @@
+---
+last_verified: 2026-08-29
+---
+
 # Technical SEO Reference
 
 Detailed guide for technical SEO configuration. Covers crawlability, indexability, and rendering optimization.
 
 ## robots.txt
 
-For AI crawler control (`Google-Extended`, `GPTBot`, `ClaudeBot`, `PerplexityBot`, etc.) and its training-vs-citation trade-offs, see [ai-search.md](ai-search.md).
+For AI crawler control (`Google-Extended`, `GPTBot`, `ClaudeBot`, `PerplexityBot`, etc.) and its training-vs-citation trade-offs, see [ai-search.md](ai-search.md). For verifying that a crawler claiming to be Googlebot really is (reverse DNS, or the published IP range files — relocated to `developers.google.com/static/crawling/ipranges/` in March 2026, with `googlebot.json` renamed to `common-crawlers.json`), see [edge-seo.md](edge-seo.md).
 
 ### Basic Syntax
 
@@ -40,6 +44,13 @@ Sitemap: https://example.com/sitemap.xml
    Disallow: /*.pdf$   # Block all PDFs
    Disallow: /*/temp/  # Block temp/ under any path
    ```
+
+4. **What Google Supports**
+   - Supported fields: `user-agent`, `allow`, `disallow`, `sitemap`. **`crawl-delay` and `noindex` are not supported** — writing them has no effect on Google
+   - File size limit: 500 KiB; anything after that is ignored
+   - Cached for up to 24 hours, so changes are not immediate
+   - Precedence: the most specific (longest path) rule wins; on a tie, the least restrictive applies. Path matching is case-sensitive
+   - Group matching: the most specific `user-agent` match determines the group — file order is irrelevant
 
 ### Common Mistakes
 
@@ -103,11 +114,12 @@ Disallow: /api/internal/
 
 | Item | Recommendation |
 |------|----------------|
-| URL limit | 50,000 URLs per file |
-| File size limit | 50MB (uncompressed) |
-| lastmod | Accurate update datetime |
-| priority | Relative importance (0.0-1.0) |
-| Submission | Google Search Console |
+| URL limit | 50,000 URLs per file (hard limit) |
+| File size limit | 50MB uncompressed (hard limit); gzip `.xml.gz` is supported |
+| Sitemap index | Up to 50,000 `<loc>` entries; up to 500 index files per site; referenced sitemaps must be in the same directory or lower |
+| lastmod | Accurate update datetime. Google uses it **only if it is consistently and verifiably accurate** — stamping every URL with today's date trains Google to ignore the field |
+| priority / changefreq | **Google ignores both.** Harmless to include, but they buy nothing |
+| Submission | Google Search Console, plus a `Sitemap:` line in robots.txt |
 
 ---
 
@@ -248,13 +260,8 @@ export async function getServerSideProps() {
   return { props: { data } };
 }
 
-// Nuxt.js SSR
-export default {
-  async asyncData({ $axios }) {
-    const data = await $axios.$get('/api/data');
-    return { data };
-  }
-}
+// Nuxt 3+ SSR (inside <script setup>)
+const { data } = await useAsyncData('items', () => $fetch('/api/data'));
 ```
 
 ### Link Implementation
@@ -331,7 +338,7 @@ The "budget" (time/resources) Googlebot allocates to crawl your site.
 
 2. **Handle Duplicate Content**
    - Canonical settings
-   - Parameter handling (Search Console)
+   - Block or consolidate parameter URLs yourself (robots.txt patterns, canonical, or edge redirects) — the Search Console URL Parameters tool was retired in 2022
 
 3. **Improve Server Response**
    - Target TTFB under 200ms

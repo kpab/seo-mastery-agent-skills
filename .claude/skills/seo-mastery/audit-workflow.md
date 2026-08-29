@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # SEO Audit Workflow
 
 Systematic process for conducting comprehensive site-wide SEO audits.
@@ -33,7 +37,9 @@ curl -s https://example.com/robots.txt
 # Check points:
 # - Are important pages Disallowed?
 # - Is there a sitemap reference?
-# - Is Crawl-delay set too high?
+# - Are CSS/JS/image directories blocked?
+# - Any crawl-delay or noindex lines? Google supports neither — flag them as
+#   ineffective rather than as configuration
 ```
 
 **Checklist:**
@@ -187,10 +193,11 @@ curl -sI https://example.com/llms.txt | head -1
 ```
 
 **Checklist:**
+- [ ] Search Console **Settings → Search generative AI** is set intentionally (default: included). Excluding removes AI Overviews / AI Mode / Discover AI visibility without affecting normal Search rankings — verify the setting matches the site's stated intent
 - [ ] robots.txt AI crawler rules match the site's intent (training opt-out vs. AI search citations — see [ai-search.md](ai-search.md))
 - [ ] `Google-Extended` blocking, if present, is understood as training-only (it does not remove the site from Search or AI Overviews)
-- [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance
-- [ ] No reliance on llms.txt for Google (Google does not use it)
+- [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance, and they cost regular snippets too, so the Search Console control is the better tool for AI-only exclusion
+- [ ] No reliance on llms.txt, content chunking, or AI-specific schema for Google (Google uses none of them)
 
 ---
 

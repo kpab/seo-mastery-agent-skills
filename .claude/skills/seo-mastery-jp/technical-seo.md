@@ -1,10 +1,14 @@
+---
+last_verified: 2026-08-29
+---
+
 # 技術SEO リファレンス
 
 技術的なSEO設定の詳細ガイド。クローラビリティ、インデクサビリティ、レンダリングの最適化を網羅。
 
 ## robots.txt
 
-AIクローラーの制御（`Google-Extended`、`GPTBot`、`ClaudeBot`、`PerplexityBot` 等）と学習拒否・引用維持のトレードオフは [ai-search.md](ai-search.md) を参照。
+AIクローラーの制御（`Google-Extended`、`GPTBot`、`ClaudeBot`、`PerplexityBot` 等）と学習拒否・引用維持のトレードオフは [ai-search.md](ai-search.md) を参照。Googlebotを名乗るクローラーが本物かを検証する方法（逆引きDNS、または公開IPレンジファイル。2026年3月に `developers.google.com/static/crawling/ipranges/` へ移動し、`googlebot.json` は `common-crawlers.json` に改名）は [edge-seo.md](edge-seo.md) を参照。
 
 ### 基本構文
 
@@ -40,6 +44,13 @@ Sitemap: https://example.com/sitemap.xml
    Disallow: /*.pdf$   # すべてのPDFをブロック
    Disallow: /*/temp/  # 任意のパス下のtemp/をブロック
    ```
+
+4. **Googleがサポートする範囲**
+   - サポートされるフィールドは `user-agent` / `allow` / `disallow` / `sitemap`。**`crawl-delay` と `noindex` は非対応** — 書いてもGoogleには効かない
+   - ファイルサイズ上限は500 KiB。それ以降の内容は無視される
+   - 最大24時間キャッシュされるため、変更は即座には反映されない
+   - 優先順位: もっとも具体的な（パスが長い）ルールが勝つ。同点なら制限の緩い方が適用される。パスの照合は大文字小文字を区別する
+   - グループの解決: もっとも具体的な `user-agent` の一致でグループが決まる。ファイル内の記述順は関係ない
 
 ### よくある間違い
 
@@ -103,11 +114,12 @@ Disallow: /api/internal/
 
 | 項目 | 推奨 |
 |------|------|
-| URL数上限 | 50,000 URL / ファイル |
-| ファイルサイズ上限 | 50MB（非圧縮） |
-| lastmod | 実際の更新日時を正確に記載 |
-| priority | 相対的な重要度（0.0-1.0） |
-| 送信先 | Google Search Console |
+| URL数上限 | 50,000 URL / ファイル（ハードリミット） |
+| ファイルサイズ上限 | 非圧縮50MB（ハードリミット）。gzip（`.xml.gz`）に対応 |
+| サイトマップインデックス | `<loc>`は最大50,000件、1サイトあたりインデックスファイルは最大500件。参照するサイトマップはインデックスと同じディレクトリかそれ以下に置く |
+| lastmod | 実際の更新日時を正確に記載。Googleは**一貫して検証可能に正確な場合にのみ使用する** — 全URLに今日の日付を打つと、この項目を無視するよう学習させることになる |
+| priority / changefreq | **Googleは両方とも無視する。** 書いても害はないが効果もない |
+| 送信先 | Google Search Console、およびrobots.txtの`Sitemap:`行 |
 
 ---
 
@@ -248,13 +260,8 @@ export async function getServerSideProps() {
   return { props: { data } };
 }
 
-// Nuxt.js での SSR
-export default {
-  async asyncData({ $axios }) {
-    const data = await $axios.$get('/api/data');
-    return { data };
-  }
-}
+// Nuxt 3+ での SSR（<script setup> 内）
+const { data } = await useAsyncData('items', () => $fetch('/api/data'));
 ```
 
 ### リンクの実装
@@ -331,7 +338,7 @@ Googlebotがサイトをクロールする「予算」（時間・リソース�
 
 2. **重複コンテンツの整理**
    - canonical設定
-   - パラメータハンドリング（Search Console）
+   - パラメータ付きURLは自分で遮断・集約する（robots.txtのパターン、canonical、エッジでのリダイレクト）。Search ConsoleのURLパラメータツールは2022年に廃止済み
 
 3. **サーバーレスポンス高速化**
    - TTFB 200ms以下目標

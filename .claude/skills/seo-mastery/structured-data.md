@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # Structured Data Reference
 
 Implementation guide for structured data supporting Google Search rich results. JSON-LD format recommended.
