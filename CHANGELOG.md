@@ -162,6 +162,9 @@ Found by a second review pass on the same branch:
   have failed CI. It also missed a value *ending* in a colon — the same scanner error the plain
   scalar check exists to catch — false-positived on values starting with `-`, `?` or `:`, which YAML
   accepts, and left `\uXXXX` escapes unexpanded while measuring description length against them
+- `release.yml` re-implemented frontmatter parsing in `sed`, which disagreed with `validate.py` over
+  quoted values: `version: "1.4.0"` passed CI and would then have failed the release, after the tag
+  was already immutable. The tag check is now `validate.py --expect-version`
 - `freshness_table.py` walked the skills tree recursively while `validate.py` globbed one level, so
   a file in a subdirectory would be demanded in the reminder issue but never enforced by CI. Both
   now walk through the same function, the table exits non-zero on malformed frontmatter instead of

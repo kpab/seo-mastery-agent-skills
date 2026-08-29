@@ -17,6 +17,7 @@ Checks:
 Stdlib only — no dependencies.
 """
 
+import argparse
 import datetime
 import json
 import re
@@ -450,13 +451,17 @@ def check_manifests() -> None:
             error(f"{manifest.relative_to(REPO)}: invalid JSON: {exc}")
 
 
-def check_versions(skill_dirs: list) -> None:
+def check_versions(skill_dirs: list, expected: str = None) -> None:
     """Every version must be declared, agree, and have a CHANGELOG section.
 
     Historically the versions did not agree: v1.2.1 and v1.2.2 shipped with the
     manifests still reading 1.2.0. A *missing* version is checked just as
     strictly, because release.yml only discovers it after the immutable tag has
     been pushed — at which point the fix means deleting and re-pushing the tag.
+
+    `expected` is the version release.yml derived from the tag. It is compared
+    here so the tag is checked against the same parse CI validated with; a
+    second implementation in shell disagreed with this one over quoting.
     """
     declared = {}
 
@@ -498,8 +503,12 @@ def check_versions(skill_dirs: list) -> None:
         detail = ", ".join(f"{k}={v}" for k, v in sorted(declared.items()))
         error(f"version mismatch across declarations: {detail}")
         return
-    if versions:
-        check_changelog(versions.pop())
+    if not versions:
+        return
+    version = versions.pop()
+    if expected is not None and version != expected:
+        error(f"every declaration reads '{version}' but the tag is 'v{expected}'")
+    check_changelog(version)
 
 
 def check_changelog(version: str) -> None:
@@ -556,7 +565,17 @@ def check_sync(en_name: str, jp_name: str) -> None:
             )
 
 
-def main() -> int:
+def main(argv: list = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--expect-version",
+        metavar="X.Y.Z",
+        help="also require every declared version to equal this one (release.yml "
+        "passes the pushed tag, so the tag is checked by this parser rather "
+        "than by a second one in shell)",
+    )
+    args = parser.parse_args(argv)
+
     if not SKILLS_DIR.is_dir():
         error(f"{SKILLS_DIR.relative_to(REPO)} does not exist")
         return 1
@@ -569,7 +588,7 @@ def main() -> int:
         check_freshness(skill_dir)
         check_json_blocks(skill_dir)
     check_manifests()
-    check_versions(skill_dirs)
+    check_versions(skill_dirs, args.expect_version)
     for en_name, jp_name in SYNC_PAIRS:
         check_sync(en_name, jp_name)
     if errors:
