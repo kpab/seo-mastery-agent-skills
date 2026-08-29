@@ -174,8 +174,8 @@ Static-site and edge deployments shift several SEO decisions out of the applicat
 
 Key facts from Google's official AI features and generative AI optimization guides:
 
-- Three eligibility gates: the page must be **indexable**, **snippet-eligible**, and the site must be **included in Search generative AI features in Search Console**
-- The site-level control lives at **Settings → Search generative AI** (default: included). Excluding removes the site from AI Overviews, AI Mode and generative AI in Discover, and Google states it "isn't used as a ranking or inclusion signal affecting other parts of Search"
+- Three eligibility gates: the page must be **indexable**, **snippet-eligible**, and the site must not be excluded from **Search generative AI features in Search Console**. The default is included, and the control is still rolling out (from 2026-06-03), so a property that does not show the setting is not thereby ineligible
+- Where the property has it, the site-level control lives at **Settings → Search generative AI** (default: included) — check for it rather than assuming availability. Excluding removes the site from AI Overviews, AI Mode and generative AI in Discover, and Google states it "isn't used as a ranking or inclusion signal affecting other parts of Search"
 - Beyond that control, appearance is shaped by the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt, content chunking, or AI-specific schema
 - `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
 - AI traffic appears in the "Web" search type of the Performance report, plus a dedicated **Search generative AI performance report** (no historical backfill, impressions only)

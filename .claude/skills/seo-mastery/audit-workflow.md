@@ -199,7 +199,7 @@ curl -sI https://example.com/llms.txt | head -1
 ```
 
 **Checklist:**
-- [ ] Search Console **Settings → Search generative AI** is set intentionally (default: included). Excluding removes AI Overviews / AI Mode / Discover AI visibility without affecting normal Search rankings — verify the setting matches the site's stated intent
+- [ ] **If the property has it** (rolling out from 2026-06-03 — its absence is not a misconfiguration), Search Console **Settings → Search generative AI** is set intentionally (default: included). Excluding removes AI Overviews / AI Mode / Discover AI visibility without affecting normal Search rankings — verify the setting matches the site's stated intent
 - [ ] robots.txt AI crawler rules match the site's intent (training opt-out vs. AI search citations — see [ai-search.md](ai-search.md))
 - [ ] `Google-Extended` blocking, if present, is understood as training-only (it does not remove the site from Search or AI Overviews)
 - [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance, and they cost regular snippets too, so the Search Console control is the better tool for AI-only exclusion

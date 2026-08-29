@@ -199,7 +199,7 @@ curl -sI https://example.com/llms.txt | head -1
 ```
 
 **チェックリスト:**
-- [ ] Search Consoleの **設定 → 検索の生成AI** が意図どおりに設定されている（デフォルトは「含める」）。除外すると通常の検索順位に影響せずAI Overviews / AIモード / DiscoverのAI表示だけが消えるため、サイトの方針と一致しているか確認する
+- [ ] **プロパティに設定が出ていれば**（2026年6月3日から順次展開中で、無いこと自体は設定漏れではない）、Search Consoleの **設定 → 検索の生成AI** が意図どおりになっている（デフォルトは「含める」）。除外すると通常の検索順位に影響せずAI Overviews / AIモード / DiscoverのAI表示だけが消えるため、サイトの方針と一致しているか確認する
 - [ ] robots.txtのAIクローラー設定がサイトの意図と一致している（学習拒否かAI検索での引用か — [ai-search.md](ai-search.md) 参照）
 - [ ] `Google-Extended` をブロックしている場合、それが学習のみの制御だと理解されている（検索・AI Overviewsからは除外されない）
 - [ ] スニペットコントロール（`nosnippet` / `max-snippet` / `data-nosnippet`）が意図的な設定である — AI Overviews / AIモードの表示も抑制され、通常のスニペットも失う。AI機能だけを除外したいならSearch Consoleのコントロールを使う
