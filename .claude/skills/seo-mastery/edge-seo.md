@@ -436,17 +436,29 @@ async function googleRanges(env) {
   // would poison the cache for 24 hours and reject every real crawler.
   if (Array.isArray(cached) && cached.length) return cached;
 
-  const files = await Promise.all(
-    RANGE_FILES.map(async (u) => {
-      const res = await fetch(u, { cf: { cacheTtl: 3600 } });
-      if (!res.ok) throw new Error(`${u} -> ${res.status}`);
-      return res.json();
-    })
-  );
-  const prefixes = files.flatMap((f) => f.prefixes ?? []);
-  if (!prefixes.length) throw new Error('no prefixes in Google range files');
-  await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
-  return prefixes;
+  // Negative cache. Without it, every request during an outage re-issues three
+  // fetches, so a flood of spoofed-UA requests becomes an outbound fetch storm
+  // against Google and burns the Worker's subrequest budget.
+  if (await env.BOT_KV.get('google-ranges-failed')) {
+    throw new Error('range lookup failed recently; backing off');
+  }
+
+  try {
+    const files = await Promise.all(
+      RANGE_FILES.map(async (u) => {
+        const res = await fetch(u, { cf: { cacheTtl: 3600 } });
+        if (!res.ok) throw new Error(`${u} -> ${res.status}`);
+        return res.json();
+      })
+    );
+    const prefixes = files.flatMap((f) => f.prefixes ?? []);
+    if (!prefixes.length) throw new Error('no prefixes in Google range files');
+    await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
+    return prefixes;
+  } catch (err) {
+    await env.BOT_KV.put('google-ranges-failed', '1', { expirationTtl: 300 });
+    throw err;
+  }
 }
 
 async function isVerifiedGoogle(request, env) {
@@ -460,9 +472,11 @@ async function isVerifiedGoogle(request, env) {
   try {
     prefixes = await googleRanges(env);
   } catch (err) {
-    // Fail OPEN. If Google's range files are unreachable, treating a real
-    // crawler as unverified is worse than treating an impostor as verified —
-    // this function gates rate limits, not access to private data.
+    // Fail OPEN *only because this function gates rate limits*. During an
+    // outage every spoofed Googlebot UA is treated as verified, which is the
+    // UA-only trust this file forbids — acceptable when the cost is a skipped
+    // rate limit, never when the check gates content or access. Fail closed
+    // there, and let the negative cache above bound the retry rate.
     console.error('crawler range lookup failed', err);
     return true;
   }
@@ -479,30 +493,69 @@ async function isVerifiedGoogle(request, env) {
 not fit in a 32-bit integer:
 
 ```js
+// Returns null for anything unparseable. Never throws: this runs inside
+// isVerifiedGoogle's prefix loop, which sits OUTSIDE its try/catch, so an
+// exception here would 5xx the one client the check exists to identify.
 function ipToBigInt(ip) {
   if (ip.includes(':')) {
-    // Expand "::" and any omitted leading zeros into eight 16-bit groups.
-    const [head, tail = ''] = ip.split('::');
+    const parts = ip.split('::');
+    if (parts.length > 2) return null;            // "::" may appear once
+    const [head, tail = ''] = parts;
     const left = head ? head.split(':') : [];
     const right = tail ? tail.split(':') : [];
-    const groups = [
-      ...left,
-      ...Array(8 - left.length - right.length).fill('0'),
-      ...right,
-    ];
-    return groups.reduce((acc, g) => (acc << 16n) | BigInt(parseInt(g || '0', 16)), 0n);
+
+    // An IPv4-mapped address ends in a dotted quad ("::ffff:192.0.2.1").
+    // parseInt('192.0.2.1', 16) silently returns 402, so expand the quad into
+    // two 16-bit groups rather than letting that value through.
+    const tailGroups = right.length ? right : left;
+    const last = tailGroups[tailGroups.length - 1];
+    if (last && last.includes('.')) {
+      const octets = last.split('.').map(Number);
+      if (octets.length !== 4) return null;
+      if (octets.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+      tailGroups.splice(-1, 1,
+        ((octets[0] << 8) | octets[1]).toString(16),
+        ((octets[2] << 8) | octets[3]).toString(16));
+    }
+
+    const fill = 8 - left.length - right.length;
+    if (fill < 0 || (fill > 0 && parts.length !== 2)) return null;
+    const groups = [...left, ...Array(fill).fill('0'), ...right];
+
+    let acc = 0n;
+    for (const g of groups) {
+      // BigInt(NaN) throws a RangeError, so reject the group instead.
+      if (!/^[0-9a-f]{1,4}$/i.test(g || '0')) return null;
+      acc = (acc << 16n) | BigInt(parseInt(g || '0', 16));
+    }
+    return acc;
   }
-  return ip.split('.').reduce((acc, o) => (acc << 8n) | BigInt(Number(o)), 0n);
+
+  const octets = ip.split('.');
+  if (octets.length !== 4) return null;
+  let acc = 0n;
+  for (const o of octets) {
+    if (!/^\d{1,3}$/.test(o) || Number(o) > 255) return null;
+    acc = (acc << 8n) | BigInt(Number(o));
+  }
+  return acc;
 }
 
 function ipInCidr(ip, cidr) {
   const [network, bitsRaw] = cidr.split('/');
+  if (!network || !/^\d{1,3}$/.test(bitsRaw ?? '')) return false;
   if (ip.includes(':') !== network.includes(':')) return false;   // family mismatch
 
   const width = network.includes(':') ? 128n : 32n;
   const bits = BigInt(bitsRaw);
+  if (bits > width) return false;
+
+  const addr = ipToBigInt(ip);
+  const net = ipToBigInt(network);
+  if (addr === null || net === null) return false;
+
   const mask = bits === 0n ? 0n : (~0n << (width - bits)) & ((1n << width) - 1n);
-  return (ipToBigInt(ip) & mask) === (ipToBigInt(network) & mask);
+  return (addr & mask) === (net & mask);
 }
 ```
 

@@ -437,17 +437,29 @@ async function googleRanges(env) {
   // 24時間キャッシュが汚染され、本物のクローラーを全部弾いてしまう。
   if (Array.isArray(cached) && cached.length) return cached;
 
-  const files = await Promise.all(
-    RANGE_FILES.map(async (u) => {
-      const res = await fetch(u, { cf: { cacheTtl: 3600 } });
-      if (!res.ok) throw new Error(`${u} -> ${res.status}`);
-      return res.json();
-    })
-  );
-  const prefixes = files.flatMap((f) => f.prefixes ?? []);
-  if (!prefixes.length) throw new Error('no prefixes in Google range files');
-  await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
-  return prefixes;
+  // 失敗もキャッシュする。これがないと障害中は毎リクエストで3本のfetchが
+  // 再発行され、偽装UAの大量リクエストがGoogleへの外向きfetchストームに変わり、
+  // Workerのサブリクエスト枠を食い潰す。
+  if (await env.BOT_KV.get('google-ranges-failed')) {
+    throw new Error('range lookup failed recently; backing off');
+  }
+
+  try {
+    const files = await Promise.all(
+      RANGE_FILES.map(async (u) => {
+        const res = await fetch(u, { cf: { cacheTtl: 3600 } });
+        if (!res.ok) throw new Error(`${u} -> ${res.status}`);
+        return res.json();
+      })
+    );
+    const prefixes = files.flatMap((f) => f.prefixes ?? []);
+    if (!prefixes.length) throw new Error('no prefixes in Google range files');
+    await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
+    return prefixes;
+  } catch (err) {
+    await env.BOT_KV.put('google-ranges-failed', '1', { expirationTtl: 300 });
+    throw err;
+  }
 }
 
 async function isVerifiedGoogle(request, env) {
@@ -461,9 +473,11 @@ async function isVerifiedGoogle(request, env) {
   try {
     prefixes = await googleRanges(env);
   } catch (err) {
-    // フェイルオープンにする。GoogleのIPレンジファイルに到達できないとき、
-    // 本物のクローラーを未検証扱いにする方が、偽装を検証済み扱いにするより有害。
-    // この関数が制御するのはレート制限であって、機密データへのアクセスではない。
+    // フェイルオープンにするのは、**この関数が制御するのがレート制限だから**。
+    // 障害中は偽装したGooglebot UAがすべて検証済み扱いになる。これはこのファイル
+    // が禁じているUAだけの信用そのもので、失うものがレート制限の適用だけなら許容
+    // できるが、コンテンツやアクセスを制御する判定なら決して許容できない。その
+    // 場合はフェイルクローズにし、再試行の頻度は上の失敗キャッシュで抑える。
     console.error('crawler range lookup failed', err);
     return true;
   }
@@ -480,30 +494,69 @@ async function isVerifiedGoogle(request, env) {
 BigIntが必要です。
 
 ```js
+// 解析できない入力にはnullを返す。例外は投げない。この処理は
+// isVerifiedGoogle のprefixループ内、つまりtry/catchの**外**で走るため、
+// ここで例外が出るとこの判定が識別しようとしている当のクローラーに5xxを返す。
 function ipToBigInt(ip) {
   if (ip.includes(':')) {
-    // "::" の省略と各グループの先頭ゼロ省略を、16ビット×8グループに展開する
-    const [head, tail = ''] = ip.split('::');
+    const parts = ip.split('::');
+    if (parts.length > 2) return null;            // "::" は1回まで
+    const [head, tail = ''] = parts;
     const left = head ? head.split(':') : [];
     const right = tail ? tail.split(':') : [];
-    const groups = [
-      ...left,
-      ...Array(8 - left.length - right.length).fill('0'),
-      ...right,
-    ];
-    return groups.reduce((acc, g) => (acc << 16n) | BigInt(parseInt(g || '0', 16)), 0n);
+
+    // IPv4射影アドレスは末尾がドット区切り（"::ffff:192.0.2.1"）。
+    // parseInt('192.0.2.1', 16) はエラーなく402を返してしまうので、
+    // その値を通さずに16ビット×2グループへ展開する。
+    const tailGroups = right.length ? right : left;
+    const last = tailGroups[tailGroups.length - 1];
+    if (last && last.includes('.')) {
+      const octets = last.split('.').map(Number);
+      if (octets.length !== 4) return null;
+      if (octets.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+      tailGroups.splice(-1, 1,
+        ((octets[0] << 8) | octets[1]).toString(16),
+        ((octets[2] << 8) | octets[3]).toString(16));
+    }
+
+    const fill = 8 - left.length - right.length;
+    if (fill < 0 || (fill > 0 && parts.length !== 2)) return null;
+    const groups = [...left, ...Array(fill).fill('0'), ...right];
+
+    let acc = 0n;
+    for (const g of groups) {
+      // BigInt(NaN) は RangeError を投げるので、グループ側で弾く。
+      if (!/^[0-9a-f]{1,4}$/i.test(g || '0')) return null;
+      acc = (acc << 16n) | BigInt(parseInt(g || '0', 16));
+    }
+    return acc;
   }
-  return ip.split('.').reduce((acc, o) => (acc << 8n) | BigInt(Number(o)), 0n);
+
+  const octets = ip.split('.');
+  if (octets.length !== 4) return null;
+  let acc = 0n;
+  for (const o of octets) {
+    if (!/^\d{1,3}$/.test(o) || Number(o) > 255) return null;
+    acc = (acc << 8n) | BigInt(Number(o));
+  }
+  return acc;
 }
 
 function ipInCidr(ip, cidr) {
   const [network, bitsRaw] = cidr.split('/');
+  if (!network || !/^\d{1,3}$/.test(bitsRaw ?? '')) return false;
   if (ip.includes(':') !== network.includes(':')) return false;   // アドレスファミリ不一致
 
   const width = network.includes(':') ? 128n : 32n;
   const bits = BigInt(bitsRaw);
+  if (bits > width) return false;
+
+  const addr = ipToBigInt(ip);
+  const net = ipToBigInt(network);
+  if (addr === null || net === null) return false;
+
   const mask = bits === 0n ? 0n : (~0n << (width - bits)) & ((1n << width) - 1n);
-  return (ipToBigInt(ip) & mask) === (ipToBigInt(network) & mask);
+  return (addr & mask) === (net & mask);
 }
 ```
 
