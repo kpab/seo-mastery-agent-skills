@@ -1,0 +1,81 @@
+name: Release
+
+# Pushing a v* tag publishes a GitHub Release whose notes are the matching
+# CHANGELOG section, so the tag, the manifest version and the changelog can
+# never drift apart without the release failing.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate skills
+        run: python3 scripts/validate.py
+
+      - name: Check tag matches the manifest and skill versions
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          status=0
+
+          check() {
+            if [ "$2" != "$version" ]; then
+              echo "::error::$1 declares version '$2' but the tag is 'v$version'"
+              status=1
+            fi
+          }
+
+          check "marketplace.json" "$(jq -r '.version' marketplace.json)"
+          while read -r found; do
+            check ".claude-plugin/marketplace.json" "$found"
+          done < <(jq -r '.plugins[].version' .claude-plugin/marketplace.json)
+
+          for skill in .claude/skills/*/SKILL.md; do
+            check "$skill" "$(sed -n 's/^version: //p' "$skill" | head -1)"
+          done
+
+          [ "$status" -eq 0 ] && echo "All versions agree with tag v$version"
+          exit "$status"
+
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          python3 - "$version" <<'PY' > release-notes.md
+          import re
+          import sys
+
+          version = sys.argv[1]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          pattern = rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|^\[Unreleased\]:)"
+          match = re.search(pattern, text, flags=re.M | re.S)
+          if not match:
+              sys.exit(f"No CHANGELOG section found for version {version}")
+          print(match.group(1).strip())
+          PY
+          if [ ! -s release-notes.md ]; then
+            echo "::error::CHANGELOG section for v$version is empty"
+            exit 1
+          fi
+          cat release-notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            --verify-tag
