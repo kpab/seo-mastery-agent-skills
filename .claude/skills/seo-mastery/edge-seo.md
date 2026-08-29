@@ -142,10 +142,18 @@ export default {
     }
 
     // 2. Query-parameter canonicalization: strip tracking params, 301 to the clean URL
-    const TRACKING = ['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid'];
-    if (TRACKING.some((p) => url.searchParams.has(p))) {
-      TRACKING.forEach((p) => url.searchParams.delete(p));
-      return Response.redirect(url.toString(), 301);
+    const TRACKING = new Set(['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid']);
+    if (url.search) {
+      // Rebuild from the raw pairs. Mutating url.searchParams re-serialises the
+      // whole query, so "?q=a%20b" comes back as "?q=a+b" — a parameter this
+      // rule never touched, rewritten on every hit. If the origin normalises it
+      // back, the two rules bounce the request between them forever.
+      const pairs = url.search.slice(1).split('&').filter(Boolean);
+      const kept = pairs.filter((pair) => !TRACKING.has(pair.split('=')[0]));
+      if (kept.length !== pairs.length) {
+        const query = kept.length ? `?${kept.join('&')}` : '';
+        return Response.redirect(`${url.origin}${url.pathname}${query}`, 301);
+      }
     }
 
     return env.ASSETS.fetch(request);

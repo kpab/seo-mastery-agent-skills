@@ -142,10 +142,18 @@ export default {
     }
 
     // 2. クエリパラメータの正規化: 計測用パラメータを除去してクリーンURLへ301
-    const TRACKING = ['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid'];
-    if (TRACKING.some((p) => url.searchParams.has(p))) {
-      TRACKING.forEach((p) => url.searchParams.delete(p));
-      return Response.redirect(url.toString(), 301);
+    const TRACKING = new Set(['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid']);
+    if (url.search) {
+      // 生のペアから組み直す。url.searchParams を書き換えるとクエリ全体が
+      // 再シリアライズされ、"?q=a%20b" が "?q=a+b" になる。このルールが触って
+      // いないパラメータが毎回書き換わるということで、オリジン側が元に戻すなら
+      // 2つのルールの間でリクエストが往復し続ける。
+      const pairs = url.search.slice(1).split('&').filter(Boolean);
+      const kept = pairs.filter((pair) => !TRACKING.has(pair.split('=')[0]));
+      if (kept.length !== pairs.length) {
+        const query = kept.length ? `?${kept.join('&')}` : '';
+        return Response.redirect(`${url.origin}${url.pathname}${query}`, 301);
+      }
     }
 
     return env.ASSETS.fetch(request);

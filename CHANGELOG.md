@@ -134,6 +134,13 @@ Found by review of this branch before release:
   newline), the notes regex now terminates on end-of-file rather than relying on the link-definition
   block, and a re-run updates the release instead of failing on "already exists"
 
+Found by a second review pass on the same branch:
+
+- **The tracking-parameter 301 rewrote parameters it was not meant to touch.** Mutating
+  `url.searchParams` re-serialises the whole query, turning `?q=a%20b` into `?q=a+b`; an origin that
+  normalises it back would bounce the request between the two rules. It now rebuilds the query from
+  the raw pairs
+
 ## [1.3.0] - 2026-08-28
 
 ### Added
