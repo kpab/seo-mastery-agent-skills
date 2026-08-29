@@ -1,0 +1,7 @@
+# Personal, machine-local Claude Code settings. This file grants tool
+# permissions for one developer's machine; tracking it would apply one
+# person's auto-approvals to everyone who clones the repository.
+.claude/settings.local.json
+
+__pycache__/
+*.pyc
