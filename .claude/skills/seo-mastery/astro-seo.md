@@ -162,28 +162,37 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6+: use import.meta.env.SITE here, NOT Astro.site
-      shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
+      // Astro 6+: use import.meta.env.SITE here, NOT Astro.site. Asset URLs are
+      // safe to build ahead of the request; page URLs are not, because only
+      // Astro.url reflects the configured trailingSlash.
+      ogImage: new URL(post.data.cover.src, import.meta.env.SITE).href,
     },
   }));
 }
 
-const { post, shareUrl } = Astro.props;
+const { post, ogImage } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
+  image={ogImage}
   type="article"
-  canonicalUrl={shareUrl}
 >
   <Content />
 </BaseLayout>
 ```
 
-Pass the URL as a prop rather than emitting a second `og:url` through the `head` slot. The
-slot renders *after* the layout's own tags, and every scraper takes the first `og:url` it
-sees, so a slotted override is silently ignored while the page ships two conflicting tags.
+Note what is *not* passed: the canonical. `BaseLayout` derives it from `Astro.url.pathname`, which
+already matches whatever `trailingSlash` is configured. Writing `` `/blog/${post.id}/` `` here would
+hardcode a slash the config may not use, and the page would then be served at `/blog/x` while
+declaring `/blog/x/` as its canonical and its `og:url` — two URLs for one page, which is exactly
+what the next section is about.
+
+When a page genuinely needs a different canonical, pass it through the `canonicalUrl` prop rather
+than emitting a second `og:url` through the `head` slot. The slot renders *after* the layout's own
+tags, and every scraper takes the first `og:url` it sees, so a slotted override is silently ignored
+while the page ships two conflicting tags.
 
 ### Trailing slashes
 

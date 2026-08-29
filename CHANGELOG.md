@@ -139,6 +139,11 @@ Found by a second review pass on the same branch:
 - **The dynamic sitemap published 404s for hierarchical slugs.** `locFor()` ran
   `encodeURIComponent()` over the whole slug, so `2026/my-post` became `2026%2Fmy-post` — a
   different URL, submitted to Google as canonical. It now encodes each path segment
+- **`astro-seo.md`'s blog route overrode the canonical with a hardcoded trailing slash.** The
+  `getStaticPaths` sample built `` `/blog/${post.id}/` `` and passed it as `canonicalUrl`, so under
+  `trailingSlash: 'never'` every post declared a canonical and `og:url` that did not match the URL
+  it was served at — the two-URLs-per-page split the next section warns about. The sample now lets
+  `BaseLayout` derive the canonical from `Astro.url.pathname`
 - **The tracking-parameter 301 rewrote parameters it was not meant to touch.** Mutating
   `url.searchParams` re-serialises the whole query, turning `?q=a%20b` into `?q=a+b`; an origin that
   normalises it back would bounce the request between the two rules. It now rebuilds the query from

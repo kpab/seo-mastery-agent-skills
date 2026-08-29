@@ -164,28 +164,37 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6+: ここでは Astro.site ではなく import.meta.env.SITE を使う
-      shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
+      // Astro 6+: ここでは Astro.site ではなく import.meta.env.SITE を使う。
+      // アセットのURLはリクエスト前に組み立ててよいが、ページのURLはだめ。
+      // 設定した trailingSlash を反映するのは Astro.url だけだから。
+      ogImage: new URL(post.data.cover.src, import.meta.env.SITE).href,
     },
   }));
 }
 
-const { post, shareUrl } = Astro.props;
+const { post, ogImage } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
+  image={ogImage}
   type="article"
-  canonicalUrl={shareUrl}
 >
   <Content />
 </BaseLayout>
 ```
 
-URLはpropで渡します。`head`スロットで2つ目の`og:url`を出力してはいけません。スロットはレイアウト
-自身のタグの**後**に描画され、スクレイパーは最初に見つけた`og:url`を採用します。つまりスロットでの
-上書きは黙って無視され、ページには矛盾するタグが2つ並ぶだけです。
+ここで渡していないものに注目してください。canonicalです。`BaseLayout`は`Astro.url.pathname`から
+canonicalを組み立てるので、設定した`trailingSlash`に自動的に一致します。ここで
+`` `/blog/${post.id}/` ``と書くと、設定が採用していないかもしれないスラッシュを固定することになり、
+`/blog/x`で配信されるページが`/blog/x/`をcanonicalと`og:url`に宣言します。1ページに2つのURL——
+次節そのものの状態です。
+
+canonicalを本当に差し替えたいページでは、`head`スロットで2つ目の`og:url`を出すのではなく
+`canonicalUrl`propを使ってください。スロットはレイアウト自身のタグの**後**に描画され、スクレイパー
+は最初に見つけた`og:url`を採用します。つまりスロットでの上書きは黙って無視され、ページには矛盾する
+タグが2つ並ぶだけです。
 
 ### 末尾スラッシュ
 
