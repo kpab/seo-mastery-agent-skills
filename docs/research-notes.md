@@ -101,11 +101,15 @@ way to opt out of AI features *without* damaging normal snippets. Corrected in v
 
 Dedicated Search Console reports for Search and Discover showing impressions within generative AI
 features (AI Overviews, AI Mode, AI features in Discover), broken down by page, country, device and
-date. Data starts **2026-05-18** with no historical backfill, and the initial version reports
-**impressions only — no clicks**.
+date. There is **no historical backfill** — the data begins shortly before launch — and the initial
+version reports **impressions only — no clicks**.
 
-**Impact:** `ai-search.md` already mentioned the report; the data start date and the
-impressions-only limitation are added in v1.4.0.
+Secondary reports put the first day of data at **2026-05-18**. Neither the launch blog post nor the
+Search Console help page states a date, so the figure is carried in `ai-search.md` as a
+secondary-source attribution and is not asserted here (see §6.2).
+
+**Impact:** `ai-search.md` already mentioned the report; the no-backfill and impressions-only limits
+are added in v1.4.0.
 
 - <https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports>
 

@@ -79,8 +79,9 @@ Every reference file carries a `last_verified` date in its frontmatter. See
   making it the correct tool for AI-only exclusion, unlike `nosnippet`
 - `ai-search.md` now cites the 2026 generative AI optimization guide, including its verbatim
   mythbusting on llms.txt, content chunking, AI-specific writing, and AI-specific schema
-- Search generative AI performance report described with its actual limits: data starts 2026-05-18,
-  no historical backfill, impressions only
+- Search generative AI performance report described with its actual limits: no historical backfill,
+  impressions only. The 2026-05-18 data start is attributed as a secondary-source figure, since
+  Google's own documentation does not state one
 - `technical-seo.md` sitemap best practices: noted that **Google ignores `<priority>` and
   `<changefreq>`**, that `lastmod` is only used when consistently accurate, and added the sitemap
   index limits
