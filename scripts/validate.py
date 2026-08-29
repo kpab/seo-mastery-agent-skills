@@ -31,6 +31,15 @@ MAX_DESCRIPTION_LENGTH = 1024
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 FIELD_PATTERN = re.compile(r"^(\w[\w-]*):\s*(.*)$")
 
+# A YAML plain (unquoted) scalar may not contain ": " or " #", and may not
+# start with an indicator character. The frontmatter is read by a real YAML
+# parser when the skill loads, so a value this script accepts but YAML rejects
+# means the skill silently fails to load with CI still green — which is how a
+# JP SKILL.md whose description contained "使い分け: " passed review.
+PLAIN_FORBIDDEN = re.compile(r": |\s#")
+YAML_INDICATORS = "-?:,[]{}#&*!|>%@`"
+DOUBLE_QUOTE_ESCAPES = {"n": "\n", "t": "\t", "r": "\r", "0": "\0"}
+
 # CI runs in UTC while contributors may be ahead of it, so a file stamped with
 # "today" in JST looks like tomorrow to the runner. One day of slack keeps that
 # from failing a build that is actually correct.
@@ -38,6 +47,7 @@ FUTURE_TOLERANCE = datetime.timedelta(days=1)
 
 errors = []
 _frontmatter_cache = {}
+_markdown_cache = {}
 
 
 def error(msg: str) -> None:
@@ -45,8 +55,71 @@ def error(msg: str) -> None:
     print(f"ERROR: {msg}")
 
 
+def _read_quoted(raw: str, quote: str) -> tuple:
+    """Read one YAML quoted scalar. Returns (value, rest); raises on no close."""
+    out = []
+    i = 1
+    while i < len(raw):
+        char = raw[i]
+        if char == quote:
+            if quote == "'" and raw[i + 1 : i + 2] == "'":
+                out.append("'")
+                i += 2
+                continue
+            return "".join(out), raw[i + 1 :]
+        if char == "\\" and quote == '"':
+            following = raw[i + 1 : i + 2]
+            if not following:
+                raise ValueError("value ends with a dangling backslash")
+            out.append(DOUBLE_QUOTE_ESCAPES.get(following, following))
+            i += 2
+            continue
+        out.append(char)
+        i += 1
+    raise ValueError(f"value is not closed with {quote}")
+
+
+def _parse_scalar(label: str, key: str, raw: str) -> str:
+    """Return a frontmatter scalar's value, reporting what YAML would reject.
+
+    The value is returned best-effort even when invalid, so a malformed field
+    is reported once here rather than also as a bogus "field is missing" from
+    every downstream check.
+    """
+    if raw[:1] in ('"', "'"):
+        quote = raw[0]
+        try:
+            value, rest = _read_quoted(raw, quote)
+        except ValueError as exc:
+            error(f"{label}: frontmatter '{key}': {exc}")
+            return raw[1:].strip()
+        if rest.strip():
+            error(f"{label}: frontmatter '{key}': trailing text after the closing {quote}")
+        return value
+
+    value = raw.strip()
+    if not value:
+        return value
+    if value[0] in YAML_INDICATORS:
+        error(
+            f"{label}: frontmatter '{key}': unquoted value starts with the YAML "
+            f"indicator '{value[0]}' — wrap the value in double quotes"
+        )
+        return value
+    match = PLAIN_FORBIDDEN.search(value)
+    if match:
+        error(
+            f"{label}: frontmatter '{key}': unquoted value contains {match.group()!r}, "
+            f"which YAML rejects — wrap the value in double quotes"
+        )
+    return value
+
+
 def parse_frontmatter(path: Path) -> dict:
-    """Parse simple `key: value` frontmatter between --- markers.
+    """Parse `key: value` frontmatter between --- markers.
+
+    Not a full YAML parser, but it rejects the constructs a real YAML parser
+    rejects, so a file that passes here also loads at runtime.
 
     Cached: several checks read the same file, and without caching a single
     malformed file would be reported once per caller.
@@ -55,20 +128,31 @@ def parse_frontmatter(path: Path) -> dict:
         return _frontmatter_cache[path]
 
     fields = {}
+    label = str(path.relative_to(REPO))
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0].strip() != "---":
-        error(f"{path.relative_to(REPO)}: missing frontmatter opening '---'")
+        error(f"{label}: missing frontmatter opening '---'")
     else:
         closed = False
         for line in lines[1:]:
             if line.strip() == "---":
                 closed = True
                 break
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            if "\t" in line:
+                error(f"{label}: frontmatter line contains a tab, which YAML forbids")
+                continue
             match = FIELD_PATTERN.match(line)
-            if match:
-                fields[match.group(1)] = match.group(2).strip()
+            if not match:
+                error(f"{label}: frontmatter line is not 'key: value': {line.strip()[:60]!r}")
+                continue
+            key, raw = match.group(1), match.group(2)
+            if key in fields:
+                error(f"{label}: duplicate frontmatter key '{key}'")
+            fields[key] = _parse_scalar(label, key, raw)
         if not closed:
-            error(f"{path.relative_to(REPO)}: frontmatter never closed with '---'")
+            error(f"{label}: frontmatter never closed with '---'")
 
     _frontmatter_cache[path] = fields
     return fields
@@ -146,6 +230,7 @@ def check_frontmatter(skill_dir: Path) -> None:
     if not description:
         error(f"{skill_md.relative_to(REPO)}: frontmatter description is missing")
     elif len(description) > MAX_DESCRIPTION_LENGTH:
+        # Measured on the parsed value, so surrounding quotes do not count.
         error(
             f"{skill_md.relative_to(REPO)}: description is {len(description)} chars "
             f"(limit {MAX_DESCRIPTION_LENGTH})"
