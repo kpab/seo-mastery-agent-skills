@@ -293,6 +293,10 @@ export async function sitemapForPage(env, page) {
       LIMIT ?1 OFFSET ?2`
   ).bind(PAGE_SIZE, page * PAGE_SIZE).all();
 
+  // A page past the end has no rows. Reporting that here lets the caller answer
+  // 404 without a second COUNT(*) round trip on every single request.
+  if (results.length === 0) return null;
+
   const urls = results
     .map((row) => {
       // A NULL or unparseable timestamp would make toISOString() throw and take
@@ -321,9 +325,12 @@ export async function pageCount(env) {
 
 function locFor(slug) {
   // The spec wants the URL percent-encoded first and entity-escaped second.
-  // encodeURIComponent leaves path-safe characters alone and handles the two
-  // things that actually break <loc>: spaces and non-ASCII.
-  return `https://example.com/blog/${encodeURIComponent(slug)}/`;
+  // Encode segment by segment: encodeURIComponent() on the whole slug escapes
+  // the "/" too, so a hierarchical slug like "2026/my-post" would be published
+  // as /blog/2026%2Fmy-post/ — a different URL, and one that 404s. Per segment
+  // it still escapes what actually breaks <loc>: spaces and non-ASCII.
+  const path = slug.split('/').filter(Boolean).map((s) => encodeURIComponent(s)).join('/');
+  return `https://example.com/blog/${path}/`;
 }
 
 function isoOrNull(value) {
@@ -352,7 +359,7 @@ function escapeXml(value) {
 Escaping is not optional. A slug containing `&` produces malformed XML, and Search Console reports
 the whole sitemap as unreadable — one bad row costs you the entire file. Note the order for `<loc>`:
 the sitemap spec wants the URL percent-encoded *first* and entity-escaped second, which is why
-`locFor()` runs `encodeURIComponent()` on the slug and hands the finished URL to `escapeXml()`.
+`locFor()` percent-encodes each path segment and hands the finished URL to `escapeXml()`.
 
 ### Sitemap index and caching
 
@@ -366,13 +373,25 @@ import { sitemapForPage, pageCount } from './sitemap.js';
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const cache = caches.default;
+    const page = url.pathname === '/sitemap-index.xml'
+      ? 'index'
+      : url.pathname.match(/^\/sitemap-(\d+)\.xml$/)?.[1];
+    // Route before touching the cache: every other path is a static asset, and
+    // a lookup against a key this Worker never writes can only ever miss.
+    if (page === undefined) return env.ASSETS.fetch(request);
 
-    const cached = await cache.match(request);
-    if (cached) return cached;
+    // caches.default only accepts GET — put() throws "Cannot cache response to
+    // non-GET request" on anything else, and crawlers and uptime monitors HEAD
+    // a sitemap routinely. Without this the rejection lands inside waitUntil.
+    const cacheable = request.method === 'GET';
+    const cache = caches.default;
+    if (cacheable) {
+      const cached = await cache.match(request);
+      if (cached) return cached;
+    }
 
     let body;
-    if (url.pathname === '/sitemap-index.xml') {
+    if (page === 'index') {
       const pages = await pageCount(env);
       // Zero pages means zero URLs, and there is no valid empty sitemap:
       // <sitemapindex> needs a child and <urlset> needs a <url>. Padding the
@@ -387,17 +406,12 @@ export default {
         ).join('\n') +
         `\n</sitemapindex>`;
     } else {
-      const match = url.pathname.match(/^\/sitemap-(\d+)\.xml$/);
-      if (!match) return env.ASSETS.fetch(request);
-      const page = Number(match[1]);
-      // Bound the page against the real count. Unbounded, /sitemap-999999.xml
-      // answers 200 with an empty <urlset>: an infinite space of indexable
-      // URLs — the crawler trap this file warns about below — backed by an
-      // unbounded D1 OFFSET scan on every request.
-      if (page >= (await pageCount(env))) {
-        return new Response('Not found', { status: 404 });
-      }
-      body = await sitemapForPage(env, page);
+      // Unbounded, /sitemap-999999.xml answers 200 with an empty <urlset>: an
+      // infinite space of indexable URLs, the crawler trap this file warns
+      // about below. sitemapForPage() reports the empty page from the query it
+      // already ran, so the bound costs nothing.
+      body = await sitemapForPage(env, Number(page));
+      if (body === null) return new Response('Not found', { status: 404 });
     }
 
     const response = new Response(body, {
@@ -406,7 +420,7 @@ export default {
         'Cache-Control': 'public, max-age=3600',
       },
     });
-    ctx.waitUntil(cache.put(request, response.clone()));
+    if (cacheable) ctx.waitUntil(cache.put(request, response.clone()));
     return response;
   },
 };

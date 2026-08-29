@@ -292,6 +292,10 @@ export async function sitemapForPage(env, page) {
       LIMIT ?1 OFFSET ?2`
   ).bind(PAGE_SIZE, page * PAGE_SIZE).all();
 
+  // 範囲外のページには行が無い。それをここで返せば、呼び出し側は毎リクエストで
+  // COUNT(*) をもう1往復させずに404を返せる。
+  if (results.length === 0) return null;
+
   const urls = results
     .map((row) => {
       // NULLやパースできないタイムスタンプがあると toISOString() が例外を投げ、
@@ -320,9 +324,12 @@ export async function pageCount(env) {
 
 function locFor(slug) {
   // 仕様が求める順序は「先にパーセントエンコード、後で実体参照」。
-  // encodeURIComponentはパスに使える文字をそのまま残し、<loc>を実際に壊す
-  // 2つ——空白と非ASCII——だけを処理する。
-  return `https://example.com/blog/${encodeURIComponent(slug)}/`;
+  // ただしセグメント単位で行う。スラッグ全体に encodeURIComponent をかけると
+  // "/" までエスケープされ、"2026/my-post" のような階層スラッグが
+  // /blog/2026%2Fmy-post/ という別URL——しかも404になるURL——として出力される。
+  // セグメント単位なら<loc>を実際に壊す空白と非ASCIIはそのまま処理できる。
+  const path = slug.split('/').filter(Boolean).map((s) => encodeURIComponent(s)).join('/');
+  return `https://example.com/blog/${path}/`;
 }
 
 function isoOrNull(value) {
@@ -351,8 +358,8 @@ function escapeXml(value) {
 エスケープは省略できません。スラッグに`&`が含まれるとXMLが壊れ、Search Consoleはサイトマップ全体を
 読み取り不能として扱います。1行の不備でファイル1つ分をまるごと失います。`<loc>`については順序も
 決まっていて、サイトマップ仕様はURLを*先に*パーセントエンコードし、そのあとで実体参照する形を
-求めています。`locFor()`がスラッグに`encodeURIComponent()`をかけ、組み立て終えたURLを`escapeXml()`に
-渡しているのはこのためです。
+求めています。`locFor()`がパスのセグメントごとにパーセントエンコードし、組み立て終えたURLを
+`escapeXml()`に渡しているのはこのためです。
 
 ### サイトマップインデックスとキャッシュ
 
@@ -366,13 +373,26 @@ import { sitemapForPage, pageCount } from './sitemap.js';
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const cache = caches.default;
+    const page = url.pathname === '/sitemap-index.xml'
+      ? 'index'
+      : url.pathname.match(/^\/sitemap-(\d+)\.xml$/)?.[1];
+    // キャッシュを触る前にルーティングする。それ以外のパスは静的アセットで、
+    // このWorkerが書き込まないキーを引いても必ずミスするだけだから。
+    if (page === undefined) return env.ASSETS.fetch(request);
 
-    const cached = await cache.match(request);
-    if (cached) return cached;
+    // caches.default が受け付けるのはGETだけ。それ以外では put() が
+    // "Cannot cache response to non-GET request" を投げる。クローラーや死活監視は
+    // サイトマップに日常的にHEADを送るので、この判定が無いと waitUntil の中で
+    // 毎回rejectする。
+    const cacheable = request.method === 'GET';
+    const cache = caches.default;
+    if (cacheable) {
+      const cached = await cache.match(request);
+      if (cached) return cached;
+    }
 
     let body;
-    if (url.pathname === '/sitemap-index.xml') {
+    if (page === 'index') {
       const pages = await pageCount(env);
       // ページ数0はURL数0であり、空のサイトマップに正当な形はない。
       // <sitemapindex>には子要素が、<urlset>には<url>が最低1つ必要だから。
@@ -387,17 +407,12 @@ export default {
         ).join('\n') +
         `\n</sitemapindex>`;
     } else {
-      const match = url.pathname.match(/^\/sitemap-(\d+)\.xml$/);
-      if (!match) return env.ASSETS.fetch(request);
-      const page = Number(match[1]);
-      // ページ番号を実際のページ数で必ず抑える。抑えないと
-      // /sitemap-999999.xml が空の<urlset>を200で返す。インデックス可能な
-      // URLが無限に生まれる——このファイルが後段で警告しているクローラー
-      // トラップそのもの——うえ、毎リクエストで無制限のD1 OFFSETスキャンが走る。
-      if (page >= (await pageCount(env))) {
-        return new Response('Not found', { status: 404 });
-      }
-      body = await sitemapForPage(env, page);
+      // 抑えないと /sitemap-999999.xml が空の<urlset>を200で返す。インデックス
+      // 可能なURLが無限に生まれる、このファイルが後段で警告しているクローラー
+      // トラップそのものになる。sitemapForPage() は既に走らせたクエリから空
+      // ページを判定して返すので、この上限チェックに追加コストはかからない。
+      body = await sitemapForPage(env, Number(page));
+      if (body === null) return new Response('Not found', { status: 404 });
     }
 
     const response = new Response(body, {
@@ -406,7 +421,7 @@ export default {
         'Cache-Control': 'public, max-age=3600',
       },
     });
-    ctx.waitUntil(cache.put(request, response.clone()));
+    if (cacheable) ctx.waitUntil(cache.put(request, response.clone()));
     return response;
   },
 };

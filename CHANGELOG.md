@@ -136,10 +136,16 @@ Found by review of this branch before release:
 
 Found by a second review pass on the same branch:
 
+- **The dynamic sitemap published 404s for hierarchical slugs.** `locFor()` ran
+  `encodeURIComponent()` over the whole slug, so `2026/my-post` became `2026%2Fmy-post` — a
+  different URL, submitted to Google as canonical. It now encodes each path segment
 - **The tracking-parameter 301 rewrote parameters it was not meant to touch.** Mutating
   `url.searchParams` re-serialises the whole query, turning `?q=a%20b` into `?q=a+b`; an origin that
   normalises it back would bounce the request between the two rules. It now rebuilds the query from
   the raw pairs
+- The sitemap Worker called `cache.put()` without checking the method, so a HEAD from any crawler or
+  uptime monitor rejected inside `waitUntil`; it also ran a cache lookup before routing, on every
+  static asset request, and spent a second `COUNT(*)` query per page purely to bound the page number
 
 ## [1.3.0] - 2026-08-28
 
