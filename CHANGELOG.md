@@ -154,6 +154,9 @@ Found by a second review pass on the same branch:
 - `astro-seo.md` described a missing `site` as silently producing broken canonicals. `new URL(path,
   undefined)` throws, so the build fails — and only one of the three components that dereference
   `Astro.site` had an explicit guard, which made the other two look like the silent case
+- The `@astrojs/sitemap` `serialize` example demonstrated `priority`, which the paragraph below it
+  says Google ignores, and matched only the blog index rather than the posts. It now sets `lastmod`,
+  the one field the file says is worth getting right
 
 ## [1.3.0] - 2026-08-28
 

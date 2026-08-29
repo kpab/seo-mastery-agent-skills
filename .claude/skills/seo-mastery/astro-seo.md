@@ -342,8 +342,14 @@ uncompressed per file).
 
 ```js
 // astro.config.mjs
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+
+// astro:content cannot be imported from the config, so a per-URL date has to
+// come from disk. Emit this map in the same step that writes the posts — any
+// source works as long as it is the one the pages were built from.
+const updatedAt = JSON.parse(readFileSync('./src/data/updated.json', 'utf8'));
 
 export default defineConfig({
   site: 'https://example.com',
@@ -353,7 +359,9 @@ export default defineConfig({
         !page.includes('/draft/') &&
         !page.includes('/thank-you/'),
       serialize(item) {
-        if (item.url.endsWith('/blog/')) item.priority = 0.8;
+        // Returning undefined drops the entry; anything else is written as is.
+        const date = updatedAt[new URL(item.url).pathname];
+        if (date) item.lastmod = new Date(date).toISOString();
         return item;
       },
       entryLimit: 10000,
@@ -362,8 +370,10 @@ export default defineConfig({
 });
 ```
 
-Note that Google **ignores `<priority>` and `<changefreq>`** — setting them costs nothing but buys
-nothing. `lastmod` is the field worth getting right, and only if it is genuinely accurate.
+`lastmod` is the only one of the three worth setting, and only while it stays accurate — a build
+clock stamped onto every URL at once is worse than no `lastmod` at all. Google **ignores
+`<priority>` and `<changefreq>`**: setting them costs nothing but buys nothing, which is why
+neither appears above.
 
 ### Excluding pages properly
 

@@ -344,8 +344,14 @@ const graph = {
 
 ```js
 // astro.config.mjs
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+
+// astro:content は設定ファイルからimportできないので、URLごとの日付はディスク
+// から読む。記事を書き出すのと同じ工程で出力すること。ページの生成元と同じデータ
+// でありさえすれば、形式は何でもよい。
+const updatedAt = JSON.parse(readFileSync('./src/data/updated.json', 'utf8'));
 
 export default defineConfig({
   site: 'https://example.com',
@@ -355,7 +361,9 @@ export default defineConfig({
         !page.includes('/draft/') &&
         !page.includes('/thank-you/'),
       serialize(item) {
-        if (item.url.endsWith('/blog/')) item.priority = 0.8;
+        // undefined を返すとそのエントリは除外される。それ以外はそのまま出力。
+        const date = updatedAt[new URL(item.url).pathname];
+        if (date) item.lastmod = new Date(date).toISOString();
         return item;
       },
       entryLimit: 10000,
@@ -364,8 +372,10 @@ export default defineConfig({
 });
 ```
 
-なお Google は**`<priority>`と`<changefreq>`を無視します**。設定しても害はありませんが効果もあり
-ません。正確さが問われるのは`lastmod`だけで、それも本当に正確な場合に限ります。
+3つのうち設定する価値があるのは`lastmod`だけで、それも正確さを保てる場合に限ります。ビルド時刻を
+全URLに一律で押すくらいなら、`lastmod`は無いほうがましです。Googleは**`<priority>`と
+`<changefreq>`を無視します**。設定しても害はありませんが効果もないので、上の例にはどちらも登場
+しません。
 
 ### 除外の正しいやり方
 
