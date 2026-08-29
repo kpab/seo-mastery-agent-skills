@@ -104,11 +104,12 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   publishedTime?: Date;
+  canonicalUrl?: string;
 }
 
-const { title, description, image, type = 'website', publishedTime } = Astro.props;
+const { title, description, image, type = 'website', publishedTime, canonicalUrl } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image ?? '/og-default.png', Astro.site).href;
 ---
 <html lang="ja">
@@ -171,11 +172,19 @@ export async function getStaticPaths() {
 const { post, shareUrl } = Astro.props;
 const { Content } = await render(post);
 ---
-<BaseLayout title={post.data.title} description={post.data.description} type="article">
-  <meta slot="head" property="og:url" content={shareUrl} />
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  canonicalUrl={shareUrl}
+>
   <Content />
 </BaseLayout>
 ```
+
+URLはpropで渡します。`head`スロットで2つ目の`og:url`を出力してはいけません。スロットはレイアウト
+自身のタグの**後**に描画され、スクレイパーは最初に見つけた`og:url`を採用します。つまりスロットでの
+上書きは黙って無視され、ページには矛盾するタグが2つ並ぶだけです。
 
 ### 末尾スラッシュ
 

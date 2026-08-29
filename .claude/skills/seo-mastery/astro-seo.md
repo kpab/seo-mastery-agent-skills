@@ -102,11 +102,12 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   publishedTime?: Date;
+  canonicalUrl?: string;
 }
 
-const { title, description, image, type = 'website', publishedTime } = Astro.props;
+const { title, description, image, type = 'website', publishedTime, canonicalUrl } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image ?? '/og-default.png', Astro.site).href;
 ---
 <html lang="en">
@@ -169,11 +170,19 @@ export async function getStaticPaths() {
 const { post, shareUrl } = Astro.props;
 const { Content } = await render(post);
 ---
-<BaseLayout title={post.data.title} description={post.data.description} type="article">
-  <meta slot="head" property="og:url" content={shareUrl} />
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  canonicalUrl={shareUrl}
+>
   <Content />
 </BaseLayout>
 ```
+
+Pass the URL as a prop rather than emitting a second `og:url` through the `head` slot. The
+slot renders *after* the layout's own tags, and every scraper takes the first `og:url` it
+sees, so a slotted override is silently ignored while the page ships two conflicting tags.
 
 ### Trailing slashes
 
