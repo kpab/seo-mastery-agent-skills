@@ -1,6 +1,6 @@
 ---
 name: seo-mastery-jp
-description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（アイランド・client:load等のクライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（wrangler・_redirects・_headers・X-Robots-Tag・HTMLRewriter・D1/KV動的サイトマップ・Pages Functions）、エッジ・静的サイトのSEOに関する相談や、サイト監査の依頼があったときに使用する。言語による使い分け: ユーザーが日本語で書いている場合はこのスキルを使い、英語の場合は seo-mastery を使う。両方を同時に読み込まない。
+description: "包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（アイランド・client:load等のクライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（wrangler・_redirects・_headers・X-Robots-Tag・HTMLRewriter・D1/KV動的サイトマップ・Pages Functions）、エッジ・静的サイトのSEOに関する相談や、サイト監査の依頼があったときに使用する。言語による使い分け: ユーザーが日本語で書いている場合はこのスキルを使い、英語の場合は seo-mastery を使う。両方を同時に読み込まない。"
 version: 1.4.0
 last_verified: 2026-08-29
 author: kpab
