@@ -1,6 +1,6 @@
 {
   "name": "seo-mastery-agent-skills",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Comprehensive SEO optimization skills for Claude/Codex based on Google's official guidelines",
   "author": "kpab",
   "repository": "https://github.com/kpab/seo-mastery-agent-skills",
@@ -9,13 +9,13 @@
     {
       "name": "seo-mastery",
       "path": ".claude/skills/seo-mastery",
-      "description": "Comprehensive SEO optimization skill (English). Covers technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T strategies, AI search (AI Overviews / AI Mode, llms.txt, AI crawler control), and site audit workflows.",
+      "description": "Comprehensive SEO optimization skill (English). Covers technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T strategies, AI search (AI Overviews / AI Mode, llms.txt, AI crawler control), Astro and edge (Cloudflare Workers/Pages) SEO, and site audit workflows.",
       "language": "en"
     },
     {
       "name": "seo-mastery-jp",
       "path": ".claude/skills/seo-mastery-jp",
-      "description": "包括的なSEO最適化スキル（日本語版）。技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード、llms.txt、AIクローラー制御）、サイト監査ワークフローを網羅。",
+      "description": "包括的なSEO最適化スキル（日本語版）。技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード、llms.txt、AIクローラー制御）、Astro・エッジ（Cloudflare Workers/Pages）SEO、サイト監査ワークフローを網羅。",
       "language": "ja"
     }
   ],
@@ -33,7 +33,10 @@
     "ai-overviews",
     "ai-search",
     "llms-txt",
-    "ai-crawlers"
+    "ai-crawlers",
+    "astro",
+    "cloudflare-workers",
+    "edge-seo"
   ],
   "categories": [
     "seo",

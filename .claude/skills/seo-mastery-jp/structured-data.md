@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # 構造化データ リファレンス
 
 Google検索のリッチリザルトに対応する構造化データの実装ガイド。JSON-LD形式を推奨。
@@ -52,7 +56,7 @@ Google検索のリッチリザルトに対応する構造化データの実装�
 {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
-  "headline": "ニュース記事のタイトル（最大110文字）",
+  "headline": "ニュース記事のタイトル（文字数制限はないが簡潔に）",
   "description": "記事の要約",
   "image": [
     "https://example.com/photos/1x1/photo.jpg",

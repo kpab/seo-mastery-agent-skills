@@ -1,7 +1,8 @@
 ---
 name: seo-mastery-jp
-description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御を網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）に関する相談や、サイト監査の依頼があったときに使用する。
-version: 1.3.0
+description: "包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（アイランド・client:load等のクライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（wrangler・_redirects・_headers・X-Robots-Tag・HTMLRewriter・D1/KV動的サイトマップ・Pages Functions）、エッジ・静的サイトのSEOに関する相談や、サイト監査の依頼があったときに使用する。言語による使い分け: ユーザーが日本語で書いている場合はこのスキルを使い、英語の場合は seo-mastery を使う。両方を同時に読み込まない。"
+version: 1.4.0
+last_verified: 2026-08-29
 author: kpab
 ---
 
@@ -20,7 +21,16 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 | [structured-data.md](structured-data.md) | 全構造化データタイプのJSON-LDテンプレート、検証、よくあるエラー | 構造化データ実装時 |
 | [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLSの詳細な原因と対策、測定、Next.js/Nuxt.jsコード | パフォーマンス改善時 |
 | [audit-workflow.md](audit-workflow.md) | 6フェーズの監査手順、診断コマンド、レポートテンプレート | サイト監査実施時 |
-| [ai-search.md](ai-search.md) | AI Overviews / AIモードの公式ガイダンス、AIクローラーのrobots.txtレシピ、llms.txt、AI引用されやすいコンテンツ設計、計測 | AI検索最適化・クローラー制御時 |
+| [ai-search.md](ai-search.md) | AI Overviews / AIモードの公式ガイダンス、Search Consoleの生成AIコントロール、AIクローラーのrobots.txtレシピ、llms.txt、AI引用されやすいコンテンツ設計、計測 | AI検索最適化・クローラー制御時 |
+| [astro-seo.md](astro-seo.md) | クライアントディレクティブとINP/LCP、canonical・OG生成、Content CollectionsからのJSON-LD、@astrojs/sitemap、View Transitions | Astroサイトの構築・監査時 |
+| [edge-seo.md](edge-seo.md) | `_redirects` / `_headers`、X-Robots-Tag、D1/KV駆動の動的サイトマップ、クローラー検証、HTMLRewriter、クロールバジェット | Cloudflare Workers / Pagesへのデプロイ時 |
+
+**1つではなく、2つの軸で読み込む。** 上の5ファイルは*トピック*別、`astro-seo.md`と`edge-seo.md`は
+*プラットフォーム*別の構成で、後者は同じトピックをプラットフォームの角度から意図的に重複して扱って
+います。複数ファイルにまたがるトピックがあります。サイトマップは`technical-seo.md`（仕様と上限）・
+`astro-seo.md`（`@astrojs/sitemap`）・`edge-seo.md`（エッジでの生成）、hreflangは`technical-seo.md`と
+`astro-seo.md`、クロールバジェットは`technical-seo.md`と`edge-seo.md`にあります。質問がプラット
+フォームに言及していたら、トピック側のファイル*と*プラットフォーム側のファイルの両方を読んでください。
 
 ## このスキルを使うタイミング
 
@@ -54,11 +64,19 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 - パフォーマンス監視と改善
 
 ### 🤖 AI検索（AI Overviews / AIモード）
-- AI Overviews / AIモードのコンテンツ選定の仕組み（インデックス可能＋スニペット表示可能以外の追加要件なし）
+- AI Overviews / AIモードのコンテンツ選定の仕組み（インデックス可能＋スニペット表示可能＋Search Consoleの生成AIコントロールで「含める」設定）
+- Search Consoleの「設定 → 検索の生成AI」によるオプトイン／オプトアウト（ランキングには影響しない）
 - スニペットコントロール（nosnippet, data-nosnippet, max-snippet, noindex）によるAI表示制御
 - robots.txtによるAIクローラー制御（Google-Extended, GPTBot, ClaudeBot, PerplexityBot等）
 - llms.txtの扱い（Googleは利用しない）
 - AI検索に引用されやすいコンテンツ設計、AIトラフィックの計測
+
+### 🚀 Astro / エッジ（Cloudflare）サイト
+- INP・LCPを損なわない`client:*`ディレクティブの選び方
+- Astro Content Collectionsからのcanonical・OGタグ・JSON-LD生成
+- `@astrojs/sitemap`の設定（多言語サイトマップを含む）
+- Cloudflareの`_redirects` / `_headers`設計と、Workerコードに適用されない盲点
+- D1/KVからの動的サイトマップ、クローラー検証、HTMLRewriterによるメタデータ修正
 
 ### 🔍 サイト監査
 - 包括的なSEO監査ワークフロー
@@ -82,6 +100,10 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 # Core Web Vitals改善
 「LCPを改善する方法を教えて」
+
+# プラットフォーム固有
+「このAstroサイトのSEOを監査して」
+「このCloudflare WorkersサイトのリダイレクトをSEO観点で設計して」
 ```
 
 ---
@@ -139,14 +161,24 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 ---
 
+## 🚀 Astro・エッジ（Cloudflare）固有の論点
+
+静的サイト・エッジ配信では、いくつかのSEO判断がアプリケーションの外に移ります。
+
+- **Astro** — `client:*`ディレクティブはすべてINP/LCPのコストを意図的に払う行為であり、絶対URLは`Astro.site` + `Astro.url`から組み立てる必要があります。Content Collectionsのスキーマはそのまま JSON-LD 生成に使えます。Astro 6では`getStaticPaths()`内の`Astro.site`が非推奨（`import.meta.env.SITE`を使用）、`<ViewTransitions />`は削除され`<ClientRouter />`に置き換わりました。詳細は [astro-seo.md](astro-seo.md)。
+- **Cloudflare Workers / Pages** — `_redirects`と`_headers`は**静的アセットにのみ**適用され、WorkerコードやPages Functionsが生成したレスポンスには一切適用されません。ハイブリッド構成では、両方に実装するかWorkerコード側へ一本化するかのどちらかが必要です。リダイレクトのステータスコードは明示しない限り302になります。詳細は [edge-seo.md](edge-seo.md)。
+
+---
+
 ## 🤖 AI検索（AI Overviews / AIモード）
 
-Google公式のAI機能ガイドで確認済みの要点:
+GoogleのAI機能ガイドおよび生成AI最適化ガイドで確認済みの要点:
 
-- 追加要件なし: インデックス可能かつスニペット表示可能なページは、そのままAI Overviews / AIモードの対象になる
-- 表示制御は既存のスニペットコントロール（`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`）で行う — 新しいファイルやマークアップは不要で、Googleはllms.txtを利用しない
+- 表示要件は3つ: ページが**インデックス可能**であること、**スニペット表示可能**であること、そしてサイトがSearch Consoleの**「検索の生成AI機能」から除外されていない**こと。デフォルトは「含める」で、コントロール自体が2026年6月3日から順次展開中のため、設定が出ていないプロパティが要件を満たしていないわけではない
+- サイト単位のコントロールは、プロパティに出ていれば Search Console の **設定 → 検索の生成AI**（デフォルトは「含める」）。利用できる前提にせず、設定の有無を確認する。除外するとAI Overviews・AIモード・Discoverの生成AI機能から外れるが、Googleは「Search の他の部分に影響するランキングや掲載のシグナルとしては使用しない」と明記している
+- そのうえで表示の細かさは既存のスニペットコントロール（`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`）で制御する。新しいファイルやマークアップは不要で、Googleはllms.txtもコンテンツのチャンク分割もAI専用スキーマも利用しない
 - `Google-Extended` はGeminiの学習・グラウンディング拒否のみを制御する。ブロックしても検索・AI Overviewsには影響せず、ランキングシグナルでもない
-- AI経由のトラフィックはSearch Consoleの検索タイプ「ウェブ」に含まれる（AIモードは2025年6月から集計）
+- AI経由のトラフィックは検索パフォーマンスの検索タイプ「ウェブ」に含まれるほか、専用の**検索の生成AIパフォーマンスレポート**でも確認できる（過去分の遡及なし、表示回数のみ）
 
 AIクローラーのUA一覧、robots.txtレシピ、llms.txtの書式、AI引用されやすいコンテンツ設計、計測の詳細は [ai-search.md](ai-search.md) を参照。
 

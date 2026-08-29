@@ -1,3 +1,7 @@
+---
+last_verified: 2026-08-29
+---
+
 # Core Web Vitals Reference
 
 Detailed optimization guide for Core Web Vitals, Google's ranking factors.
@@ -186,7 +190,8 @@ async function processItemsAsync(items) {
   }
 }
 
-// Good: Using scheduler.yield() (Chrome 129+)
+// Good: Using scheduler.yield() — Chromium and Firefox only.
+// Not supported in Safari and not Baseline, so the feature check is required.
 async function processItemsWithYield(items) {
   for (const item of items) {
     heavyProcess(item);
@@ -518,32 +523,35 @@ function Hero() {
 }
 ```
 
-### Nuxt.js
+### Nuxt 3+
 
 ```javascript
-// nuxt.config.js
-export default {
+// nuxt.config.ts (Nuxt 3+)
+export default defineNuxtConfig({
+  modules: ['@nuxt/image'],
   image: {
-    provider: 'ipx',
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-    },
+    format: ['avif', 'webp'],
+    screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280 },
   },
-  render: {
-    http2: {
-      push: true,
-      pushAssets: (req, res, publicPath, preloadFiles) =>
-        preloadFiles
-          .filter(f => f.asType === 'script' || f.asType === 'style')
-          .map(f => `<${publicPath}${f.file}>; rel=preload; as=${f.asType}`),
-    },
-  },
-};
+});
 ```
+
+```vue
+<!-- Mark the LCP image as high priority. `preload` emits the <link rel=preload>
+     for the variant the module actually generates, so this is the one place the
+     preload belongs. The comma-separated `format` list is a NuxtPicture prop;
+     NuxtImg's `format` takes a single format. -->
+<template>
+  <NuxtPicture src="/hero.jpg" width="1200" height="600" preload
+               fetchpriority="high" format="avif,webp" alt="Hero" />
+</template>
+```
+
+Declare the preload in exactly one place. A hardcoded `{ rel: 'preload', href: '/hero.webp' }` in
+`app.head.link` points at a different URL than the one `@nuxt/image` generates, so the browser
+downloads a file the page never references and logs "preloaded using link preload but not used".
+Do not fall back to HTTP/2 Server Push either — Chrome removed it, and Nuxt 2's
+`render.http2.push` no longer exists.
 
 ---
 

@@ -1,0 +1,116 @@
+name: Freshness reminder
+
+# SEO guidance goes stale silently: Google retires rich results and changes
+# crawler behaviour without always publishing a blog post. This opens a
+# checklist issue on the 1st of every month so the reference files get
+# re-verified against primary sources on a fixed cadence.
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+# Naming only `issues` here would set every other scope to none, and
+# actions/checkout would then fail to clone — contents: read is required.
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Reuses validate.py's frontmatter parser. A sed/grep version here read
+      # only the first few lines and split on a single space, so it reported
+      # fields as missing that validate.py had just accepted.
+      - name: Collect last_verified dates
+        id: dates
+        run: |
+          delimiter="table_$(date +%s)_$RANDOM"
+          {
+            echo "table<<$delimiter"
+            python3 scripts/freshness_table.py
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open freshness check issue
+        uses: actions/github-script@v7
+        env:
+          DATES_TABLE: ${{ steps.dates.outputs.table }}
+        with:
+          script: |
+            const month = new Date().toISOString().slice(0, 7);
+            const title = `Freshness check: ${month}`;
+
+            // Paginate, and include closed issues: re-running workflow_dispatch
+            // after closing this month's issue should not reopen a duplicate.
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              labels: 'freshness',
+              per_page: 100,
+            });
+            const match = existing.find((issue) => issue.title === title);
+            if (match) {
+              core.info(`Issue "${title}" already exists (#${match.number}, ${match.state}).`);
+              return;
+            }
+
+            const body = [
+              'Monthly re-verification of the reference files against primary sources.',
+              '',
+              '**Rules:** primary sources only. Record the date a change took effect, not the date',
+              'you found it. Anything that cannot be confirmed against a primary source stays out',
+              'of the skill files and is marked `UNCONFIRMED` in `docs/research-notes.md`.',
+              '',
+              '## Sources to check',
+              '',
+              '### Google Search',
+              '- [ ] [Search Central Blog](https://developers.google.com/search/blog) — new posts since the last check',
+              '- [ ] [Documentation updates changelog](https://developers.google.com/search/updates) — deprecations and removals',
+              '- [ ] [Structured data search gallery](https://developers.google.com/search/docs/appearance/structured-data/search-gallery) — diff the supported feature list against `structured-data.md`',
+              '- [ ] [Ranking release history](https://developers.google.com/search/updates/ranking) — confirmed core/spam updates',
+              '- [ ] [robots.txt spec](https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt) and [robots meta tag](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag)',
+              '- [ ] [Google crawlers](https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers) — user agent tokens, IP range file locations',
+              '- [ ] [AI features](https://developers.google.com/search/docs/appearance/ai-features) and the [generative AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)',
+              '',
+              '### Performance',
+              '- [ ] [web.dev — Core Web Vitals](https://web.dev/articles/vitals) — metric set and thresholds',
+              '- [ ] [Chrome Platform Status](https://chromestatus.com/) — APIs used in the code samples',
+              '',
+              '### Schema and platforms',
+              '- [ ] [Schema.org releases](https://schema.org/docs/releases.html)',
+              '- [ ] [Astro docs](https://docs.astro.build/) and [Astro blog](https://astro.build/blog/) — breaking changes affecting `astro-seo.md`',
+              '- [ ] [Cloudflare Workers static assets](https://developers.cloudflare.com/workers/static-assets/) — `_redirects` / `_headers` limits and behaviour',
+              '- [ ] [Cloudflare changelog](https://developers.cloudflare.com/changelog/)',
+              '',
+              '### AI crawler operators',
+              '- [ ] [OpenAI](https://platform.openai.com/docs/bots) · [Anthropic](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler) · [Perplexity](https://docs.perplexity.ai/guides/bots) — user agent names and scopes',
+              '',
+              '## Current last_verified dates',
+              '',
+              process.env.DATES_TABLE,
+              '',
+              '## When done',
+              '',
+              '- [ ] Update `docs/research-notes.md` with what was checked and any new source URLs',
+              '- [ ] Apply corrections to **both** the EN and JP skills (they must stay in sync)',
+              '- [ ] Bump `last_verified` on every file re-verified this round',
+              '- [ ] Add a CHANGELOG entry — PATCH for corrections/freshness, MINOR for new knowledge',
+              '- [ ] Run `python3 scripts/validate.py`',
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['freshness', 'maintenance'],
+            });

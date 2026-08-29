@@ -1,18 +1,43 @@
+---
+last_verified: 2026-08-29
+---
+
 # AI検索リファレンス（AI Overviews / AIモード / AIクローラー）
 
-生成AI検索への最適化と制御の方法。GoogleのAI OverviewsとAIモード、およびサードパーティAIクローラー（OpenAI、Anthropic、Perplexity等）を扱います。Googleの公式AI機能ガイド（2025年5月公開）と公式クローラードキュメントに基づいています。
+生成AI検索への最適化と制御の方法。GoogleのAI OverviewsとAIモード、およびサードパーティAIクローラー（OpenAI、Anthropic、Perplexity等）を扱います。GoogleのAI機能ガイド、2026年5月15日公開の生成AI最適化ガイド、および公式クローラードキュメントに基づいています。
 
 ## Googleの公式ガイダンス（AI Overviews / AIモード）
 
-出典: [AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
+出典: [AI features and your website](https://developers.google.com/search/docs/appearance/ai-features) および [Optimizing your website for generative AI features](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
 公式ガイドで確認済みの要点:
 
-- **追加要件はない。** AI OverviewsやAIモードに表示されるための特別なマークアップ・ファイル・オプトインは存在しない。前提条件は通常の検索と同じで、ページが**インデックス可能**かつ**スニペット表示可能**であること。
-- **新しい機械可読ファイルは不要。** Googleは「AI text files」や特別なマークアップは不要と明言している。つまり **Googleはllms.txtを利用しない**（後述のllms.txtセクションを参照）。
-- **標準的なSEOがそのまま最適化になる。** 上位表示され、質問に明確に答えるコンテンツがAI機能に引用される。「AI用ランキング」が別に存在するわけではない。
-- **表示制御は既存のスニペットコントロールで行う。** 新しいディレクティブはない（次セクション参照）。
-- **トラフィックはSearch Consoleで確認できる。** 検索タイプ「ウェブ」に含まれる。AIモードのデータは2025年6月からPerformanceレポートに集計されている。AI Overviews / AIモードからのクリックは「ウェブ」内で通常のクリックとして計上され、2026年6月からは専用の「生成AI」パフォーマンスレポート（表示回数のみ）も提供されている。
+- **表示要件は3つある。** ページが**インデックス可能**であること、**スニペット表示可能**であること、そしてサイトがSearch Consoleで**「検索の生成AI機能」に含まれている**こと。Googleは「Searchの技術要件に加えて、Google Searchの生成AI機能に表示される資格を得るには、サイトがSearch Consoleで生成AI機能に含まれている必要がある」と明記しています（原文: "In addition to the technical requirements for Search, a site must be included in Search generative AI features in Search Console to be eligible for display in generative AI features on Google Search."）。
+- **特別なマークアップやファイルは不要。** 「Google Search（生成AI機能を含む）に表示されるために、新しい機械可読ファイル・AIテキストファイル・マークアップ・Markdownを作る必要はない。Google Search 自身がそれらを使っていないからだ」。これは**llms.txt**（後述）、コンテンツのチャンク分割（「AIが理解しやすいように細切れにする必要はない」）、AI向けの文体、AI専用スキーマ（「生成AI検索に構造化データは必須ではない」）のすべてに当てはまります。
+- **標準的なSEOがそのまま最適化になる。** 生成AI機能は「Search のコアなランキング・品質システムに根ざしている」。上位表示され、質問に明確に答えるコンテンツがAI機能に引用されます。「AI用ランキング」が別に存在するわけではありません。
+- **表示制御はSearch Consoleのコントロールと既存のスニペットコントロールで行う。** 新しいディレクティブはありません（次の2セクション参照）。
+- **トラフィックはSearch Consoleで確認できる。** 検索タイプ「ウェブ」に含まれ、AI Overviews / AIモードからのクリックもそこで通常のクリックとして計上されます。2026年6月3日からは専用の**検索の生成AIパフォーマンスレポート**も提供されています（制約は計測セクション参照）。
+
+### Search Consoleの生成AIコントロール
+
+**2026年6月3日**から提供開始。Googleの発表では、当初は英国のサイト運営者の一部に提供し、十分にテストしたうえで世界のサイト運営者に展開するとされています。通常の検索スニペットを損なわずにAI機能だけをオプトアウトできる唯一の手段です。利用できる前提で話を進めず、対象プロパティに設定が出ているかを実際に確認してください。
+
+場所は **設定 → 検索の生成AI**。選択肢は3つあります。
+
+| 選択肢 | 効果 |
+|--------|------|
+| サイトのリンクとコンテンツを検索の生成AI機能に含める | **デフォルト。** コンテンツがリンクとして表示され、AI応答のグラウンディングに使われる。これらの機能から表示回数と流入を得られる |
+| サイトのリンクとコンテンツを検索の生成AI機能から除外する | AI Overviews・AIモード・Discoverの生成AI機能で表示・リンク・グラウンディングに使われなくなる |
+| 親から継承 | 親プロパティの設定に従う |
+
+**やらないこと:** Googleはこのコントロールについて、Searchの他の部分に影響するランキングや掲載のシグナルとしては使用しないと明記しています（原文: "this control isn't used as a ranking or inclusion signal affecting other parts of Search"）。通常の検索結果とDiscoverフィードには影響しません。
+
+反映は即時ではなく、ヘルプの書き方も慎重です。除外には「数日かかるのが一般的」で、コントロールが有効になってから1〜2日以内に除外されるものの、「キャッシュとGoogleのシステム間での伝播により、一部のコンテンツはさらに時間がかかることがある」とされています。緊急の削除手段として扱わないでください。
+
+このコントロールと `nosnippet` の使い分け:
+
+- **Search Consoleのコントロール** — AI機能への表示だけを止めます。通常のスニペット、したがって通常のCTRには影響しません。「AIに自分のコンテンツを使わせたくない」が目的ならこちらを選びます。
+- **`nosnippet` / `max-snippet`** — 通常の検索結果を含む*すべての*スニペットを消す・短くします。通常のスニペットも抑制したい場合にのみ使ってください。
 
 ### AI機能への表示制御
 
@@ -36,7 +61,7 @@
 <p><span data-nosnippet>このテキストはスニペットにもAI Overviewsにも表示されません。</span></p>
 ```
 
-トレードオフ: `nosnippet` や小さい `max-snippet` 値は通常の検索スニペットも消したり短くしたりするため、一般にCTRが下がります。本当に引用されたくないコンテンツにのみ使ってください。
+トレードオフ: `nosnippet` や小さい `max-snippet` 値は通常の検索スニペットも消したり短くしたりするため、一般にCTRが下がります。本当に引用されたくないコンテンツにのみ使ってください。AI機能だけを除外したいなら、上のSearch Consoleコントロールを使います。
 
 ## AIクローラー制御（robots.txt）
 
@@ -154,7 +179,7 @@ Disallow: /
 
 `llms.txt` は、LLMが主要コンテンツを見つけやすくするために `/llms.txt` にMarkdown形式のサイト索引を置くというコミュニティ提案です。
 
-- **Googleは利用しない。** 公式AI機能ガイドは、AI Overviews / AIモードに新しい機械可読ファイルは不要と明記している。設置してもGoogleへの効果は期待しないこと。
+- **Googleは利用しない。** 生成AI最適化ガイドは、AIテキストファイルの類は不要であり「Google Search自身がそれらを使っていない」からだと明言しています。設置してもGoogleへの効果は期待しないこと。
 - 他のAIベンダーの採用状況も限定的・未確認。任意・低コスト・効果のエビデンスは薄い、という位置づけで扱う。
 - 他のAIクローラー向けに設置する場合、提案されている書式は次のとおり:
 
@@ -195,8 +220,9 @@ AIの回答は、抽出と出典表示がしやすいコンテンツを好みま
 
 ### Search Console
 
-- AI Overviews / AIモードの表示回数・クリックはPerformanceレポートの**検索タイプ「ウェブ」**に含まれる（AIモードは2025年6月から集計）。2026年6月からは専用の**「生成AI」パフォーマンスレポート**も提供されている（表示回数のみ — クリックの内訳はない）。
-- 情報系クエリで「表示回数は横ばい、クリックは減少」というパターンに注意 — AI Overviewsがクリックを吸収している典型的な兆候。
+- AI Overviews / AIモードの表示回数・クリックは検索パフォーマンスの**検索タイプ「ウェブ」**に含まれる（AIモードは2025年6月から集計）。
+- 専用の**検索の生成AIパフォーマンスレポート**（2026年6月3日提供開始、Discover版もあり）は、AI Overviews・AIモード・Discoverの生成AI機能をまたいで表示回数をページ・国・デバイス・日付別に分解できる。前提となる制約が2つある。**過去分の遡及がない**こと（提供開始の少し前からのデータしかなく、前年同期比は取れない）、そして**表示回数のみでクリックがない**こと。（データ開始日を2026年5月18日とする二次情報が複数あるが、Google自身のドキュメントには日付の記載がない。正確な開始日は未確認として扱い、自分のプロパティで確認すること。）
+- 専用レポートにクリックがないため、貢献度の把握は引き続き「ウェブ」タイプに依存する。情報系クエリで「表示回数は横ばい、クリックは減少」というパターンに注意 — AI Overviewsがクリックを吸収している典型的な兆候。
 
 ### Analytics（参照元の分離）
 
@@ -221,6 +247,9 @@ chatgpt\.com|perplexity\.ai|gemini\.google\.com|copilot\.microsoft\.com|claude\.
 ## 公式リソース
 
 - [AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
+- [Optimizing your website for generative AI features on Google Search](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+- [検索の生成AIコントロール（Search Console ヘルプ）](https://support.google.com/webmasters/answer/16908024)
+- [Introducing Search Generative AI performance reports](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
 - [Google's common crawlers（Google-Extended）](https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers)
 - [スニペットコントロール（メタタグ）](https://developers.google.com/search/docs/appearance/snippet)
 - [OpenAIのクローラー](https://platform.openai.com/docs/bots)

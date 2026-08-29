@@ -4,7 +4,15 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
 [![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](../README.md)
 
-Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、サイト監査を統合的にサポートします。
+[English README here](../README.md)
+
+Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、AI検索、エッジ・静的サイトのSEO、サイト監査を統合的にサポートします。
+
+## このスキルの位置づけ
+
+- **軽量・ゼロ依存。** Markdownのみで完結します。APIキーもMCPサーバーもインストールするスクリプトも不要で、実行するものは何もありません。フォルダをコピーすればオフラインで動きます。
+- **エッジ・静的サイトに強い。** **Astro** と **Cloudflare Workers/Pages** に専用のリファレンス層を用意しています。アイランドのハイドレーションとINP/LCPの関係、`_redirects` / `_headers` とWorkerコードに適用されない盲点、D1/KVからの動的サイトマップ、エッジでのクローラー検証まで扱います。
+- **鮮度を「たぶん最新」で済ませない。** 全リファレンスファイルに `last_verified` の日付を付与してCIで検証し、検証パスで追加・修正した記述は [docs/research-notes.md](research-notes.md) から一次情報に辿れるようにし、変更は semver に沿って [CHANGELOG.md](../CHANGELOG.md) に記録し、毎月1日に再検証用のIssueを自動作成しています。保証しているのは運用と日付スタンプであって、全行が現時点で正しいことではありません。
 
 ## 特徴
 
@@ -12,6 +20,8 @@ Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式
 - **コンテンツSEO最適化** - メタタグ、見出し構造、E-E-A-T対策
 - **構造化データテンプレート** - Article、FAQ、Product、LocalBusiness等
 - **Core Web Vitals対応** - LCP、INP、CLSの詳細な最適化手法
+- **AI検索対応** - AI Overviews / AIモードの表示要件と制御、AIクローラー管理
+- **Astro・エッジSEO** - Astro固有のパターンとCloudflare Workers/PagesのエッジSEO
 - **サイト監査ワークフロー** - 体系的な監査プロセスとレポート形式
 - **実践的なコード例** - コピペで使えるテンプレート多数
 
@@ -43,7 +53,7 @@ cp -r seo-mastery-agent-skills/.claude/skills/seo-mastery-jp  .claude/skills/   
 SKILL=seo-mastery   # または seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .claude/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md astro-seo.md edge-seo.md audit-workflow.md; do
   curl -fsSL -o .claude/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -56,7 +66,7 @@ done
 SKILL=seo-mastery   # または seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
 mkdir -p .codex/skills/$SKILL
-for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md audit-workflow.md; do
+for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md astro-seo.md edge-seo.md audit-workflow.md; do
   curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
 done
 ```
@@ -72,6 +82,8 @@ done
 │   ├── structured-data.md    # 構造化データ詳細
 │   ├── core-web-vitals.md    # Core Web Vitals詳細
 │   ├── ai-search.md          # AI検索詳細
+│   ├── astro-seo.md          # Astro固有のSEO
+│   ├── edge-seo.md           # Cloudflare Workers/PagesのエッジSEO
 │   └── audit-workflow.md     # 監査ワークフロー詳細
 └── seo-mastery-jp/           # 日本語版
     ├── SKILL.md              # メインスキルファイル
@@ -80,8 +92,15 @@ done
     ├── structured-data.md    # 構造化データ詳細
     ├── core-web-vitals.md    # Core Web Vitals詳細
     ├── ai-search.md          # AI検索詳細
+    ├── astro-seo.md          # Astro固有のSEO
+    ├── edge-seo.md           # Cloudflare Workers/PagesのエッジSEO
     └── audit-workflow.md     # 監査ワークフロー詳細
+
+docs/research-notes.md        # 調査ノート: 各記述の根拠と出典
+CHANGELOG.md                  # Keep a Changelog + semver の更新履歴
 ```
+
+`.claude/skills/` 配下の全ファイルには `last_verified: YYYY-MM-DD` のfrontmatterが付いており、CIで検証しています（存在すること、形式が正しいこと、未来日でないこと、英語版と日本語版で一致していること）。
 
 ## 使用例
 
@@ -131,10 +150,18 @@ done
 
 ## 対応フレームワーク
 
-- Next.js
-- Nuxt.js
-- 静的HTML
-- WordPress（参考）
+- **Astro** — 専用リファレンスあり（[astro-seo.md](../.claude/skills/seo-mastery-jp/astro-seo.md)）。Astro 6 で検証済み
+- **Cloudflare Workers / Pages** — 専用リファレンスあり（[edge-seo.md](../.claude/skills/seo-mastery-jp/edge-seo.md)）
+- Next.js — コード例は [core-web-vitals.md](../.claude/skills/seo-mastery-jp/core-web-vitals.md) と [technical-seo.md](../.claude/skills/seo-mastery-jp/technical-seo.md)
+- Nuxt 3+ — 同じファイル
+- 静的HTML — テンプレートはすべてフレームワーク非依存
+
+それ以外（WordPress、Rails、Django など）はフレームワーク非依存のガイダンスでのみカバーしています。
+CMS固有のリファレンスファイルはありません。
+
+## バージョニング
+
+本リポジトリは [Semantic Versioning](https://semver.org/lang/ja/) を、APIではなく知識ベースとして解釈して運用します。**MAJOR** は構造の破壊的変更（リファレンスファイルの削除・改名、スキルの改名、過去の助言を無効化する方針転換）、**MINOR** は知識の追加（新しいリファレンスファイル・テンプレート・セクション）、**PATCH** は誤りの修正と鮮度更新（不正確な記述の訂正、廃止機能への追随、`last_verified` の更新）です。`SKILL.md`・2つの `marketplace.json`・CHANGELOGの見出し・gitタグのバージョンは常に一致させており、食い違うとリリースワークフローが失敗します。
 
 ## 参考リソース
 
