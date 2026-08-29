@@ -8,8 +8,8 @@ Checks:
    frontmatter field that is a real date and is not in the future.
 3. Every ```json code block in skill markdown files parses as JSON.
 4. marketplace manifests are valid JSON.
-5. Every declared version agrees: both marketplace manifests and every
-   SKILL.md frontmatter.
+5. Every declared version is present and agrees: both marketplace manifests
+   and every SKILL.md frontmatter, and CHANGELOG.md has a matching section.
 6. The EN and JP skills stay structurally in sync (same file list, same
    heading counts per level, same number of JSON code blocks per file,
    same `last_verified` date per file).
@@ -26,6 +26,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO / ".claude" / "skills"
 MANIFESTS = [REPO / "marketplace.json", REPO / ".claude-plugin" / "marketplace.json"]
+CHANGELOG = REPO / "CHANGELOG.md"
 SYNC_PAIRS = [("seo-mastery", "seo-mastery-jp")]
 MAX_DESCRIPTION_LENGTH = 1024
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -289,11 +290,12 @@ def check_manifests() -> None:
 
 
 def check_versions(skill_dirs: list) -> None:
-    """All declared versions must agree.
+    """Every version must be declared, agree, and have a CHANGELOG section.
 
-    Historically they did not: v1.2.1 and v1.2.2 shipped with the manifests
-    still reading 1.2.0. Checking here (rather than only in the release
-    workflow) catches the drift at pull-request time.
+    Historically the versions did not agree: v1.2.1 and v1.2.2 shipped with the
+    manifests still reading 1.2.0. A *missing* version is checked just as
+    strictly, because release.yml only discovers it after the immutable tag has
+    been pushed — at which point the fix means deleting and re-pushing the tag.
     """
     declared = {}
 
@@ -305,22 +307,47 @@ def check_versions(skill_dirs: list) -> None:
         except json.JSONDecodeError:
             continue  # already reported by check_manifests
         label = str(manifest.relative_to(REPO))
+        found = False
         if "version" in data:
             declared[label] = data["version"]
+            found = True
         for plugin in data.get("plugins", []):
+            plugin_label = f"{label}#{plugin.get('name', '?')}"
             if "version" in plugin:
-                declared[f"{label}#{plugin.get('name', '?')}"] = plugin["version"]
+                declared[plugin_label] = plugin["version"]
+                found = True
+            else:
+                error(f"{plugin_label}: plugin declares no 'version'")
+        if not found:
+            error(f"{label}: declares no 'version'")
 
     for skill_dir in skill_dirs:
         skill_md = skill_dir / "SKILL.md"
-        if skill_md.is_file():
-            version = parse_frontmatter(skill_md).get("version")
-            if version:
-                declared[str(skill_md.relative_to(REPO))] = version
+        if not skill_md.is_file():
+            continue  # already reported by check_frontmatter
+        version = parse_frontmatter(skill_md).get("version")
+        if not version:
+            error(f"{skill_md.relative_to(REPO)}: frontmatter is missing 'version'")
+            continue
+        declared[str(skill_md.relative_to(REPO))] = version
 
-    if len(set(declared.values())) > 1:
+    versions = set(declared.values())
+    if len(versions) > 1:
         detail = ", ".join(f"{k}={v}" for k, v in sorted(declared.items()))
         error(f"version mismatch across declarations: {detail}")
+        return
+    if versions:
+        check_changelog(versions.pop())
+
+
+def check_changelog(version: str) -> None:
+    """release.yml hard-fails when the version has no CHANGELOG section."""
+    if not CHANGELOG.is_file():
+        error(f"{CHANGELOG.name}: missing")
+        return
+    text = CHANGELOG.read_text(encoding="utf-8")
+    if not re.search(rf"^## \[{re.escape(version)}\]", text, re.MULTILINE):
+        error(f"{CHANGELOG.name}: no '## [{version}]' section for the declared version")
 
 
 def structure_signature(path: Path) -> dict:
