@@ -166,10 +166,11 @@ export async function getStaticPaths() {
   }));
 }
 
-const { post } = Astro.props;
+const { post, shareUrl } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout title={post.data.title} description={post.data.description} type="article">
+  <meta slot="head" property="og:url" content={shareUrl} />
   <Content />
 </BaseLayout>
 ```
@@ -205,7 +206,8 @@ const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
-      title: z.string().max(110),           // headline limit for Article rich results
+      title: z.string().max(110),           // editorial cap: Google sets no headline limit,
+                                             // but "long titles may be truncated on some devices"
       description: z.string(),
       publishedAt: z.coerce.date(),
       updatedAt: z.coerce.date().optional(),
@@ -221,7 +223,7 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-Putting SEO constraints in the schema (`max(110)` on the headline, `.url()` on author links) means a
+Putting your own editorial constraints in the schema (a headline cap, `.url()` on author links) means a
 malformed post fails `astro build` rather than shipping broken markup.
 
 ### Generate the markup
@@ -287,7 +289,10 @@ them with `@graph` and emit once, so pages carry only their own entity.
 ```astro
 ---
 // src/components/SiteJsonLd.astro — rendered once in BaseLayout
-const site = Astro.site!.href;
+// Fail loudly at build time rather than emitting "undefined" URLs. A non-null
+// assertion (Astro.site!) would only silence TypeScript, not the real problem.
+if (!Astro.site) throw new Error('astro.config.mjs is missing `site`; JSON-LD needs absolute URLs');
+const site = Astro.site.href;
 
 const graph = {
   '@context': 'https://schema.org',
@@ -347,8 +352,13 @@ listing it sends contradictory signals.
 ```astro
 ---
 // src/pages/internal/preview.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<meta name="robots" content="noindex, nofollow" />
+<BaseLayout title="Internal preview" description="Not for search engines">
+  <!-- Must land inside <head>: the BaseLayout above exposes a `head` slot for it -->
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+  <p>…</p>
+</BaseLayout>
 ```
 
 ### Multilingual sitemaps
@@ -418,12 +428,11 @@ that assume one page load per session.
 
 ```astro
 ---
-// src/layouts/BaseLayout.astro — v6 name. On v5 this was <ViewTransitions />, now removed.
+// Add to the <head> of the BaseLayout above, if you want client routing.
+// v6 name — on v5 this component was <ViewTransitions />, which is now removed.
 import { ClientRouter } from 'astro:transitions';
 ---
-<head>
-  <ClientRouter />
-</head>
+<ClientRouter />
 ```
 
 ### Scripts and analytics after navigation

@@ -56,7 +56,7 @@ Implementation guide for structured data supporting Google Search rich results. 
 {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
-  "headline": "News article headline (max 110 characters)",
+  "headline": "News article headline (no character limit, but keep it concise)",
   "description": "Article summary",
   "image": [
     "https://example.com/photos/1x1/photo.jpg",

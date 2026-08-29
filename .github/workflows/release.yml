@@ -50,7 +50,6 @@ jobs:
           exit "$status"
 
       - name: Extract release notes from CHANGELOG
-        id: notes
         run: |
           version="${GITHUB_REF_NAME#v}"
           python3 - "$version" <<'PY' > release-notes.md
@@ -59,23 +58,37 @@ jobs:
 
           version = sys.argv[1]
           text = open("CHANGELOG.md", encoding="utf-8").read()
-          pattern = rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|^\[Unreleased\]:)"
+          # Terminate on the next version heading, on the link-definition block,
+          # or on end-of-file — so the last section does not depend on either.
+          pattern = (
+              rf"^## \[{re.escape(version)}\][^\n]*\n"
+              r"(.*?)(?=^## \[|^\[[^\]]+\]:\s*http|\Z)"
+          )
           match = re.search(pattern, text, flags=re.M | re.S)
           if not match:
               sys.exit(f"No CHANGELOG section found for version {version}")
           print(match.group(1).strip())
           PY
-          if [ ! -s release-notes.md ]; then
+          # -s is not enough: the section is always at least a newline.
+          if ! grep -q '[^[:space:]]' release-notes.md; then
             echo "::error::CHANGELOG section for v$version is empty"
             exit 1
           fi
           cat release-notes.md
 
-      - name: Create GitHub Release
+      - name: Create or update the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --notes-file release-notes.md \
-            --verify-tag
+          # Idempotent: re-running after a failed step updates the notes rather
+          # than erroring out with "release already exists".
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md \
+              --verify-tag
+          fi

@@ -42,9 +42,30 @@ Cloudflareは明言しています。リダイレクトは「リクエストURL�
 ```
 
 `run_worker_first`は真偽値かルートパターンの配列を受け付けます（`*`は深い一致、先頭の`!`は否定）。
-Workerを先に走らせるルートは`_headers`と`_redirects`をバイパスするため、どのパスをコード経由に
-するか決める際にこのコストを織り込んでください。`.assetsignore`を使うと`_worker.js`・`_redirects`・
-`_headers`が公開アセットとしてアップロードされるのを防げます。
+`.assetsignore`を使うと`_worker.js`・`_redirects`・`_headers`が公開アセットとしてアップロード
+されるのを防げます。
+
+**このキーは、そもそもWorkerがリクエストを見るかどうかを決めます。** デフォルトでは一致する静的
+アセットがあればそれを返し、一致しない場合にのみWorkerが呼ばれます。HTMLを書き換えたり検査したり
+するWorker——本ファイル後半のHTMLRewriterやクエリ正規化のパターン——は、上の設定のままでは
+デッドコードです。`/blog/post/`はアセットに一致するのでWorkerまで到達しません。ミドルウェア型の
+Workerでは、HTMLのパスを`run_worker_first`に列挙する必要があります。
+
+```jsonc
+{
+  "assets": {
+    "directory": "./dist/",
+    "binding": "ASSETS",
+    // ハッシュ付きアセット以外はWorkerを先に通す。
+    // アセットはエッジからそのまま返したいので除外する。
+    "run_worker_first": ["/*", "!/_astro/*", "!/assets/*"]
+  }
+}
+```
+
+代償は前述のトレードオフです。これらのパスには`_headers`も`_redirects`も適用されなくなるため、
+ヘッダ設定とリダイレクトはWorker側で自前で行うことになります。プロジェクトごとに選んでください。
+純粋な静的サイトならアセット優先、HTMLを本当に変換する必要があるならWorker優先です。
 
 このうち2つのキーは、自前のリダイレクトが動くより前にcanonicalなURL形を決めてしまいます。
 
@@ -79,8 +100,12 @@ Workerを先に走らせるルートは`_headers`と`_redirects`をバイパス�
 
 押さえるべきルール。
 
-- **プレースホルダー**（`:name`）は`/`と`.`以外に一致します。**スプラット**（`*`）は貪欲一致で、
-  **1URLにつき1つまで**です。宛先側では`:name`・`:splat`で参照します。
+- **プレースホルダー**（`:name`）は区切り文字以外のすべてに一致します。区切り文字は位置によって
+  変わり、**ホスト部**では`.`または`/`、**パス部**では`/`のみです。つまりパス中のプレースホルダーは
+  **ドットにも一致します**。`/:slug`は`report.pdf`にも一致するため、きれいなスラッグを想定した
+  ルールがファイルURLまで書き換えてしまいます。
+- **スプラット**（`*`）は貪欲一致で、**1URLにつき1つまで**です。宛先側ではプレースホルダーと
+  スプラットをそれぞれ`:name`・`:splat`で参照します。
 - サポートされるステータスコードは**301・302・303・307・308**。宛先を`200`にするとリダイレクト
   ではなくプロキシになります。
 - **非対応:** クエリパラメータによる一致、ドメインレベルのリダイレクト、国・言語・Cookieによる
@@ -150,28 +175,35 @@ export default {
 ルールブロックはURLパターンの行と、インデントした`Name: value`行で構成されます。上限は
 **100ルール**、**1行2,000文字**。先頭に`! `を付けるとヘッダを削除できます。
 
+ファイル全体を支配する挙動が1つあります。**一致したルールは積み上がるだけで、上書きにはなりません。**
+Cloudflareは「同じヘッダが`_headers`内で2回適用された場合、値はカンマ区切りで結合される」と
+明記しています。広い`/*`ルールと狭い`/_astro/*`ルールの両方が`Cache-Control`を設定すると、
+具体的な方が勝つのではなく、意味をなさない結合値が1本送出されます。1つのヘッダ名につき一致する
+ルールは1つに保つか、`! ヘッダ名`で継承値を外してから自分の値を設定してください。
+
 ```txt
 # ステージング・内部プレビューをインデックスさせない
 /preview/*
   X-Robots-Tag: noindex, nofollow
 
-# クローラー個別の指定
+# HTML以外のリソースはヘッダでしかrobots指定を持てない
 /reports/*.pdf
-  X-Robots-Tag: googlebot: noindex
-  X-Robots-Tag: otherbot: noindex, nofollow
+  X-Robots-Tag: noindex, nofollow
 
-# 長期キャッシュ可能なビルド成果物
+# 長期キャッシュ可能なビルド成果物。Cache-Controlはここだけで設定し、
+# これらのパスに一致する他のルールでは設定しない。
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
-
-# HTML: 毎回再検証しつつ、CDNには再検証中の配信を許可する
-/*.html
-  Cache-Control: public, max-age=0, must-revalidate
 
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 ```
+
+意図的に書いていないものがあります。HTML用の`Cache-Control`ルールです。デフォルトの
+`auto-trailing-slash`ではページは拡張子なしのURLで配信されるため、`/*.html`パターンは実質何にも
+一致しません。かといって`/*`に書くと上のアセット用ルールと衝突します。HTMLのキャッシュは
+ゾーンレベルのCloudflare Cache Rulesで、SSRルートはWorkerコード側で設定してください。
 
 ### X-Robots-Tag
 
@@ -187,7 +219,16 @@ X-Robots-Tag: otherbot: noindex, nofollow
 ```
 
 ユーザーエージェント指定のないルールは全クローラーに適用され、衝突時は**より制限の強い**ルールが
-優先されます。落とし穴が2つあります。
+優先されます。
+
+**ただしクローラー個別指定は`_headers`では表現できません。** Googleのユーザーエージェント別の書き方は
+`X-Robots-Tag`を*別々のヘッダ行*として送ることを前提にしていますが、Cloudflareは「同じヘッダが
+`_headers`内で2回適用された場合、値はカンマ区切りで結合される」と明記しています。2行書いても1本の
+結合ヘッダとして送出され、ユーザーエージェント接頭辞を含む結合値をGoogleがどう解釈するかは
+ドキュメント化されていません。クローラー個別の指定が必要なら、各行を自分で制御できるWorkerコード側で
+ヘッダを設定してください。
+
+さらに落とし穴が2つあります。
 
 - **robots.txtでクロール拒否しているURLに付けた`noindex`ヘッダは効きません。** クローラーが
   レスポンスを取得できずヘッダを読めないためです。どちらかを選んでください。クロールを拒否するか、
@@ -232,7 +273,7 @@ return new Response(response.body, { status: response.status, headers });
 
 ```js
 // src/sitemap.ts
-const PAGE_SIZE = 25000;   // 50,000 URL上限に対して十分な余裕を取る
+export const PAGE_SIZE = 25000;   // 50,000 URL上限に対して十分な余裕を取る
 
 export async function sitemapForPage(env, page) {
   const { results } = await env.DB.prepare(
@@ -243,28 +284,51 @@ export async function sitemapForPage(env, page) {
   ).bind(PAGE_SIZE, page * PAGE_SIZE).all();
 
   const urls = results
-    .map(
-      (row) =>
+    .map((row) => {
+      // NULLやパースできないタイムスタンプがあると toISOString() が例外を投げ、
+      // サイトマップ全体を道連れにする。lastmod は任意項目であり、そもそも
+      // Googleは一貫して正確な場合しか信用しないので、出さない方がよい。
+      const lastmod = isoOrNull(row.updated_at);
+      return (
         `  <url>\n` +
         `    <loc>https://example.com/blog/${escapeXml(row.slug)}/</loc>\n` +
-        `    <lastmod>${new Date(row.updated_at).toISOString()}</lastmod>\n` +
+        (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : '') +
         `  </url>`
-    )
+      );
+    })
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
+function isoOrNull(value) {
+  if (value == null) return null;
+  // SQLiteは "2026-08-01 12:00:00" 形式で保存することが多い。この空白区切りは
+  // ISO 8601 ではなく、new Date() の解釈がエンジン依存になるため先に正規化する。
+  const normalised = typeof value === 'string' ? value.trim().replace(' ', 'T') : value;
+  const date = new Date(normalised);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
 function escapeXml(value) {
-  return String(value).replace(/[<>&'"]/g, (c) =>
-    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c])
-  );
+  const ENTITIES = { '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' };
+  let out = '';
+  for (const ch of String(value)) {
+    const code = ch.codePointAt(0);
+    // 制御文字はXMLで不正であり、エスケープでは救えないので除去する。
+    // タブ(0x09)・LF(0x0a)・CR(0x0d)だけが例外。
+    if (code < 0x20 && code !== 0x09 && code !== 0x0a && code !== 0x0d) continue;
+    out += ENTITIES[ch] ?? ch;
+  }
+  return out;
 }
 ```
 
 エスケープは省略できません。スラッグに`&`が含まれるとXMLが壊れ、Search Consoleはサイトマップ全体を
-読み取り不能として扱います。1行の不備でファイル1つ分をまるごと失う計算です。
+読み取り不能として扱います。1行の不備でファイル1つ分をまるごと失います。`<loc>`については順序も
+決まっていて、サイトマップ仕様はURLを*先に*パーセントエンコードし、そのあとで実体参照する形を
+求めています。非ASCIIや空白を含むスラッグは`escapeXml()`の前に`encodeURIComponent()`を通してください。
 
 ### サイトマップインデックスとキャッシュ
 
@@ -272,6 +336,9 @@ function escapeXml(value) {
 取得しにきても、データベースへのクエリが50回走らないようにするためです。
 
 ```js
+// src/index.js
+import { sitemapForPage, PAGE_SIZE } from './sitemap.js';
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -285,7 +352,9 @@ export default {
       const { results } = await env.DB.prepare(
         'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
       ).all();
-      const pages = Math.ceil(results[0].n / 25000);
+      // 子要素は最低1つ。<sitemap>が0個のインデックスは不正であり、
+      // 新規サイトではそれを返してしまうため。
+      const pages = Math.max(1, Math.ceil(results[0].n / PAGE_SIZE));
       body =
         `<?xml version="1.0" encoding="UTF-8"?>\n` +
         `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -340,12 +409,19 @@ const RANGE_FILES = [
 
 async function googleRanges(env) {
   const cached = await env.BOT_KV.get('google-ranges', 'json');
-  if (cached) return cached;
+  // 空配列も真値になる。length を見ないと、取得に一度失敗しただけで
+  // 24時間キャッシュが汚染され、本物のクローラーを全部弾いてしまう。
+  if (Array.isArray(cached) && cached.length) return cached;
 
   const files = await Promise.all(
-    RANGE_FILES.map((u) => fetch(u).then((r) => r.json()))
+    RANGE_FILES.map(async (u) => {
+      const res = await fetch(u, { cf: { cacheTtl: 3600 } });
+      if (!res.ok) throw new Error(`${u} -> ${res.status}`);
+      return res.json();
+    })
   );
   const prefixes = files.flatMap((f) => f.prefixes ?? []);
+  if (!prefixes.length) throw new Error('no prefixes in Google range files');
   await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
   return prefixes;
 }
@@ -355,10 +431,60 @@ async function isVerifiedGoogle(request, env) {
   if (!/Googlebot|Google-InspectionTool|Storebot-Google/i.test(ua)) return false;
 
   const ip = request.headers.get('cf-connecting-ip');
-  const prefixes = await googleRanges(env);
-  return prefixes.some((p) => ipInCidr(ip, p.ipv4Prefix ?? p.ipv6Prefix));
+  if (!ip) return false;
+
+  let prefixes;
+  try {
+    prefixes = await googleRanges(env);
+  } catch (err) {
+    // フェイルオープンにする。GoogleのIPレンジファイルに到達できないとき、
+    // 本物のクローラーを未検証扱いにする方が、偽装を検証済み扱いにするより有害。
+    // この関数が制御するのはレート制限であって、機密データへのアクセスではない。
+    console.error('crawler range lookup failed', err);
+    return true;
+  }
+
+  const wantV6 = ip.includes(':');
+  return prefixes.some((p) => {
+    const cidr = wantV6 ? p.ipv6Prefix : p.ipv4Prefix;
+    return cidr ? ipInCidr(ip, cidr) : false;
+  });
 }
 ```
+
+`ipInCidr` は自前で用意します。IPv4は数行で済みますが、IPv6はアドレスが32ビット整数に収まらないため
+BigIntが必要です。
+
+```js
+function ipToBigInt(ip) {
+  if (ip.includes(':')) {
+    // "::" の省略と各グループの先頭ゼロ省略を、16ビット×8グループに展開する
+    const [head, tail = ''] = ip.split('::');
+    const left = head ? head.split(':') : [];
+    const right = tail ? tail.split(':') : [];
+    const groups = [
+      ...left,
+      ...Array(8 - left.length - right.length).fill('0'),
+      ...right,
+    ];
+    return groups.reduce((acc, g) => (acc << 16n) | BigInt(parseInt(g || '0', 16)), 0n);
+  }
+  return ip.split('.').reduce((acc, o) => (acc << 8n) | BigInt(Number(o)), 0n);
+}
+
+function ipInCidr(ip, cidr) {
+  const [network, bitsRaw] = cidr.split('/');
+  if (ip.includes(':') !== network.includes(':')) return false;   // アドレスファミリ不一致
+
+  const width = network.includes(':') ? 128n : 32n;
+  const bits = BigInt(bitsRaw);
+  const mask = bits === 0n ? 0n : (~0n << (width - bits)) & ((1n << width) - 1n);
+  return (ipToBigInt(ip) & mask) === (ipToBigInt(network) & mask);
+}
+```
+
+なお、Cloudflareのbot検出は同じ判定を既に行っています。有料プランならVerified Botsのシグナルを
+使う方が確実で、上のコードはWorkerのロジック内で判定したい場合の実装例です。
 
 公開されているファイルは`common-crawlers.json`（Googlebot系）、`special-crawlers.json`（AdsBot等）、
 `user-triggered-fetchers.json`、`user-triggered-fetchers-google.json`、`user-triggered-agents.json`
@@ -412,21 +538,26 @@ robots.txtだけでは失わなかったはずの流入まで失います。
 class MetaRewriter {
   constructor(meta) {
     this.meta = meta;
-    this.seen = new Set();
   }
 
   element(element) {
-    if (element.tagName === 'title') {
-      element.setInnerContent(this.meta.title);
-      this.seen.add('title');
-      return;
+    // ハンドラが例外を投げるとパースが停止しレスポンスボディがエラーになる。
+    // メタデータの微修正が5xxに化けるので、例外を外に出さない。
+    try {
+      if (element.tagName === 'title') {
+        if (this.meta.title) element.setInnerContent(this.meta.title);
+        return;
+      }
+      const name = element.getAttribute('name') ?? element.getAttribute('property');
+      if (name === 'description' && this.meta.description) {
+        element.setAttribute('content', this.meta.description);
+      }
+      if (name === 'og:title' && this.meta.title) {
+        element.setAttribute('content', this.meta.title);
+      }
+    } catch (err) {
+      console.error('meta rewrite failed', err);
     }
-    const name = element.getAttribute('name') ?? element.getAttribute('property');
-    if (name === 'description' && this.meta.description) {
-      element.setAttribute('content', this.meta.description);
-      this.seen.add('description');
-    }
-    if (name === 'og:title') element.setAttribute('content', this.meta.title);
   }
 }
 
@@ -438,13 +569,21 @@ export default {
     const meta = await env.META.get(new URL(request.url).pathname, 'json');
     if (!meta) return response;
 
+    const rewriter = new MetaRewriter(meta);
     return new HTMLRewriter()
-      .on('title', new MetaRewriter(meta))
-      .on('meta', new MetaRewriter(meta))
+      // `title` ではなく `head > title`。裸のセレクタはインラインSVG内の
+      // <title> にも一致し、アイコンのツールチップまで書き換えてしまう。
+      .on('head > title', rewriter)
+      .on('head > meta', rewriter)
       .transform(response);
   },
 };
 ```
+
+このコードが**やらないこと**が2つあります。既存のタグを編集するだけで、存在しない
+`<meta name="description">`は追加できません（HTMLRewriterはストリーミングなので、追加は次節の
+`head`へのappendで行います）。そして、そもそもWorkerがリクエストを見られること、つまりHTMLのパスが
+`run_worker_first`に入っていることが前提です。
 
 ### 構造化データの注入
 
@@ -498,7 +637,8 @@ class JsonLdInjector {
   robots.txtでパターンごとブロックしてクロール段階で止めてください。
 - **可能なら304を返す。** `If-Modified-Since` / `If-None-Match`を尊重すれば、クローラーは安価に
   再検証できます。
-- **恒久的に削除したコンテンツには410を使う。** 404より速く処理されます。
+- **恒久的に削除したコンテンツには410を使う。** 意図を正確に伝えられるからです。404より速く処理
+  されるとGoogleは明言していないので、速度ではなく正確さを理由に選んでください。
 - **サイトマップの`lastmod`を正直に保つ。** Googleは一貫して正確な場合にのみこの値を使います。
   全URLに今日の日付を打つのは、この項目を無視するよう学習させる行為です。
 

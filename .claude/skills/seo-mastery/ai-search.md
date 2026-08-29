@@ -20,7 +20,7 @@ Key points, verified against the official guides:
 
 ### The Search Console Generative AI Control
 
-Rolled out from **2026-06-03** (initially to a subset of UK properties, expanding from July 2026), this is the only way to opt out of AI features without also damaging your regular search snippets.
+Rolled out from **2026-06-03**, initially "to a subset of website owners in the UK, allowing for thorough testing before rolling them out to website owners globally." This is the only way to opt out of AI features without also damaging your regular search snippets. Check whether your property has the setting rather than assuming availability.
 
 Location: **Settings → Search generative AI**. Three options:
 
@@ -30,7 +30,9 @@ Location: **Settings → Search generative AI**. Three options:
 | Exclude my site's links and content from Search generative AI features | Content is not shown in, linked from, or used to ground AI Overviews, AI Mode, or generative AI features in Discover |
 | Inherit control from parent | Follows the parent property's setting |
 
-What it does **not** do: Google states the control "isn't used as a ranking or inclusion signal affecting other parts of Search." Normal Search results and the Discover feed are unaffected. Changes generally take effect within 1–2 days.
+What it does **not** do: Google states the control "isn't used as a ranking or inclusion signal affecting other parts of Search." Normal Search results and the Discover feed are unaffected.
+
+Timing is not instant, and the help page is careful about it: exclusion "generally takes a few days"; content is excluded "within 1-2 days after the control goes live, but some content may take longer to be excluded due to caching and propagation across Google systems." Do not treat the toggle as a takedown mechanism.
 
 Choosing between this and `nosnippet`:
 
@@ -219,7 +221,7 @@ Checklist:
 ### Search Console
 
 - AI Overviews / AI Mode impressions and clicks are included in the **"Web" search type** of the Performance report (AI Mode included since June 2025).
-- The dedicated **Search generative AI performance report** (launched 2026-06-03, with a Discover counterpart) breaks impressions down by page, country, device and date across AI Overviews, AI Mode and generative AI in Discover. Two limits to plan around: data starts **2026-05-18** with no historical backfill, and the initial version reports **impressions only — no clicks**.
+- The dedicated **Search generative AI performance report** (launched 2026-06-03, with a Discover counterpart) breaks impressions down by page, country, device and date across AI Overviews, AI Mode and generative AI in Discover. Two limits to plan around: the report has **no historical backfill** — it starts shortly before launch, so there is no year-over-year comparison — and it carries **impressions only, no clicks**. (Secondary reports put the first day of data at 2026-05-18; Google's own documentation does not state a date, so treat the exact start as unverified and read it off your own property.)
 - Because clicks are missing from the dedicated report, attribution still depends on the "Web" type. Watch for the pattern "impressions stable, clicks down" on informational queries — a common signature of AI Overviews absorbing clicks.
 
 ### Analytics (Referral Segmentation)

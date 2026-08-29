@@ -43,9 +43,30 @@ Configuration lives under `assets` in `wrangler.jsonc`:
 ```
 
 `run_worker_first` accepts a boolean or an array of route patterns (`*` matches deeply, a leading `!`
-negates). Routes that run the Worker first bypass `_headers` and `_redirects` — budget for that when
-you decide which paths go through code. `.assetsignore` keeps `_worker.js`, `_redirects` and
-`_headers` from being uploaded as public assets.
+negates). `.assetsignore` keeps `_worker.js`, `_redirects` and `_headers` from being uploaded as
+public assets.
+
+**This key decides whether your Worker sees the request at all.** By default Cloudflare serves a
+matching static asset and only invokes the Worker when none matches. A Worker that rewrites or
+inspects HTML — the HTMLRewriter and query-canonicalization patterns later in this file — is
+therefore dead code under the config above, because `/blog/post/` matches an asset and never reaches
+it. Middleware-style Workers need the HTML paths listed in `run_worker_first`:
+
+```jsonc
+{
+  "assets": {
+    "directory": "./dist/",
+    "binding": "ASSETS",
+    // Worker first for everything except fingerprinted assets, which should be
+    // served straight from the edge.
+    "run_worker_first": ["/*", "!/_astro/*", "!/assets/*"]
+  }
+}
+```
+
+The cost is the trade documented above: those paths no longer get `_headers` or `_redirects`, so the
+Worker has to set headers and issue redirects itself. Pick per project — asset-first for a purely
+static site, Worker-first when you genuinely need to transform HTML.
 
 Two of these keys decide your canonical URL shape before any of your own redirects run:
 
@@ -79,8 +100,12 @@ Cloudflare projects — a permanent move published as a temporary redirect. Alwa
 
 Rules to keep in mind:
 
-- **Placeholders** (`:name`) match everything except `/` and `.`; **splats** (`*`) are greedy and
-  only **one splat per URL** is allowed. Reference them as `:name` and `:splat` in the destination.
+- **Placeholders** (`:name`) match everything except the delimiter, and the delimiter depends on
+  position: in the **host** it is `.` or `/`, in the **path** it is only `/`. A path placeholder
+  therefore **does match dots** — `/:slug` also matches `report.pdf`, so a rule intended for clean
+  slugs will happily rewrite file URLs too.
+- **Splats** (`*`) are greedy and only **one splat per URL** is allowed. Reference placeholders and
+  splats as `:name` and `:splat` in the destination.
 - Supported status codes: **301, 302, 303, 307, 308**. A `200` destination proxies instead of
   redirecting.
 - **Not supported:** matching on query parameters, domain-level redirects, or conditional redirects
@@ -151,28 +176,35 @@ for parameters that genuinely produce distinct, low-value URLs (session IDs, sor
 A rule block is a URL pattern followed by indented `Name: value` lines. Limits: **100 rules** and
 **2,000 characters per line**. A leading `! ` removes a header.
 
+One behaviour governs the whole file: **matching rules accumulate, they do not override.** Cloudflare
+states that "if a header is applied twice in the `_headers` file, the values are joined with a comma
+separator." A broad `/*` rule and a narrow `/_astro/*` rule that both set `Cache-Control` therefore
+ship one nonsensical joined value, not the specific one. Keep each header name to a single matching
+rule, or detach the inherited value with `! Header-Name` before setting your own.
+
 ```txt
 # Keep staging and internal previews out of the index
 /preview/*
   X-Robots-Tag: noindex, nofollow
 
-# Per-crawler directives: allow indexing, suppress the Google cache-style preview limits
+# Non-HTML resources can only carry robots directives as a header
 /reports/*.pdf
-  X-Robots-Tag: googlebot: noindex
-  X-Robots-Tag: otherbot: noindex, nofollow
+  X-Robots-Tag: noindex, nofollow
 
-# Long-lived immutable build output
+# Long-lived immutable build output. Cache-Control is set here and nowhere
+# else that matches these paths.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
-
-# HTML: revalidate every time, but let the CDN serve while revalidating
-/*.html
-  Cache-Control: public, max-age=0, must-revalidate
 
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 ```
+
+Note what is deliberately absent: a `Cache-Control` rule for HTML. Under the default
+`auto-trailing-slash`, pages are served at extensionless URLs, so a `/*.html` pattern matches
+nothing useful — and a `/*` rule would collide with the asset rule above. Set HTML caching with
+Cloudflare Cache Rules at the zone level, or in Worker code for SSR routes.
 
 ### X-Robots-Tag
 
@@ -189,7 +221,15 @@ X-Robots-Tag: otherbot: noindex, nofollow
 ```
 
 Directives without a user agent apply to all crawlers, and where rules conflict the **more
-restrictive** one wins. Two traps:
+restrictive** one wins.
+
+**Per-crawler rules do not survive `_headers`.** Google's per-user-agent form relies on *separate*
+`X-Robots-Tag` header lines, but Cloudflare states that "if a header is applied twice in the
+`_headers` file, the values are joined with a comma separator" — two lines ship as one combined
+header, and Google does not document how it parses a combined value carrying user-agent prefixes.
+If you need per-crawler directives, set the headers in Worker code, where you control each line.
+
+Two further traps:
 
 - A `noindex` header on a URL that is **also disallowed in robots.txt** never takes effect — the
   crawler cannot fetch the response to read the header. Choose one: block crawling, or allow
@@ -235,7 +275,7 @@ uncompressed per sitemap file**, and `lastmod` is only used if it is verifiably 
 
 ```js
 // src/sitemap.ts
-const PAGE_SIZE = 25000;   // well under the 50,000 URL limit
+export const PAGE_SIZE = 25000;   // well under the 50,000 URL limit
 
 export async function sitemapForPage(env, page) {
   const { results } = await env.DB.prepare(
@@ -246,28 +286,51 @@ export async function sitemapForPage(env, page) {
   ).bind(PAGE_SIZE, page * PAGE_SIZE).all();
 
   const urls = results
-    .map(
-      (row) =>
+    .map((row) => {
+      // A NULL or unparseable timestamp would make toISOString() throw and take
+      // the whole sitemap down with it. Omit lastmod instead — it is optional,
+      // and Google only trusts it when it is consistently accurate anyway.
+      const lastmod = isoOrNull(row.updated_at);
+      return (
         `  <url>\n` +
         `    <loc>https://example.com/blog/${escapeXml(row.slug)}/</loc>\n` +
-        `    <lastmod>${new Date(row.updated_at).toISOString()}</lastmod>\n` +
+        (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : '') +
         `  </url>`
-    )
+      );
+    })
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
+function isoOrNull(value) {
+  if (value == null) return null;
+  // SQLite commonly stores "2026-08-01 12:00:00"; the space form is not ISO 8601
+  // and its parsing is engine-dependent, so normalise it first.
+  const normalised = typeof value === 'string' ? value.trim().replace(' ', 'T') : value;
+  const date = new Date(normalised);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
 function escapeXml(value) {
-  return String(value).replace(/[<>&'"]/g, (c) =>
-    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c])
-  );
+  const ENTITIES = { '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' };
+  let out = '';
+  for (const ch of String(value)) {
+    const code = ch.codePointAt(0);
+    // Control characters are illegal in XML and cannot be escaped, only dropped.
+    // Tab (0x09), LF (0x0a) and CR (0x0d) are the exceptions.
+    if (code < 0x20 && code !== 0x09 && code !== 0x0a && code !== 0x0d) continue;
+    out += ENTITIES[ch] ?? ch;
+  }
+  return out;
 }
 ```
 
 Escaping is not optional. A slug containing `&` produces malformed XML, and Search Console reports
-the whole sitemap as unreadable — one bad row costs you the entire file.
+the whole sitemap as unreadable — one bad row costs you the entire file. Note the order for `<loc>`:
+the sitemap spec wants the URL percent-encoded *first* and entity-escaped second, so wrap non-ASCII
+or space-bearing slugs in `encodeURIComponent()` before `escapeXml()`.
 
 ### Sitemap index and caching
 
@@ -275,6 +338,9 @@ Serve an index that points at the paginated files, and cache both at the edge so
 50 sitemap files does not run 50 database queries.
 
 ```js
+// src/index.js
+import { sitemapForPage, PAGE_SIZE } from './sitemap.js';
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -288,7 +354,9 @@ export default {
       const { results } = await env.DB.prepare(
         'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
       ).all();
-      const pages = Math.ceil(results[0].n / 25000);
+      // Always at least one child: an index with zero <sitemap> entries is
+      // invalid, and a brand-new site would otherwise serve one.
+      const pages = Math.max(1, Math.ceil(results[0].n / PAGE_SIZE));
       body =
         `<?xml version="1.0" encoding="UTF-8"?>\n` +
         `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -342,12 +410,19 @@ const RANGE_FILES = [
 
 async function googleRanges(env) {
   const cached = await env.BOT_KV.get('google-ranges', 'json');
-  if (cached) return cached;
+  // An empty array is truthy: without the length check, one failed refresh
+  // would poison the cache for 24 hours and reject every real crawler.
+  if (Array.isArray(cached) && cached.length) return cached;
 
   const files = await Promise.all(
-    RANGE_FILES.map((u) => fetch(u).then((r) => r.json()))
+    RANGE_FILES.map(async (u) => {
+      const res = await fetch(u, { cf: { cacheTtl: 3600 } });
+      if (!res.ok) throw new Error(`${u} -> ${res.status}`);
+      return res.json();
+    })
   );
   const prefixes = files.flatMap((f) => f.prefixes ?? []);
+  if (!prefixes.length) throw new Error('no prefixes in Google range files');
   await env.BOT_KV.put('google-ranges', JSON.stringify(prefixes), { expirationTtl: 86400 });
   return prefixes;
 }
@@ -357,10 +432,60 @@ async function isVerifiedGoogle(request, env) {
   if (!/Googlebot|Google-InspectionTool|Storebot-Google/i.test(ua)) return false;
 
   const ip = request.headers.get('cf-connecting-ip');
-  const prefixes = await googleRanges(env);
-  return prefixes.some((p) => ipInCidr(ip, p.ipv4Prefix ?? p.ipv6Prefix));
+  if (!ip) return false;
+
+  let prefixes;
+  try {
+    prefixes = await googleRanges(env);
+  } catch (err) {
+    // Fail OPEN. If Google's range files are unreachable, treating a real
+    // crawler as unverified is worse than treating an impostor as verified —
+    // this function gates rate limits, not access to private data.
+    console.error('crawler range lookup failed', err);
+    return true;
+  }
+
+  const wantV6 = ip.includes(':');
+  return prefixes.some((p) => {
+    const cidr = wantV6 ? p.ipv6Prefix : p.ipv4Prefix;
+    return cidr ? ipInCidr(ip, cidr) : false;
+  });
 }
 ```
+
+`ipInCidr` is yours to provide. IPv4 fits in a few lines; IPv6 needs BigInt because the address does
+not fit in a 32-bit integer:
+
+```js
+function ipToBigInt(ip) {
+  if (ip.includes(':')) {
+    // Expand "::" and any omitted leading zeros into eight 16-bit groups.
+    const [head, tail = ''] = ip.split('::');
+    const left = head ? head.split(':') : [];
+    const right = tail ? tail.split(':') : [];
+    const groups = [
+      ...left,
+      ...Array(8 - left.length - right.length).fill('0'),
+      ...right,
+    ];
+    return groups.reduce((acc, g) => (acc << 16n) | BigInt(parseInt(g || '0', 16)), 0n);
+  }
+  return ip.split('.').reduce((acc, o) => (acc << 8n) | BigInt(Number(o)), 0n);
+}
+
+function ipInCidr(ip, cidr) {
+  const [network, bitsRaw] = cidr.split('/');
+  if (ip.includes(':') !== network.includes(':')) return false;   // family mismatch
+
+  const width = network.includes(':') ? 128n : 32n;
+  const bits = BigInt(bitsRaw);
+  const mask = bits === 0n ? 0n : (~0n << (width - bits)) & ((1n << width) - 1n);
+  return (ipToBigInt(ip) & mask) === (ipToBigInt(network) & mask);
+}
+```
+
+Cloudflare's own bot detection already does this work, so on paid plans prefer the Verified Bots
+signal over rolling your own. The code above is for cases where you need the check in Worker logic.
 
 The published files are `common-crawlers.json` (Googlebot and friends), `special-crawlers.json`
 (AdsBot etc.), `user-triggered-fetchers.json`, `user-triggered-fetchers-google.json` and
@@ -412,21 +537,26 @@ you cannot modify, an A/B tested title.
 class MetaRewriter {
   constructor(meta) {
     this.meta = meta;
-    this.seen = new Set();
   }
 
   element(element) {
-    if (element.tagName === 'title') {
-      element.setInnerContent(this.meta.title);
-      this.seen.add('title');
-      return;
+    // A throwing handler aborts parsing and errors the response body, turning a
+    // metadata tweak into a 5xx. Never let one escape.
+    try {
+      if (element.tagName === 'title') {
+        if (this.meta.title) element.setInnerContent(this.meta.title);
+        return;
+      }
+      const name = element.getAttribute('name') ?? element.getAttribute('property');
+      if (name === 'description' && this.meta.description) {
+        element.setAttribute('content', this.meta.description);
+      }
+      if (name === 'og:title' && this.meta.title) {
+        element.setAttribute('content', this.meta.title);
+      }
+    } catch (err) {
+      console.error('meta rewrite failed', err);
     }
-    const name = element.getAttribute('name') ?? element.getAttribute('property');
-    if (name === 'description' && this.meta.description) {
-      element.setAttribute('content', this.meta.description);
-      this.seen.add('description');
-    }
-    if (name === 'og:title') element.setAttribute('content', this.meta.title);
   }
 }
 
@@ -438,13 +568,21 @@ export default {
     const meta = await env.META.get(new URL(request.url).pathname, 'json');
     if (!meta) return response;
 
+    const rewriter = new MetaRewriter(meta);
     return new HTMLRewriter()
-      .on('title', new MetaRewriter(meta))
-      .on('meta', new MetaRewriter(meta))
+      // `head > title`, not `title`: a bare selector also matches <title>
+      // inside inline SVG, which would rewrite an icon's tooltip.
+      .on('head > title', rewriter)
+      .on('head > meta', rewriter)
       .transform(response);
   },
 };
 ```
+
+Two things this does **not** do. It only edits tags that already exist — HTMLRewriter streams, so
+adding a missing `<meta name="description">` means appending to `head` instead (next section). And it
+requires the Worker to see the request at all, which means the HTML paths must be in
+`run_worker_first`.
 
 ### Injecting structured data
 
@@ -498,7 +636,8 @@ What actually helps:
   handling them at the edge (which still costs a fetch).
 - **Return 304 where you can.** Honouring `If-Modified-Since` / `If-None-Match` lets a crawler
   revalidate cheaply.
-- **Use 410 for permanently removed content.** It is processed faster than a 404.
+- **Use 410 for permanently removed content.** It states the intent precisely. Google does not
+  document a processing-speed advantage over 404, so choose it for correctness, not for speed.
 - **Keep `lastmod` honest in the sitemap.** Google uses it only when it is consistently accurate;
   stamping every URL with today's date trains it to ignore the field.
 

@@ -10,7 +10,10 @@ on:
     - cron: "0 0 1 * *"
   workflow_dispatch:
 
+# Naming only `issues` here would set every other scope to none, and
+# actions/checkout would then fail to clone — contents: read is required.
 permissions:
+  contents: read
   issues: write
 
 jobs:
@@ -22,15 +25,17 @@ jobs:
       - name: Collect last_verified dates
         id: dates
         run: |
+          delimiter="table_$(date +%s)_$RANDOM"
           {
-            echo "table<<EOF"
+            echo "table<<$delimiter"
             echo "| File | last_verified |"
             echo "|------|---------------|"
-            for f in $(find .claude/skills -name '*.md' | sort); do
-              date=$(sed -n '1,10p' "$f" | grep -m1 '^last_verified:' | cut -d' ' -f2)
+            find .claude/skills -name '*.md' -print0 | sort -z | while IFS= read -r -d '' f; do
+              # `|| true` keeps a missing field from failing the step under pipefail
+              date=$(sed -n '1,10p' "$f" | grep -m1 '^last_verified:' | cut -d' ' -f2 || true)
               echo "| \`$f\` | ${date:-**missing**} |"
             done
-            echo "EOF"
+            echo "$delimiter"
           } >> "$GITHUB_OUTPUT"
 
       - name: Open freshness check issue
@@ -42,14 +47,18 @@ jobs:
             const month = new Date().toISOString().slice(0, 7);
             const title = `Freshness check: ${month}`;
 
-            const existing = await github.rest.issues.listForRepo({
+            // Paginate, and include closed issues: re-running workflow_dispatch
+            // after closing this month's issue should not reopen a duplicate.
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open',
+              state: 'all',
               labels: 'freshness',
+              per_page: 100,
             });
-            if (existing.data.some((issue) => issue.title === title)) {
-              core.info(`Issue "${title}" already open — nothing to do.`);
+            const match = existing.find((issue) => issue.title === title);
+            if (match) {
+              core.info(`Issue "${title}" already exists (#${match.number}, ${match.state}).`);
               return;
             }
 

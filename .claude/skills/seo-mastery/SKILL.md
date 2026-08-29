@@ -167,7 +167,7 @@ Key facts from Google's official AI features and generative AI optimization guid
 - The site-level control lives at **Settings → Search generative AI** (default: included). Excluding removes the site from AI Overviews, AI Mode and generative AI in Discover, and Google states it "isn't used as a ranking or inclusion signal affecting other parts of Search"
 - Beyond that control, appearance is shaped by the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt, content chunking, or AI-specific schema
 - `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
-- AI traffic appears in the "Web" search type of the Performance report, plus a dedicated **Search generative AI performance report** (data from 2026-05-18, impressions only)
+- AI traffic appears in the "Web" search type of the Performance report, plus a dedicated **Search generative AI performance report** (no historical backfill, impressions only)
 
 AI crawler UA list, robots.txt recipes, llms.txt format, AI-citable content design, and measurement details: see [ai-search.md](ai-search.md).
 

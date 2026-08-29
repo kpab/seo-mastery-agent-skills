@@ -168,10 +168,11 @@ export async function getStaticPaths() {
   }));
 }
 
-const { post } = Astro.props;
+const { post, shareUrl } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout title={post.data.title} description={post.data.description} type="article">
+  <meta slot="head" property="og:url" content={shareUrl} />
   <Content />
 </BaseLayout>
 ```
@@ -208,7 +209,8 @@ const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
-      title: z.string().max(110),           // Articleリッチリザルトのheadline上限
+      title: z.string().max(110),           // 編集上の上限。Googleはheadlineに文字数制限を設けて
+                                             // いないが「長いタイトルは端末により切り詰められる」
       description: z.string(),
       publishedAt: z.coerce.date(),
       updatedAt: z.coerce.date().optional(),
@@ -224,7 +226,7 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-SEO上の制約をスキーマに書いておくこと（headlineの`max(110)`、著者URLの`.url()`）で、不正な記事は
+自分たちの編集ルールをスキーマに書いておけば（headlineの文字数上限、著者URLの`.url()`）、不正な記事は
 壊れたマークアップとして公開される前に`astro build`で落ちます。
 
 ### マークアップを生成する
@@ -290,7 +292,10 @@ Organization・WebSite・BreadcrumbListはページごとではなくベース�
 ```astro
 ---
 // src/components/SiteJsonLd.astro — BaseLayoutで一度だけ描画する
-const site = Astro.site!.href;
+// "undefined" を含むURLを出力するくらいならビルド時に落とす。非nullアサーション
+//（Astro.site!）はTypeScriptを黙らせるだけで、本当の問題は解決しない。
+if (!Astro.site) throw new Error('astro.config.mjs に `site` がありません。JSON-LDには絶対URLが必要です');
+const site = Astro.site.href;
 
 const graph = {
   '@context': 'https://schema.org',
@@ -350,8 +355,13 @@ export default defineConfig({
 ```astro
 ---
 // src/pages/internal/preview.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<meta name="robots" content="noindex, nofollow" />
+<BaseLayout title="内部プレビュー" description="検索エンジン向けではない">
+  <!-- <head> の中に置く必要がある。上のBaseLayoutは `head` スロットを用意している -->
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+  <p>…</p>
+</BaseLayout>
 ```
 
 ### 多言語サイトマップ
@@ -423,12 +433,11 @@ Astroには2つの方式があり、SEO上の性質が大きく異なります�
 
 ```astro
 ---
-// src/layouts/BaseLayout.astro — v6の名称。v5では <ViewTransitions /> だったが現在は削除済み
+// クライアントルーティングを使うなら、上のBaseLayoutの <head> に追加する。
+// v6の名称。v5では <ViewTransitions /> だったが現在は削除済み。
 import { ClientRouter } from 'astro:transitions';
 ---
-<head>
-  <ClientRouter />
-</head>
+<ClientRouter />
 ```
 
 ### 遷移後のスクリプトと計測
