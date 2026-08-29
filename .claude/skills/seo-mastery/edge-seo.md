@@ -293,7 +293,7 @@ export async function sitemapForPage(env, page) {
       const lastmod = isoOrNull(row.updated_at);
       return (
         `  <url>\n` +
-        `    <loc>https://example.com/blog/${escapeXml(row.slug)}/</loc>\n` +
+        `    <loc>${escapeXml(locFor(row.slug))}</loc>\n` +
         (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : '') +
         `  </url>`
       );
@@ -302,6 +302,20 @@ export async function sitemapForPage(env, page) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+}
+
+export async function pageCount(env) {
+  const { results } = await env.DB.prepare(
+    'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
+  ).all();
+  return Math.ceil(results[0].n / PAGE_SIZE);
+}
+
+function locFor(slug) {
+  // The spec wants the URL percent-encoded first and entity-escaped second.
+  // encodeURIComponent leaves path-safe characters alone and handles the two
+  // things that actually break <loc>: spaces and non-ASCII.
+  return `https://example.com/blog/${encodeURIComponent(slug)}/`;
 }
 
 function isoOrNull(value) {
@@ -329,8 +343,8 @@ function escapeXml(value) {
 
 Escaping is not optional. A slug containing `&` produces malformed XML, and Search Console reports
 the whole sitemap as unreadable — one bad row costs you the entire file. Note the order for `<loc>`:
-the sitemap spec wants the URL percent-encoded *first* and entity-escaped second, so wrap non-ASCII
-or space-bearing slugs in `encodeURIComponent()` before `escapeXml()`.
+the sitemap spec wants the URL percent-encoded *first* and entity-escaped second, which is why
+`locFor()` runs `encodeURIComponent()` on the slug and hands the finished URL to `escapeXml()`.
 
 ### Sitemap index and caching
 
@@ -339,7 +353,7 @@ Serve an index that points at the paginated files, and cache both at the edge so
 
 ```js
 // src/index.js
-import { sitemapForPage, PAGE_SIZE } from './sitemap.js';
+import { sitemapForPage, pageCount } from './sitemap.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -351,12 +365,12 @@ export default {
 
     let body;
     if (url.pathname === '/sitemap-index.xml') {
-      const { results } = await env.DB.prepare(
-        'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
-      ).all();
-      // Always at least one child: an index with zero <sitemap> entries is
-      // invalid, and a brand-new site would otherwise serve one.
-      const pages = Math.max(1, Math.ceil(results[0].n / PAGE_SIZE));
+      const pages = await pageCount(env);
+      // Zero pages means zero URLs, and there is no valid empty sitemap:
+      // <sitemapindex> needs a child and <urlset> needs a <url>. Padding the
+      // count to 1 only moves the invalid document one level down, so serve
+      // nothing. List your static routes here too and the case cannot arise.
+      if (pages === 0) return new Response('Not found', { status: 404 });
       body =
         `<?xml version="1.0" encoding="UTF-8"?>\n` +
         `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -365,8 +379,16 @@ export default {
         ).join('\n') +
         `\n</sitemapindex>`;
     } else {
-      const page = Number(url.pathname.match(/^\/sitemap-(\d+)\.xml$/)?.[1] ?? -1);
-      if (page < 0) return env.ASSETS.fetch(request);
+      const match = url.pathname.match(/^\/sitemap-(\d+)\.xml$/);
+      if (!match) return env.ASSETS.fetch(request);
+      const page = Number(match[1]);
+      // Bound the page against the real count. Unbounded, /sitemap-999999.xml
+      // answers 200 with an empty <urlset>: an infinite space of indexable
+      // URLs — the crawler trap this file warns about below — backed by an
+      // unbounded D1 OFFSET scan on every request.
+      if (page >= (await pageCount(env))) {
+        return new Response('Not found', { status: 404 });
+      }
       body = await sitemapForPage(env, page);
     }
 

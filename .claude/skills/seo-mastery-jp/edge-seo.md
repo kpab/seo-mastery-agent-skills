@@ -292,7 +292,7 @@ export async function sitemapForPage(env, page) {
       const lastmod = isoOrNull(row.updated_at);
       return (
         `  <url>\n` +
-        `    <loc>https://example.com/blog/${escapeXml(row.slug)}/</loc>\n` +
+        `    <loc>${escapeXml(locFor(row.slug))}</loc>\n` +
         (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : '') +
         `  </url>`
       );
@@ -301,6 +301,20 @@ export async function sitemapForPage(env, page) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+}
+
+export async function pageCount(env) {
+  const { results } = await env.DB.prepare(
+    'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
+  ).all();
+  return Math.ceil(results[0].n / PAGE_SIZE);
+}
+
+function locFor(slug) {
+  // 仕様が求める順序は「先にパーセントエンコード、後で実体参照」。
+  // encodeURIComponentはパスに使える文字をそのまま残し、<loc>を実際に壊す
+  // 2つ——空白と非ASCII——だけを処理する。
+  return `https://example.com/blog/${encodeURIComponent(slug)}/`;
 }
 
 function isoOrNull(value) {
@@ -329,7 +343,8 @@ function escapeXml(value) {
 エスケープは省略できません。スラッグに`&`が含まれるとXMLが壊れ、Search Consoleはサイトマップ全体を
 読み取り不能として扱います。1行の不備でファイル1つ分をまるごと失います。`<loc>`については順序も
 決まっていて、サイトマップ仕様はURLを*先に*パーセントエンコードし、そのあとで実体参照する形を
-求めています。非ASCIIや空白を含むスラッグは`escapeXml()`の前に`encodeURIComponent()`を通してください。
+求めています。`locFor()`がスラッグに`encodeURIComponent()`をかけ、組み立て終えたURLを`escapeXml()`に
+渡しているのはこのためです。
 
 ### サイトマップインデックスとキャッシュ
 
@@ -338,7 +353,7 @@ function escapeXml(value) {
 
 ```js
 // src/index.js
-import { sitemapForPage, PAGE_SIZE } from './sitemap.js';
+import { sitemapForPage, pageCount } from './sitemap.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -350,12 +365,12 @@ export default {
 
     let body;
     if (url.pathname === '/sitemap-index.xml') {
-      const { results } = await env.DB.prepare(
-        'SELECT COUNT(*) AS n FROM posts WHERE published = 1'
-      ).all();
-      // 子要素は最低1つ。<sitemap>が0個のインデックスは不正であり、
-      // 新規サイトではそれを返してしまうため。
-      const pages = Math.max(1, Math.ceil(results[0].n / PAGE_SIZE));
+      const pages = await pageCount(env);
+      // ページ数0はURL数0であり、空のサイトマップに正当な形はない。
+      // <sitemapindex>には子要素が、<urlset>には<url>が最低1つ必要だから。
+      // 1に丸めても不正なドキュメントが1階層下がるだけなので、何も返さない。
+      // 静的ルートもここに含めれば、そもそもこのケースは発生しない。
+      if (pages === 0) return new Response('Not found', { status: 404 });
       body =
         `<?xml version="1.0" encoding="UTF-8"?>\n` +
         `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -364,8 +379,16 @@ export default {
         ).join('\n') +
         `\n</sitemapindex>`;
     } else {
-      const page = Number(url.pathname.match(/^\/sitemap-(\d+)\.xml$/)?.[1] ?? -1);
-      if (page < 0) return env.ASSETS.fetch(request);
+      const match = url.pathname.match(/^\/sitemap-(\d+)\.xml$/);
+      if (!match) return env.ASSETS.fetch(request);
+      const page = Number(match[1]);
+      // ページ番号を実際のページ数で必ず抑える。抑えないと
+      // /sitemap-999999.xml が空の<urlset>を200で返す。インデックス可能な
+      // URLが無限に生まれる——このファイルが後段で警告しているクローラー
+      // トラップそのもの——うえ、毎リクエストで無制限のD1 OFFSETスキャンが走る。
+      if (page >= (await pageCount(env))) {
+        return new Response('Not found', { status: 404 });
+      }
       body = await sitemapForPage(env, page);
     }
 
