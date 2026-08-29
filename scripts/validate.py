@@ -158,26 +158,33 @@ def parse_frontmatter(path: Path) -> dict:
     return fields
 
 
-def fenced_regions(lines: list) -> list:
-    """Return a bool per line: True if the line is inside a fenced code block.
+def fenced_blocks(lines: list) -> tuple:
+    """Scan a markdown file's code fences once.
 
-    Tracks the opening fence's character and length so an inner ``` inside a
-    ```` block does not close it, and so an indented fence is matched by its
-    own closing fence rather than by the next unrelated one.
+    Returns (inside, blocks, unclosed): `inside[i]` is True when line i belongs
+    to a fenced code block (fence lines included), `blocks` holds one dict per
+    closed block, and `unclosed` is the opening line of a block that never
+    closed, or None.
+
+    One scan means the prose view and the code-block view cannot disagree.
+    They did when they were two parsers: the block reader closed on any bare
+    ``` and only ever opened on ```, so a ```` block containing an inner ```
+    was mis-split and every ~~~json block went unvalidated.
+
+    The opening fence's character and length are tracked so an inner ``` inside
+    a ```` block does not close it.
     """
     inside = [False] * len(lines)
-    fence = None  # (char, length, indent)
+    blocks = []
+    fence = None  # (char, run, start_line, info, content)
     for i, line in enumerate(lines):
         stripped = line.lstrip()
         char = stripped[:1]
-        if char in ("`", "~"):
-            run = len(stripped) - len(stripped.lstrip(char))
-        else:
-            run = 0
+        run = len(stripped) - len(stripped.lstrip(char)) if char in ("`", "~") else 0
 
         if fence is None:
             if run >= 3:
-                fence = (char, run)
+                fence = (char, run, i + 1, stripped[run:].strip(), [])
                 inside[i] = True
             continue
 
@@ -185,33 +192,35 @@ def fenced_regions(lines: list) -> list:
         # A closing fence uses the same character, is at least as long, and
         # carries no info string.
         if char == fence[0] and run >= fence[1] and not stripped[run:].strip():
+            blocks.append({"line": fence[2], "info": fence[3], "text": "\n".join(fence[4])})
             fence = None
-    return inside
+        else:
+            fence[4].append(line)
+
+    return inside, blocks, fence[2] if fence else None
 
 
 def parse_markdown(path: Path) -> dict:
-    """Split a markdown file into prose lines and fenced code blocks."""
+    """Split a markdown file into prose lines and fenced code blocks.
+
+    Cached for the same reason parse_frontmatter is: check_json_blocks and
+    check_sync both parse every file, so without caching an unclosed fence was
+    reported twice and every file was read and scanned twice.
+    """
+    if path in _markdown_cache:
+        return _markdown_cache[path]
+
     lines = path.read_text(encoding="utf-8").splitlines()
-    inside = fenced_regions(lines)
+    inside, blocks, unclosed = fenced_blocks(lines)
+    if unclosed is not None:
+        error(f"{path.relative_to(REPO)}:{unclosed}: unclosed code fence")
 
-    prose = [line for line, fenced in zip(lines, inside) if not fenced]
-
-    blocks, current, start, info = [], None, 0, ""
-    for i, (line, fenced) in enumerate(zip(lines, inside), 1):
-        stripped = line.strip()
-        if current is None:
-            if fenced and stripped.startswith("```"):
-                current, start, info = [], i, stripped[3:].strip()
-            continue
-        if stripped == "```":
-            blocks.append({"line": start, "info": info, "text": "\n".join(current)})
-            current = None
-        else:
-            current.append(line)
-    if current is not None:
-        error(f"{path.relative_to(REPO)}:{start}: unclosed ``` block")
-
-    return {"prose": prose, "blocks": blocks}
+    parsed = {
+        "prose": [line for line, fenced in zip(lines, inside) if not fenced],
+        "blocks": blocks,
+    }
+    _markdown_cache[path] = parsed
+    return parsed
 
 
 def check_frontmatter(skill_dir: Path) -> None:
