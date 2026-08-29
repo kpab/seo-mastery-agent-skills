@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-08-30
 ---
 
 # Astro SEO Reference
@@ -9,8 +9,9 @@ solve much of what other frameworks need plugins for — what remains are the de
 *you* responsible for: which islands hydrate, how absolute URLs are constructed at build time, and
 how content metadata becomes structured data.
 
-Verified against Astro 6 (released 2026-03-10). Where v5 and v6 differ, the v6 form is given first
-and the v5 form is noted.
+Verified against Astro 7 (released 2026-06-22). No API in this file changed in v7 — what changed is
+the HTML Astro emits, covered in the migration section at the end. Where v5 and v6 differ, the v6
+form is given first and the v5 form is noted.
 
 ## Islands Architecture and Core Web Vitals
 
@@ -142,9 +143,9 @@ const ogImage = new URL(image ?? '/og-default.png', Astro.site).href;
 OG images must be absolute URLs on an absolute host — `new URL(..., Astro.site)` guarantees that.
 Relative OG image paths are the single most common broken-share-preview cause in Astro projects.
 
-### getStaticPaths and Astro.site on Astro 6
+### getStaticPaths and Astro.site on Astro 6+
 
-`getStaticPaths()` runs before a page has a request context. On Astro 6, `Astro.site` inside
+`getStaticPaths()` runs before a page has a request context. Since Astro 6, `Astro.site` inside
 `getStaticPaths()` is **deprecated and logs a warning**; accessing any other `Astro` property there
 throws. Use `import.meta.env.SITE`, which holds the same configured value.
 
@@ -161,7 +162,7 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6: use import.meta.env.SITE here, NOT Astro.site
+      // Astro 6+: use import.meta.env.SITE here, NOT Astro.site
       shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
     },
   }));
@@ -189,7 +190,7 @@ sees, so a slotted override is silently ignored while the page ships two conflic
 Astro's `trailingSlash` config, your internal links, your canonical tags and your sitemap must all
 agree, or you publish two URLs for every page and let Google pick. Two Astro-specific traps:
 
-- **Endpoints with a file extension.** On Astro 6, routes such as `/sitemap.xml` or `/rss.xml`
+- **Endpoints with a file extension.** Since Astro 6, routes such as `/sitemap.xml` or `/rss.xml`
   "can only be accessed without a trailing slash … regardless of your `build.trailingSlash`
   configuration." Link to them without a trailing slash.
 - **The host also decides.** Static hosts often normalize trailing slashes themselves. Verify the
@@ -203,8 +204,8 @@ build error instead of a Search Console error.
 
 ### Define the collection
 
-Collections live in `src/content.config.ts` on Astro 6 (the legacy `src/content/config.ts` location
-was removed) and require an explicit `loader`.
+Collections live in `src/content.config.ts` on Astro 6 and later (the legacy
+`src/content/config.ts` location was removed) and require an explicit `loader`.
 
 ```ts
 // src/content.config.ts
@@ -417,7 +418,7 @@ Sitemap: https://example.com/sitemap-index.xml
 
 For AI crawler directives, see `ai-search.md`. If robots.txt must be generated (per-environment
 rules, for example), an endpoint at `src/pages/robots.txt.ts` works — link to it without a trailing
-slash on Astro 6.
+slash on Astro 6 and later.
 
 ## View transitions and SEO
 
@@ -485,7 +486,22 @@ needs the new DOM in place.
   that contains page-specific structured data or metadata will leave stale content in the DOM —
   persist players and sidebars, not content.
 
-## Astro 6 migration notes that affect SEO
+## Version migration notes that affect SEO
+
+### Astro 7 (released 2026-06-22)
+
+Astro 7 changes no API in this file. What it changes is the HTML those APIs emit, which matters more
+to a crawler than a renamed import does.
+
+| Change | SEO consequence |
+|--------|-----------------|
+| The Rust compiler is the default and only `.astro` compiler | "Unclosed tags now produce errors" and "semantically invalid HTML is no longer auto-corrected." The old compiler silently restructured invalid markup to match the HTML parsing specification; v7 passes your markup "through as-is", so a page that rendered cleanly on v6 can now ship the broken nesting you actually wrote. Most of it surfaces as a build error — re-check heading order and `<head>` contents on whatever still builds |
+| `compressHTML` defaults to `'jsx'` instead of `true` | Whitespace between adjacent inline elements collapses: `<span>hello</span><em>world</em>` now renders as `helloworld`. Titles, headings and anchor text assembled from adjacent elements lose their word boundaries — and that is the text Google indexes. Insert an explicit `{" "}` wherever a space is meant |
+| Markdown renders through Sätteri, not remark/rehype | `@astrojs/markdown-remark` is no longer installed by default, so a remark/rehype plugin doing SEO work — heading anchors, `rel` on external links, excerpt generation — stops running until you reinstall the package and configure `unified()` as the processor. Diff the generated heading IDs against your existing in-page anchors before shipping |
+| `src/fetch.ts` is reserved for Advanced Routing | A standard fetch handler can now own the whole request pipeline. That is where redirects and response headers for SSR routes belong — the same gap `edge-seo.md` describes for Worker-generated responses |
+| `astro:transitions` internals removed | The `TRANSITION_*` constants and helpers (`isTransitionBeforeSwapEvent()`, `createAnimationScope()`, …) are gone. The lifecycle *event names* are unaffected, so the `astro:page-load` analytics hook above still applies |
+
+### Astro 6 (released 2026-03-10)
 
 | Change | Action |
 |--------|--------|
@@ -514,14 +530,17 @@ reduce the layout shift when a web font swaps in.
 - [ ] Multilingual sites configure `sitemap({ i18n })` with locale keys matching the route segments
 - [ ] `robots.txt` in `public/` references `sitemap-index.xml`
 - [ ] If ClientRouter is used: analytics hooks `astro:page-load`, and every page has a unique title
-- [ ] On Astro 6: no `Astro.site` inside `getStaticPaths()`, no `<ViewTransitions />`
+- [ ] On Astro 6+: no `Astro.site` inside `getStaticPaths()`, no `<ViewTransitions />`
+- [ ] On Astro 7: the build clears the Rust compiler's HTML validation, and `compressHTML: 'jsx'` has not merged words in titles, headings or anchor text
 
 ## Official resources
 
 - [Astro docs](https://docs.astro.build/)
+- [Upgrade to Astro v7](https://docs.astro.build/en/guides/upgrade-to/v7/)
 - [Upgrade to Astro v6](https://docs.astro.build/en/guides/upgrade-to/v6/)
 - [Template directives reference](https://docs.astro.build/en/reference/directives-reference/)
 - [View transitions](https://docs.astro.build/en/guides/view-transitions/)
 - [Content collections](https://docs.astro.build/en/guides/content-collections/)
 - [@astrojs/sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/)
+- [Astro 7.0 release notes](https://astro.build/blog/astro-7/)
 - [Astro 6.0 release notes](https://astro.build/blog/astro-6/)

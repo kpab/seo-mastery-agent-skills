@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-08-30
 ---
 
 # Astro SEO リファレンス
@@ -9,8 +9,9 @@ Astro特有のSEOパターン。Astroのデフォルト（JavaScriptゼロ、静
 判断です。どのアイランドをハイドレートするか、ビルド時に絶対URLをどう組み立てるか、
 コンテンツのメタデータをどう構造化データに変換するか。
 
-Astro 6（2026年3月10日リリース）で検証済み。v5とv6で異なる場合はv6の書き方を先に示し、v5の形を
-注記します。
+Astro 7（2026年6月22日リリース）で検証済み。このファイルで扱うAPIはv7では変更されていません。
+v7が変えたのはAstroが出力するHTMLそのもので、末尾の移行ポイントにまとめてあります。v5とv6で
+異なる場合はv6の書き方を先に示し、v5の形を注記します。
 
 ## Islands ArchitectureとCore Web Vitals
 
@@ -144,9 +145,9 @@ const ogImage = new URL(image ?? '/og-default.png', Astro.site).href;
 OG画像はホスト名を含む絶対URLでなければなりません。`new URL(..., Astro.site)`ならそれが保証
 されます。AstroプロジェクトでSNSのシェアプレビューが壊れる原因は、ほぼこの相対パス指定です。
 
-### Astro 6のgetStaticPathsとAstro.site
+### Astro 6以降のgetStaticPathsとAstro.site
 
-`getStaticPaths()`はページのリクエストコンテキストが存在しない段階で実行されます。Astro 6では
+`getStaticPaths()`はページのリクエストコンテキストが存在しない段階で実行されます。Astro 6以降、
 `getStaticPaths()`内の`Astro.site`は**非推奨で警告が出ます**。他の`Astro`プロパティにアクセス
 するとエラーになります。同じ設定値を持つ`import.meta.env.SITE`を使ってください。
 
@@ -163,7 +164,7 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6: ここでは Astro.site ではなく import.meta.env.SITE を使う
+      // Astro 6+: ここでは Astro.site ではなく import.meta.env.SITE を使う
       shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
     },
   }));
@@ -192,7 +193,7 @@ Astroの`trailingSlash`設定、内部リンク、canonicalタグ、サイトマ
 なりません。ずれていると1ページにつき2つのURLを公開し、どちらを採用するかをGoogleに委ねることに
 なります。Astro固有の落とし穴が2つあります。
 
-- **拡張子付きエンドポイント。** Astro 6では`/sitemap.xml`や`/rss.xml`のようなルートは
+- **拡張子付きエンドポイント。** Astro 6以降、`/sitemap.xml`や`/rss.xml`のようなルートは
   「`build.trailingSlash`の設定にかかわらず、末尾スラッシュなしでのみアクセスできる」仕様です。
   リンクは末尾スラッシュなしで書いてください。
 - **ホスト側も正規化する。** 静的ホスティングは独自に末尾スラッシュを正規化することがあります。
@@ -206,7 +207,7 @@ Content Collectionsは全エントリをZodスキーマで検証します。こ�
 
 ### コレクションを定義する
 
-Astro 6ではコレクションは`src/content.config.ts`に置き（旧`src/content/config.ts`は削除済み）、
+Astro 6以降、コレクションは`src/content.config.ts`に置き（旧`src/content/config.ts`は削除済み）、
 `loader`の明示が必須です。
 
 ```ts
@@ -421,7 +422,7 @@ Sitemap: https://example.com/sitemap-index.xml
 ```
 
 AIクローラー向けの記述は`ai-search.md`を参照。環境ごとにルールを変えるなど動的生成が必要な場合は
-`src/pages/robots.txt.ts`のエンドポイントで対応できます。Astro 6ではリンクを末尾スラッシュなしで
+`src/pages/robots.txt.ts`のエンドポイントで対応できます。Astro 6以降はリンクを末尾スラッシュなしで
 書いてください。
 
 ## View TransitionsとSEO
@@ -489,7 +490,22 @@ Astroはバンドルされたモジュールスクリプトについて「一度
   含む要素を永続化すると古い内容がDOMに残ります。永続化してよいのはプレーヤーやサイドバーであって、
   コンテンツではありません。
 
-## SEOに影響するAstro 6移行ポイント
+## SEOに影響するバージョン移行ポイント
+
+### Astro 7（2026年6月22日リリース）
+
+Astro 7はこのファイルで扱うAPIを変更していません。変わったのはAstroが出力するHTMLそのものです。
+importの名前が変わるより、クローラーにとっては影響が大きい部類です。
+
+| 変更点 | SEOへの影響 |
+|--------|-------------|
+| Rustコンパイラが唯一のデフォルト`.astro`コンパイラに | 「未閉じタグはエラーになる」「意味的に不正なHTMLは自動補正されない」。旧コンパイラはHTMLパース仕様に合わせて不正なマークアップを黙って組み替えていましたが、v7は書いたまま通します。v6では問題なく描画されていたページが、実際に書かれていた壊れた入れ子のまま出力されることになります。大半はビルドエラーとして表面化します。ビルドが通ったものは見出しの順序と`<head>`の中身を再確認してください |
+| `compressHTML`のデフォルトが`true`から`'jsx'`に | 隣接するインライン要素の間の空白が詰められます。`<span>hello</span><em>world</em>`は`helloworld`として出力されます。隣接要素を組み合わせて作っているタイトル・見出し・アンカーテキストは単語の区切りを失い、それがGoogleのインデックス対象テキストになります。空白が必要な箇所には明示的に`{" "}`を入れてください |
+| MarkdownのレンダリングがremarkからSätteriへ | `@astrojs/markdown-remark`はデフォルトではインストールされなくなりました。見出しアンカー、外部リンクへの`rel`付与、抜粋生成など、SEO目的で入れていたremark/rehypeプラグインは、パッケージを再導入して`unified()`をプロセッサに設定するまで黙って動かなくなります。公開前に、生成される見出しIDと既存のページ内アンカーを突き合わせてください |
+| `src/fetch.ts`がAdvanced Routing用の予約ファイルに | 標準のfetchハンドラーでリクエストパイプライン全体を制御できるようになりました。SSRルートのリダイレクトとレスポンスヘッダーはここが置き場所です。`edge-seo.md`が指摘するWorker生成レスポンスの穴と同じ話です |
+| `astro:transitions`の内部APIを削除 | `TRANSITION_*`定数と`isTransitionBeforeSwapEvent()`・`createAnimationScope()`などのヘルパーが削除されました。ライフサイクル*イベント名*は変わっていないため、上記の`astro:page-load`による計測フックはそのまま使えます |
+
+### Astro 6（2026年3月10日リリース）
 
 | 変更点 | 対応 |
 |--------|------|
@@ -518,14 +534,17 @@ Webフォント差し替え時のレイアウトシフトを減らすためで�
 - [ ] 多言語サイトでは`sitemap({ i18n })`のロケールキーがルートのパスセグメントと一致している
 - [ ] `public/`の`robots.txt`が`sitemap-index.xml`を参照している
 - [ ] ClientRouter使用時: 計測は`astro:page-load`にフックし、各ページのタイトルが一意である
-- [ ] Astro 6: `getStaticPaths()`内に`Astro.site`がなく、`<ViewTransitions />`も残っていない
+- [ ] Astro 6以降: `getStaticPaths()`内に`Astro.site`がなく、`<ViewTransitions />`も残っていない
+- [ ] Astro 7: RustコンパイラのHTML検証をビルドが通過している。`compressHTML: 'jsx'`によってタイトル・見出し・アンカーテキストの単語がつながっていない
 
 ## 公式リソース
 
 - [Astro ドキュメント](https://docs.astro.build/)
+- [Astro v7 へのアップグレード](https://docs.astro.build/en/guides/upgrade-to/v7/)
 - [Astro v6 へのアップグレード](https://docs.astro.build/en/guides/upgrade-to/v6/)
 - [テンプレートディレクティブリファレンス](https://docs.astro.build/en/reference/directives-reference/)
 - [View transitions](https://docs.astro.build/en/guides/view-transitions/)
 - [Content collections](https://docs.astro.build/en/guides/content-collections/)
 - [@astrojs/sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/)
+- [Astro 7.0 リリースノート](https://astro.build/blog/astro-7/)
 - [Astro 6.0 リリースノート](https://astro.build/blog/astro-6/)

@@ -27,8 +27,10 @@ Every reference file carries a `last_verified` date in its frontmatter. See
   costs, `server:defer` server islands, canonical and Open Graph generation from
   `Astro.site` + `Astro.url`, JSON-LD generated from Content Collections schemas (with
   `</script>` escaping), `@astrojs/sitemap` configuration including multilingual sitemaps with
-  hreflang, view transitions (native vs. `<ClientRouter />`) and their analytics pitfalls, and an
-  Astro 6 migration table for SEO-affecting breaking changes
+  hreflang, view transitions (native vs. `<ClientRouter />`) and their analytics pitfalls, and
+  version migration notes for the SEO-affecting breaking changes in Astro 7 (Rust compiler HTML
+  validation, `compressHTML: 'jsx'` collapsing whitespace in indexable text, the Sätteri Markdown
+  pipeline) and Astro 6
 - **`edge-seo.md` (EN/JP)** — Cloudflare Workers/Pages SEO layer: `_redirects` design and limits,
   `_headers` with `X-Robots-Tag` and cache strategy, the static-asset vs. Worker-code blind spot,
   dynamic `sitemap.xml` generation from D1/KV with edge caching, crawler verification by published

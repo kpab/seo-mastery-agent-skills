@@ -5,7 +5,8 @@ verification pass** must be traceable to an entry here, and every entry must car
 file is not a complete audit of every sentence in the skills — it records what each pass actually
 checked, so a later pass can tell verified content from inherited content.
 
-**Research date: 2026-08-29** — all "as of" statements below refer to this date.
+**Research date: 2026-08-29** — all "as of" statements below refer to this date, except §7, which
+records a follow-up pass on **2026-08-30**.
 
 Rules for this file:
 
@@ -271,6 +272,9 @@ Chromium-only and is corrected to name the real support picture.
 ## 3. Astro
 
 ### 3.1 Astro 6.0 (released 2026-03-10)
+
+**Superseded by §7:** this pass treated Astro 6 as current and missed that Astro 7 shipped on
+2026-06-22. The v6 findings below remain accurate for v6 projects.
 
 Headline features: built-in **Fonts API** (download, cache, fallback generation, preload), built-in
 **CSP API** (hashes scripts and styles for static and dynamic output), **Live Content Collections**
@@ -549,3 +553,53 @@ HTML paths listed in `run_worker_first` or they never execute.
 ### 6.4 Pages banner
 
 See §4.1 — the review surfaced a quotable primary statement, which replaced the `UNCONFIRMED` note.
+
+---
+
+## 7. Follow-up pass — Astro 7 (2026-08-30)
+
+### 7.1 What the 2026-08-29 pass missed
+
+`astro-seo.md` was written and stamped `last_verified: 2026-08-29` against **Astro 6**, but
+**Astro 7.0 was released on 2026-06-22** — with 7.1 (2026-07-16) and 7.2 (2026-08-06) already out by
+the time of that pass. The freshness checklist in `freshness-reminder.yml` names the Astro blog as a
+source; the release announcement was on it and was not picked up.
+
+No guidance had to be retracted. Every API the file documents — `client:*` directives, `Astro.site`
+and `Astro.url`, `getStaticPaths()`, Content Collections, `@astrojs/sitemap`, `<ClientRouter />`,
+trailing-slash behaviour — is unchanged in v7; the v7 upgrade guide lists none of them among its
+breaking changes. What was missing was v7 itself.
+
+- <https://astro.build/blog/astro-7/>
+- <https://docs.astro.build/en/guides/upgrade-to/v7/>
+
+### 7.2 Astro 7 breaking changes relevant to SEO
+
+v7's SEO surface is the emitted HTML, not the API:
+
+| Change | Detail |
+|--------|--------|
+| Rust compiler is the default and only compiler | "Unclosed tags now produce errors. The previous compiler silently accepted unclosed HTML and component tags." And: "Semantically invalid HTML is no longer auto-corrected … The Rust compiler does not attempt to correct your markup and instead passes it through as-is." CSS serialization also changes cosmetically (`rebeccapurple` → `#639`), with no functional effect. |
+| `compressHTML` default `true` → `'jsx'` | "Astro strips whitespace from your HTML using JSX rules by default, the same way frameworks like React do." `<span>hello</span><em>world</em>` renders as `helloworld`; the documented fix is an explicit `{" "}`. This changes indexable text, which is why it is in the skill file. |
+| Markdown processor | "Astro now renders your `.md` and `.mdx` files with Sätteri, its native Markdown pipeline, instead of the remark/rehype pipeline." `@astrojs/markdown-remark` is no longer installed by default; remark/rehype plugins require reinstalling it and configuring `unified()` as the processor. |
+| `src/fetch.ts` reserved | Advanced Routing: a standard fetch handler owning the request pipeline. Relevant to SSR redirects and response headers. |
+| `astro:transitions` internals removed | `TRANSITION_BEFORE_PREPARATION`, `TRANSITION_AFTER_SWAP`, `isTransitionBeforeSwapEvent()`, `createAnimationScope()` and friends. Lifecycle **event names** such as `astro:page-load` are unaffected. |
+| `@astrojs/db` removed | Not SEO-relevant; noted so the next pass does not re-derive it. |
+| Vite 8 | Affects integrations using Vite internals. |
+
+Headline v7 features from the release post, for context: 15–61% faster builds (Rust rewrites plus
+Vite 8's Rolldown bundler), Advanced Routing via `src/fetch.ts`, structured JSON logging
+(`astro dev --json`), and a background dev server (`astro dev --background`).
+
+**UNCONFIRMED — for the next pass:** whether Sätteri generates the same Markdown heading IDs as the
+remark/rehype pipeline. The upgrade guide does not say. `astro-seo.md` therefore tells readers to
+diff their generated heading IDs rather than asserting either outcome.
+
+### 7.3 Applied to the skill files
+
+| File | Change |
+|------|--------|
+| `astro-seo.md` (EN/JP) | Verified-against line moved to Astro 7. Version-specific statements reworded to "Astro 6 and later" where the behaviour still holds. "Astro 6 migration notes" became "Version migration notes" with an Astro 7 table above the Astro 6 one. Checklist gained an Astro 7 item; v7 upgrade guide and release notes added to the resources. `last_verified` → 2026-08-30 |
+
+- <https://docs.astro.build/en/guides/upgrade-to/v7/>
+- <https://astro.build/blog/astro-7/>
