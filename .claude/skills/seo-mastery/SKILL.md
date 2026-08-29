@@ -1,7 +1,8 @@
 ---
 name: seo-mastery
-description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, AI search (AI Overviews / AI Mode) and AI crawler control, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, AI Overviews / AIO, AI Mode, generative AI search, llms.txt, AI crawlers (GPTBot, ClaudeBot, Google-Extended), or requests a site audit.
-version: 1.3.0
+description: Comprehensive SEO optimization skill based on Google's official guidelines. Covers technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T strategies, AI search (AI Overviews / AI Mode) and AI crawler control, Astro and edge/Cloudflare SEO, practical code generation, and site audit workflows. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang tags, schema.org structured data, rich results, LCP/INP/CLS, Lighthouse or PageSpeed scores, AI Overviews / AIO, AI Mode, generative AI search, llms.txt, AI crawlers (GPTBot, ClaudeBot, Google-Extended), Astro SEO (client directives, @astrojs/sitemap, ClientRouter, content collections), Cloudflare Workers/Pages SEO (_redirects, _headers, X-Robots-Tag, HTMLRewriter, dynamic sitemaps), or requests a site audit.
+version: 1.4.0
+last_verified: 2026-08-29
 author: kpab
 ---
 
@@ -20,7 +21,9 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 | [structured-data.md](structured-data.md) | Full JSON-LD templates for all supported types, validation, common errors | Structured data implementation |
 | [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS causes and fixes, measurement, Next.js/Nuxt.js code | Performance improvement |
 | [audit-workflow.md](audit-workflow.md) | 6-phase audit procedure, diagnostic commands, report templates | Site audit execution |
-| [ai-search.md](ai-search.md) | AI Overviews / AI Mode guidance, AI crawler robots.txt recipes, llms.txt, AI-citable content design, measurement | AI search optimization and crawler control |
+| [ai-search.md](ai-search.md) | AI Overviews / AI Mode guidance, the Search Console generative AI control, AI crawler robots.txt recipes, llms.txt, AI-citable content design, measurement | AI search optimization and crawler control |
+| [astro-seo.md](astro-seo.md) | Client directives vs. INP/LCP, canonical & OG generation, JSON-LD from Content Collections, @astrojs/sitemap, view transitions | Building or auditing an Astro site |
+| [edge-seo.md](edge-seo.md) | `_redirects` / `_headers`, X-Robots-Tag, D1/KV dynamic sitemaps, crawler verification, HTMLRewriter, crawl budget | Cloudflare Workers / Pages deployments |
 
 ## When to Use This Skill
 
@@ -54,11 +57,19 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 - Performance monitoring and improvement
 
 ### AI Search (AI Overviews / AI Mode)
-- Understanding how AI Overviews / AI Mode select content (no extra requirements beyond indexable + snippet-eligible)
+- Understanding how AI Overviews / AI Mode select content (indexable + snippet-eligible + included via the Search Console generative AI control)
+- Opting in or out with **Settings → Search generative AI** in Search Console (ranking-neutral)
 - Controlling AI appearance with snippet controls (nosnippet, data-nosnippet, max-snippet, noindex)
 - AI crawler control via robots.txt (Google-Extended, GPTBot, ClaudeBot, PerplexityBot, etc.)
 - llms.txt guidance (Google does not use it)
 - Designing content that AI search cites; measuring AI traffic
+
+### Astro / Edge (Cloudflare) Sites
+- Choosing `client:*` directives so islands do not damage INP and LCP
+- Generating canonical, OG tags and JSON-LD from Astro content collections
+- `@astrojs/sitemap` configuration, including multilingual sitemaps
+- Cloudflare `_redirects` / `_headers` design and their Worker-code blind spots
+- Dynamic sitemaps from D1/KV, crawler verification, HTMLRewriter metadata fixes
 
 ### Site Audit
 - Comprehensive SEO audit workflow
@@ -139,14 +150,24 @@ Detailed causes, code examples, measurement tools, and framework-specific (Next.
 
 ---
 
+## Astro and Edge (Cloudflare) Specifics
+
+Static-site and edge deployments shift several SEO decisions out of the application:
+
+- **Astro** — every `client:*` directive is a deliberate INP/LCP cost, absolute URLs must be built from `Astro.site` + `Astro.url`, and Content Collections schemas can drive JSON-LD generation. On Astro 6, `Astro.site` is deprecated inside `getStaticPaths()` (use `import.meta.env.SITE`) and `<ViewTransitions />` was removed in favour of `<ClientRouter />`. See [astro-seo.md](astro-seo.md).
+- **Cloudflare Workers / Pages** — `_redirects` and `_headers` apply to **static assets only**, never to responses generated by Worker code or Pages Functions, so hybrid sites need the logic in both places. Redirect codes default to 302 unless stated. See [edge-seo.md](edge-seo.md).
+
+---
+
 ## AI Search (AI Overviews / AI Mode)
 
-Key facts from Google's official AI features guide:
+Key facts from Google's official AI features and generative AI optimization guides:
 
-- No extra requirements: pages that are indexable and snippet-eligible are automatically eligible for AI Overviews / AI Mode
-- Appearance is controlled with the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt
+- Three eligibility gates: the page must be **indexable**, **snippet-eligible**, and the site must be **included in Search generative AI features in Search Console**
+- The site-level control lives at **Settings → Search generative AI** (default: included). Excluding removes the site from AI Overviews, AI Mode and generative AI in Discover, and Google states it "isn't used as a ranking or inclusion signal affecting other parts of Search"
+- Beyond that control, appearance is shaped by the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt, content chunking, or AI-specific schema
 - `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
-- AI traffic is reported in Search Console's "Web" search type (AI Mode included since June 2025)
+- AI traffic appears in the "Web" search type of the Performance report, plus a dedicated **Search generative AI performance report** (data from 2026-05-18, impressions only)
 
 AI crawler UA list, robots.txt recipes, llms.txt format, AI-citable content design, and measurement details: see [ai-search.md](ai-search.md).
 
