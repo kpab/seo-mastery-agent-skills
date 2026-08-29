@@ -12,7 +12,7 @@ Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Go
 
 - **Lightweight, zero dependency.** Markdown only — no API keys, no MCP server, no scripts to install, nothing to run. Copy the folder and the skill works offline.
 - **Strong on edge and static sites.** Dedicated reference layers for **Astro** and **Cloudflare Workers/Pages**: island hydration vs. INP/LCP, `_redirects` / `_headers` and their Worker-code blind spots, dynamic sitemaps from D1/KV, crawler verification at the edge.
-- **Freshness is guaranteed, not assumed.** Every reference file carries a `last_verified` date, every factual claim is traceable to a primary source in [docs/research-notes.md](docs/research-notes.md), changes are recorded in [CHANGELOG.md](CHANGELOG.md) under semver, and a scheduled workflow opens a re-verification issue every month.
+- **Staleness is tracked, not hoped away.** Every reference file carries a `last_verified` date that CI enforces; claims added or corrected in a verification pass are traceable to a primary source in [docs/research-notes.md](docs/research-notes.md); changes are recorded in [CHANGELOG.md](CHANGELOG.md) under semver; and a scheduled workflow opens a re-verification issue every month. What is guaranteed is the process and the date stamp — not that every line is currently correct.
 
 ## Features
 
@@ -152,10 +152,12 @@ Every file under `.claude/skills/` carries a `last_verified: YYYY-MM-DD` frontma
 
 - **Astro** — dedicated reference file ([astro-seo.md](.claude/skills/seo-mastery/astro-seo.md)); verified against Astro 6
 - **Cloudflare Workers / Pages** — dedicated reference file ([edge-seo.md](.claude/skills/seo-mastery/edge-seo.md))
-- Next.js
-- Nuxt.js
-- Static HTML
-- WordPress (reference)
+- Next.js — code examples in [core-web-vitals.md](.claude/skills/seo-mastery/core-web-vitals.md) and [technical-seo.md](.claude/skills/seo-mastery/technical-seo.md)
+- Nuxt 3+ — same files
+- Static HTML — every template is framework-agnostic
+
+Everything else (WordPress, Rails, Django, …) is covered only by the framework-agnostic guidance;
+there is no CMS-specific reference file.
 
 ## Versioning
 

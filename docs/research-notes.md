@@ -1,7 +1,9 @@
 # Research Notes
 
-Verification log behind the reference files in this repository. Every claim written into a skill
-reference file must be traceable to an entry here, and every entry must carry a source URL.
+Verification log behind the reference files in this repository. Every claim **added or corrected in a
+verification pass** must be traceable to an entry here, and every entry must carry a source URL. This
+file is not a complete audit of every sentence in the skills — it records what each pass actually
+checked, so a later pass can tell verified content from inherited content.
 
 **Research date: 2026-08-29** — all "as of" statements below refer to this date.
 
@@ -373,10 +375,16 @@ syntax as Pages — the files go in the static asset directory. Cloudflare's mig
 Workers as having "a distinctly broader set of features" and lists Cron Triggers, native Durable
 Objects, Tail Workers, Workers Logs, Logpush and the Cloudflare Vite plugin as Workers-only.
 
-The frequently repeated claim that "Pages is in maintenance mode" appears in secondary sources but
-**could not be confirmed in Cloudflare's own documentation**. Marked `UNCONFIRMED`; the skill files
-therefore say Workers is the platform receiving new capability and describe both, rather than
-declaring Pages deprecated.
+The frequently repeated claim that "Pages is in maintenance mode" **could not be confirmed** —
+Cloudflare's documentation never uses the words "maintenance mode" or "deprecated". What it does
+carry, as a banner at the top of the Pages documentation (last updated 2026-08-25), is:
+
+> "Workers supports most Pages use cases and offers a broader feature set. It is Cloudflare's primary
+> platform for building applications. Start new projects with Workers."
+
+That is the strongest primary statement available, and it supports the skill files' framing —
+Workers is where new capability lands, both platforms are documented — without asserting a
+deprecation Cloudflare has not announced.
 
 - <https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/>
 
@@ -387,8 +395,10 @@ declaring Pages deprecated.
   (relative URLs only).
 - Limits: "A `_redirects` file is limited to 2,000 static redirects and 100 dynamic redirects, for a
   combined total of 2,100 redirects." Each declaration has a **1,000-character** limit.
-- Placeholders `:name` match a single path segment (not `/` or `.`); splats `*` are greedy and only
-  **one per URL** is allowed. Both are referenceable in the destination (`:splat`, `:name`).
+- Placeholders `:name` match "all characters apart from the delimiter, which when part of the host,
+  is a period (`.`) or a forward-slash (`/`) and may only be a forward-slash (`/`) when part of the
+  path." **A path placeholder therefore matches dots** — `/:slug` also matches `report.pdf`. Splats
+  `*` are greedy and only **one per URL** is allowed. Both are referenceable in the destination.
 - Not supported: query-parameter matching, domain-level redirects, conditional (country / language /
   cookie) redirects.
 - **Critical:** redirects "are not applied to requests served by Pages Functions" / "not applied to
@@ -403,6 +413,10 @@ declaring Pages deprecated.
 - Limits: **100 header rules** max; **2,000 characters per line**.
 - Same splat/placeholder matching as `_redirects`; `:splat` is referenceable in header *values*.
 - `! Header-Name` removes a default or previously applied header.
+- **Matching rules accumulate rather than override:** "If a header is applied twice in the `_headers`
+  file, the values are joined with a comma separator." This makes Google's per-user-agent
+  `X-Robots-Tag` form — which relies on *separate* header lines — inexpressible in `_headers`, and
+  makes overlapping `Cache-Control` rules produce a joined value instead of the specific one.
 - **Critical:** "Custom headers defined in the `_headers` file are not applied to responses generated
   by Pages Functions" / "by your Worker code, even if the request URL matches a rule" — including SSR
   frameworks, `_worker.js`, and `assets.run_worker_first` routes.
@@ -475,9 +489,63 @@ in v1.4.0 and listed in `CHANGELOG.md`.
 | `ai-search.md` | Generative AI report described without limits | Added data start 2026-05-18, impressions-only (§1.4) |
 | `technical-seo.md` | Sitemap best-practice table recommended `priority` / `changefreq` without noting Google ignores both | Annotated (§1.9) |
 | `technical-seo.md` | Crawl budget section recommended "parameter handling (Search Console)" | Removed — the URL Parameters tool was retired in 2022 |
-| `technical-seo.md` | Nuxt SSR example used Nuxt 2 `asyncData` + `$axios` | Replaced with Nuxt 3+ `useAsyncData` / `useFetch` |
+| `technical-seo.md` | Nuxt SSR example used Nuxt 2 `asyncData` + `$axios` | Replaced with Nuxt 3+ `useAsyncData` / `$fetch` |
 | `technical-seo.md` | No pointer to crawler verification | Added reverse-DNS + IP range files with the new paths (§1.6) |
 | `core-web-vitals.md` | Nuxt config example used Nuxt 2 `render.http2.push` (HTTP/2 Server Push is removed from Chrome) | Replaced with a Nuxt 3+ config using `@nuxt/image` and preload hints |
 | `core-web-vitals.md` | `scheduler.yield()` labelled "Chrome 129+" | Corrected to Chromium + Firefox, not in Safari, not Baseline (§2) |
 | `audit-workflow.md` | robots.txt check asked whether `Crawl-delay` is set too high | Replaced — Google ignores `crawl-delay` (§1.8) |
 | `audit-workflow.md` | AI readiness phase did not check the Search Console generative AI control | Added as a checklist item (§1.3) |
+
+---
+
+## 6. Second pass — review findings (2026-08-29)
+
+Three independent reviews were run against the v1.4.0 branch. What they overturned:
+
+### 6.1 Article `headline` has no character limit
+
+`astro-seo.md` and `structured-data.md` (the latter since v1.0.0) presented a **110-character limit**
+on `headline` as a Google requirement. Google removed that limit from the Article documentation in
+January 2023. The current definition is:
+
+> "The title of the article. Consider using a concise title, as long titles may be truncated on some
+> devices."
+
+The Article page also states "There are no required properties; instead, add the properties that
+apply to your content." The schema cap is retained in the Astro example but relabelled as an
+editorial choice.
+
+- <https://developers.google.com/search/docs/appearance/structured-data/article>
+
+### 6.2 Claims removed for lack of a primary source
+
+Written from secondary sources or from general knowledge, now either removed or explicitly
+attributed:
+
+| Claim | Status |
+|-------|--------|
+| "410 is processed faster than 404" | **Removed.** Not in Google's documentation; recent Googler statements describe the difference as negligible. The files now recommend 410 for semantic correctness only |
+| Generative AI report data starts 2026-05-18 | **Downgraded.** Not in the launch blog post or the Search Console help page. Attributed in `ai-search.md` as a secondary-source figure; removed from `SKILL.md` |
+| Generative AI control "expanding from July 2026" | **Replaced** with Google's own wording: rolling out to a UK subset first, "before rolling them out to website owners globally" |
+| Control takes effect "within 1–2 days" | **Corrected** to the help page's fuller wording: exclusion "generally takes a few days", 1–2 days after the control goes live, "but some content may take longer … due to caching and propagation" |
+
+Claims that remain in `edge-seo.md` on operational rather than documentary grounds, flagged here so a
+later pass can revisit them: Googlebot crawling predominantly from US IP addresses; sustained 5xx
+reducing site-wide crawl rate; crawlers treating 503 + `Retry-After` as "come back later". These are
+widely-held operational guidance rather than quoted specification.
+
+### 6.3 Cloudflare corrections
+
+Both were misreadings of the documentation, corrected in §4.2 and §4.3 above: placeholders **do**
+match dots inside the path, and repeated header names in `_headers` are **joined with a comma**
+rather than overriding.
+
+A third issue was behavioural rather than factual: Cloudflare serves a matching static asset before
+invoking the Worker, so middleware-style Workers (HTMLRewriter, query canonicalization) need their
+HTML paths listed in `run_worker_first` or they never execute.
+
+- <https://developers.cloudflare.com/workers/static-assets/routing/>
+
+### 6.4 Pages banner
+
+See §4.1 — the review surfaced a quotable primary statement, which replaced the `UNCONFIRMED` note.

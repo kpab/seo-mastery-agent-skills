@@ -12,7 +12,7 @@ last_verified: 2026-08-29
 
 公式ガイドで確認済みの要点:
 
-- **表示要件は3つある。** ページが**インデックス可能**であること、**スニペット表示可能**であること、そしてサイトがSearch Consoleで**「検索の生成AI機能」に含まれている**こと。Googleは明記しています。「Search の技術要件に加えて、Google Search の生成AI機能に表示される資格を得るには、サイトが Search Console で Search の生成AI機能に含まれている必要がある」。
+- **表示要件は3つある。** ページが**インデックス可能**であること、**スニペット表示可能**であること、そしてサイトがSearch Consoleで**「検索の生成AI機能」に含まれている**こと。Googleは「Searchの技術要件に加えて、Google Searchの生成AI機能に表示される資格を得るには、サイトがSearch Consoleで生成AI機能に含まれている必要がある」と明記しています（原文: "In addition to the technical requirements for Search, a site must be included in Search generative AI features in Search Console to be eligible for display in generative AI features on Google Search."）。
 - **特別なマークアップやファイルは不要。** 「Google Search（生成AI機能を含む）に表示されるために、新しい機械可読ファイル・AIテキストファイル・マークアップ・Markdownを作る必要はない。Google Search 自身がそれらを使っていないからだ」。これは**llms.txt**（後述）、コンテンツのチャンク分割（「AIが理解しやすいように細切れにする必要はない」）、AI向けの文体、AI専用スキーマ（「生成AI検索に構造化データは必須ではない」）のすべてに当てはまります。
 - **標準的なSEOがそのまま最適化になる。** 生成AI機能は「Search のコアなランキング・品質システムに根ざしている」。上位表示され、質問に明確に答えるコンテンツがAI機能に引用されます。「AI用ランキング」が別に存在するわけではありません。
 - **表示制御はSearch Consoleのコントロールと既存のスニペットコントロールで行う。** 新しいディレクティブはありません（次の2セクション参照）。
@@ -179,7 +179,7 @@ Disallow: /
 
 `llms.txt` は、LLMが主要コンテンツを見つけやすくするために `/llms.txt` にMarkdown形式のサイト索引を置くというコミュニティ提案です。
 
-- **Googleは利用しない。** 生成AI最適化ガイドは明確です。「AIテキストファイル」は不要であり、「Google Search 自身がそれらを使っていない」。設置してもGoogleへの効果は期待しないこと。
+- **Googleは利用しない。** 生成AI最適化ガイドは、AIテキストファイルの類は不要であり「Google Search自身がそれらを使っていない」からだと明言しています。設置してもGoogleへの効果は期待しないこと。
 - 他のAIベンダーの採用状況も限定的・未確認。任意・低コスト・効果のエビデンスは薄い、という位置づけで扱う。
 - 他のAIクローラー向けに設置する場合、提案されている書式は次のとおり:
 

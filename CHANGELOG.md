@@ -45,9 +45,21 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 
 ### Changed
 
-- Skill descriptions now include Astro and Cloudflare Workers/Pages invocation triggers
-- `SKILL.md` (EN/JP) gained an "Astro and Edge (Cloudflare) Specifics" section and registered the
-  two new reference files
+- Skill descriptions now include Astro and Cloudflare Workers/Pages invocation triggers, and state
+  which of the two skills to load: English input selects `seo-mastery`, Japanese input selects
+  `seo-mastery-jp`. Previously the two descriptions were near-identical, so either could fire
+- `SKILL.md` (EN/JP) gained an "Astro and Edge (Cloudflare) Specifics" section, registered the two
+  new reference files, and now states that topic files and platform files must be read *together* —
+  sitemaps, hreflang and crawl budget each span more than one file
+- `audit-workflow.md` (EN/JP) points at the platform files, since several audit phases surface
+  findings whose cause is platform-specific
+- README positioning no longer claims freshness is "guaranteed": what is guaranteed is the process
+  and the date stamp. Supported Frameworks now links each entry to the file that backs it, and drops
+  the WordPress entry, which had no supporting content anywhere in the repo
+- `CONTRIBUTING.md`'s Japanese section is a full translation rather than a summary; it previously
+  omitted the repository layout, the one-language-PR rule, the freshness workflow, and all four
+  content guidelines
+- `marketplace.json` gained `astro`, `cloudflare-workers` and `edge-seo` keywords
 - CHANGELOG restructured to Keep a Changelog format; historical entries re-dated from git history
   (the v1.0.0 entry previously read "2025-01"; the initial commits are dated 2025-12-29/30)
 - `scripts/validate.py` now verifies `last_verified` on every skill markdown file (present, ISO
@@ -83,6 +95,41 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 - `audit-workflow.md` robots.txt check no longer asks whether `Crawl-delay` is set too high; it now
   flags `crawl-delay` / `noindex` lines as ineffective for Google
 - `audit-workflow.md` AI readiness phase now checks the Search Console generative AI control
+
+Found by review of this branch before release:
+
+- **Article `headline` has no 110-character limit.** Google removed it from the documentation in
+  January 2023; the current wording only warns that long titles may be truncated. The claim was
+  presented as a Google requirement in `structured-data.md` (since v1.0.0) and `astro-seo.md`
+- **`_redirects` placeholders do match dots inside the path.** The delimiter is `/` in the path and
+  `.` or `/` only in the host, so `/:slug` also matches `report.pdf` — the previous wording made
+  such rules look safe for file URLs
+- **`_headers` rules accumulate rather than override**, joining repeated header names with a comma.
+  The per-crawler `X-Robots-Tag` example would therefore have shipped one combined header that
+  Google does not document parsing; removed, with the collision rule documented. The `/*.html`
+  cache rule was dropped too — under `auto-trailing-slash` it matches nothing
+- **Middleware-style Workers need `run_worker_first`.** Cloudflare serves a matching static asset
+  before invoking the Worker, so the HTMLRewriter and query-canonicalization examples could never
+  have executed under the config shown
+- Supplied the `ipInCidr` implementation the crawler check called but never defined; made the range
+  lookup fail open rather than 500 on a fetch error; stopped an empty KV value poisoning the cache
+- Dynamic sitemap generation no longer 500s on a NULL or non-ISO `updated_at`, strips
+  XML-illegal control characters, and cannot emit a zero-entry sitemap index
+- HTMLRewriter handlers now catch their own exceptions (a throwing handler errors the response
+  body), guard missing values, and scope the selector to `head > title` so inline SVG titles are
+  left alone
+- Removed the unsourced claim that 410 is processed faster than 404; attributed the generative AI
+  report's 2026-05-18 data start as a secondary-source figure and removed it from `SKILL.md`;
+  replaced "expanding from July 2026" and "takes effect within 1–2 days" with Google's own wording
+- `freshness-reminder.yml` declared only `issues: write`, which sets every other scope to `none` —
+  `actions/checkout` would have failed on the very first run
+- `validate.py` crashed with a traceback on a syntactically valid but impossible date, could fail in
+  CI for a file stamped "today" in JST, mispaired indented code fences, and reported one malformed
+  file three times. It also now checks that every declared version agrees — v1.2.1 and v1.2.2
+  shipped with both manifests still reading 1.2.0
+- `release.yml`'s empty-section guard could never fire (the extracted section always contains a
+  newline), the notes regex now terminates on end-of-file rather than relying on the link-definition
+  block, and a re-run updates the release instead of failing on "already exists"
 
 ## [1.3.0] - 2026-08-28
 

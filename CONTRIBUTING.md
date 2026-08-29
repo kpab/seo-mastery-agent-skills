@@ -41,8 +41,39 @@ Every markdown file in a skill folder carries `last_verified: YYYY-MM-DD` in its
 
 # コントリビューション（日本語）
 
-**英語版がマスターです。** スキル内容を変更する際は、先に英語版（`.claude/skills/seo-mastery/`・`README.md`）を編集し、同じPR内で日本語版（`.claude/skills/seo-mastery-jp/`・`docs/README.ja.md`）にも同等の変更を反映してください。見出し・表・コードブロックの構造は両言語で一致させます（例中の通貨・住所・タイムゾーン等のローカライズ値は異なっていて構いません）。
+プルリクエストや Issue の報告を歓迎します。
 
-バージョンは両スキル共通です。変更時は各 `SKILL.md` の frontmatter、`marketplace.json`、`.claude-plugin/marketplace.json`、`CHANGELOG.md` を更新し、コミットに `vx.y.z` のタグを付けてください。タグ・マニフェスト・frontmatter が食い違うとリリースワークフローが失敗します。semver の基準は、知識の追加が MINOR、誤り修正・鮮度更新が PATCH、構造の破壊的変更が MAJOR です。
+## リポジトリの構成
 
-スキルフォルダ内の各Markdownには `last_verified: YYYY-MM-DD` を付与しています。内容を変更したら一次情報で再検証したうえで当日の日付に更新し、確認した内容と出典URLを [`docs/research-notes.md`](docs/research-notes.md) に記録してください。仕様変更の日付は「見つけた日」ではなく「変更が有効になった日」を書きます。
+英語版スキル（`.claude/skills/seo-mastery/`）と日本語版スキル（`.claude/skills/seo-mastery-jp/`）は互いの翻訳です。`README.md` と `docs/README.ja.md` も同様の関係にあります。
+
+## 英語版と日本語版の同期
+
+**英語版がマスターです。** スキル内容を変更する際は次の順で進めてください。
+
+1. まず英語版（`.claude/skills/seo-mastery/...` または `README.md`）を編集する。
+2. 同じプルリクエスト内で、日本語版（`.claude/skills/seo-mastery-jp/...` または `docs/README.ja.md`）に同等の変更を反映する。
+3. 見出し・表・コードブロックの構造は両言語で一致させる。例中のローカライズ値（通貨・住所・タイムゾーンのオフセット等）は異なっていて構いません。
+
+片方の言語しか変更していないプルリクエストは、マージ前にもう一方への反映をお願いします。
+
+## バージョニング
+
+バージョンは両スキル共通で、各 `SKILL.md` の frontmatter、`marketplace.json`、`.claude-plugin/marketplace.json` に記載しています。変更時はこれらすべてを更新し、`CHANGELOG.md` に `## [x.y.z] - YYYY-MM-DD` の見出しでエントリを追加し、コミットに `vx.y.z` のタグを付けてください。タグ・マニフェスト・frontmatter が食い違うとリリースワークフローが失敗します。
+
+ナレッジリポジトリにおける semver の基準は次のとおりです。**MAJOR** は構造の破壊的変更（ファイルの削除・改名、方針の転換）、**MINOR** は知識の追加（新しいリファレンスファイル・テンプレート・セクション）、**PATCH** は誤りの修正と鮮度更新です。
+
+## 鮮度の管理
+
+スキルフォルダ内の各Markdownには frontmatter に `last_verified: YYYY-MM-DD` を付与しており、CIが「存在すること・形式が正しいこと・未来日でないこと・英語版と日本語版で一致していること」を検証します。
+
+- 事実にあたる内容を変更したら、一次情報で再検証したうえで `last_verified` を当日の日付に更新してください。
+- 確認した内容と出典URLを [`docs/research-notes.md`](docs/research-notes.md) に記録してください。一次情報で裏付けられないものは同ファイルに `UNCONFIRMED` として記し、スキル本文には書きません。
+- `Freshness reminder` ワークフローが毎月1日に、確認先の一覧を含むチェックリストIssueを自動作成します。
+
+## 内容のガイドライン
+
+- 推奨事項は [Google Search Central](https://developers.google.com/search) のドキュメントに基づき、可能な限り公式の出典を示してください。
+- Googleが機能を廃止・制限した場合（例: HowToリッチリザルト）、schema.org として有効ならテンプレートは残し、現状を説明する日付付きの注記を添えてください。
+- 構造化データの例は有効なJSONでなければなりません。
+- 仕様変更の日付は「見つけた日」ではなく「変更が有効になった日」を書きます。

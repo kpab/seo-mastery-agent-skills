@@ -4,13 +4,15 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
 [![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](../README.md)
 
+[English README here](../README.md)
+
 Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、AI検索、エッジ・静的サイトのSEO、サイト監査を統合的にサポートします。
 
 ## このスキルの位置づけ
 
 - **軽量・ゼロ依存。** Markdownのみで完結します。APIキーもMCPサーバーもインストールするスクリプトも不要で、実行するものは何もありません。フォルダをコピーすればオフラインで動きます。
 - **エッジ・静的サイトに強い。** **Astro** と **Cloudflare Workers/Pages** に専用のリファレンス層を用意しています。アイランドのハイドレーションとINP/LCPの関係、`_redirects` / `_headers` とWorkerコードに適用されない盲点、D1/KVからの動的サイトマップ、エッジでのクローラー検証まで扱います。
-- **鮮度を「たぶん最新」で済ませない。** 全リファレンスファイルに `last_verified` の日付を付与し、事実の記述はすべて [docs/research-notes.md](research-notes.md) で一次情報に辿れるようにし、変更は semver に沿って [CHANGELOG.md](../CHANGELOG.md) に記録し、毎月1日に再検証用のIssueを自動作成しています。
+- **鮮度を「たぶん最新」で済ませない。** 全リファレンスファイルに `last_verified` の日付を付与してCIで検証し、検証パスで追加・修正した記述は [docs/research-notes.md](research-notes.md) から一次情報に辿れるようにし、変更は semver に沿って [CHANGELOG.md](../CHANGELOG.md) に記録し、毎月1日に再検証用のIssueを自動作成しています。保証しているのは運用と日付スタンプであって、全行が現時点で正しいことではありません。
 
 ## 特徴
 
@@ -150,10 +152,12 @@ CHANGELOG.md                  # Keep a Changelog + semver の更新履歴
 
 - **Astro** — 専用リファレンスあり（[astro-seo.md](../.claude/skills/seo-mastery-jp/astro-seo.md)）。Astro 6 で検証済み
 - **Cloudflare Workers / Pages** — 専用リファレンスあり（[edge-seo.md](../.claude/skills/seo-mastery-jp/edge-seo.md)）
-- Next.js
-- Nuxt.js
-- 静的HTML
-- WordPress（参考）
+- Next.js — コード例は [core-web-vitals.md](../.claude/skills/seo-mastery-jp/core-web-vitals.md) と [technical-seo.md](../.claude/skills/seo-mastery-jp/technical-seo.md)
+- Nuxt 3+ — 同じファイル
+- 静的HTML — テンプレートはすべてフレームワーク非依存
+
+それ以外（WordPress、Rails、Django など）はフレームワーク非依存のガイダンスでのみカバーしています。
+CMS固有のリファレンスファイルはありません。
 
 ## バージョニング
 

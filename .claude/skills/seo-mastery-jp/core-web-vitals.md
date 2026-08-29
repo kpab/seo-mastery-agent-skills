@@ -523,7 +523,7 @@ function Hero() {
 }
 ```
 
-### Nuxt.js
+### Nuxt 3+
 
 ```javascript
 // nuxt.config.ts（Nuxt 3+）

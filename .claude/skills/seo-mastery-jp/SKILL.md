@@ -1,6 +1,6 @@
 ---
 name: seo-mastery-jp
-description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（クライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（_redirects・_headers・X-Robots-Tag・HTMLRewriter・動的サイトマップ）に関する相談や、サイト監査の依頼があったときに使用する。
+description: 包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（アイランド・client:load等のクライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（wrangler・_redirects・_headers・X-Robots-Tag・HTMLRewriter・D1/KV動的サイトマップ・Pages Functions）、エッジ・静的サイトのSEOに関する相談や、サイト監査の依頼があったときに使用する。言語による使い分け: ユーザーが日本語で書いている場合はこのスキルを使い、英語の場合は seo-mastery を使う。両方を同時に読み込まない。
 version: 1.4.0
 last_verified: 2026-08-29
 author: kpab
@@ -24,6 +24,13 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 | [ai-search.md](ai-search.md) | AI Overviews / AIモードの公式ガイダンス、Search Consoleの生成AIコントロール、AIクローラーのrobots.txtレシピ、llms.txt、AI引用されやすいコンテンツ設計、計測 | AI検索最適化・クローラー制御時 |
 | [astro-seo.md](astro-seo.md) | クライアントディレクティブとINP/LCP、canonical・OG生成、Content CollectionsからのJSON-LD、@astrojs/sitemap、View Transitions | Astroサイトの構築・監査時 |
 | [edge-seo.md](edge-seo.md) | `_redirects` / `_headers`、X-Robots-Tag、D1/KV駆動の動的サイトマップ、クローラー検証、HTMLRewriter、クロールバジェット | Cloudflare Workers / Pagesへのデプロイ時 |
+
+**1つではなく、2つの軸で読み込む。** 上の5ファイルは*トピック*別、`astro-seo.md`と`edge-seo.md`は
+*プラットフォーム*別の構成で、後者は同じトピックをプラットフォームの角度から意図的に重複して扱って
+います。複数ファイルにまたがるトピックがあります。サイトマップは`technical-seo.md`（仕様と上限）・
+`astro-seo.md`（`@astrojs/sitemap`）・`edge-seo.md`（エッジでの生成）、hreflangは`technical-seo.md`と
+`astro-seo.md`、クロールバジェットは`technical-seo.md`と`edge-seo.md`にあります。質問がプラット
+フォームに言及していたら、トピック側のファイル*と*プラットフォーム側のファイルの両方を読んでください。
 
 ## このスキルを使うタイミング
 
@@ -93,6 +100,10 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 # Core Web Vitals改善
 「LCPを改善する方法を教えて」
+
+# プラットフォーム固有
+「このAstroサイトのSEOを監査して」
+「このCloudflare WorkersサイトのリダイレクトをSEO観点で設計して」
 ```
 
 ---
@@ -155,7 +166,7 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 静的サイト・エッジ配信では、いくつかのSEO判断がアプリケーションの外に移ります。
 
 - **Astro** — `client:*`ディレクティブはすべてINP/LCPのコストを意図的に払う行為であり、絶対URLは`Astro.site` + `Astro.url`から組み立てる必要があります。Content Collectionsのスキーマはそのまま JSON-LD 生成に使えます。Astro 6では`getStaticPaths()`内の`Astro.site`が非推奨（`import.meta.env.SITE`を使用）、`<ViewTransitions />`は削除され`<ClientRouter />`に置き換わりました。詳細は [astro-seo.md](astro-seo.md)。
-- **Cloudflare Workers / Pages** — `_redirects`と`_headers`は**静的アセットにのみ**適用され、WorkerコードやPages Functionsが生成したレスポンスには一切適用されません。ハイブリッド構成では両方に実装が必要です。リダイレクトのステータスコードは明示しない限り302になります。詳細は [edge-seo.md](edge-seo.md)。
+- **Cloudflare Workers / Pages** — `_redirects`と`_headers`は**静的アセットにのみ**適用され、WorkerコードやPages Functionsが生成したレスポンスには一切適用されません。ハイブリッド構成では、両方に実装するかWorkerコード側へ一本化するかのどちらかが必要です。リダイレクトのステータスコードは明示しない限り302になります。詳細は [edge-seo.md](edge-seo.md)。
 
 ---
 
