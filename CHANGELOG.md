@@ -151,6 +151,9 @@ Found by a second review pass on the same branch:
 - The sitemap Worker called `cache.put()` without checking the method, so a HEAD from any crawler or
   uptime monitor rejected inside `waitUntil`; it also ran a cache lookup before routing, on every
   static asset request, and spent a second `COUNT(*)` query per page purely to bound the page number
+- `astro-seo.md` described a missing `site` as silently producing broken canonicals. `new URL(path,
+  undefined)` throws, so the build fails — and only one of the three components that dereference
+  `Astro.site` had an explicit guard, which made the other two look like the silent case
 
 ## [1.3.0] - 2026-08-28
 

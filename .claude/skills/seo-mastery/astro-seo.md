@@ -72,8 +72,9 @@ animate it. The hero is the LCP element — keep it a plain `.astro` component a
 
 Astro exposes two values you need for absolute URLs:
 
-- `Astro.site` — the `site` value from `astro.config.mjs`. **Undefined if `site` is not set**, which
-  silently produces relative or broken canonicals.
+- `Astro.site` — the `site` value from `astro.config.mjs`. **Undefined if `site` is not set**, and
+  `new URL(path, undefined)` throws, so the build dies with `TypeError: Invalid URL` from whichever
+  component dereferences it first — not with a relative canonical you could spot in the output.
 - `Astro.url` — the URL of the page being rendered.
 
 Set `site` first; nothing else in this section works without it.
@@ -308,8 +309,10 @@ them with `@graph` and emit once, so pages carry only their own entity.
 ```astro
 ---
 // src/components/SiteJsonLd.astro — rendered once in BaseLayout
-// Fail loudly at build time rather than emitting "undefined" URLs. A non-null
-// assertion (Astro.site!) would only silence TypeScript, not the real problem.
+// Without the guard, `Astro.site.href` below throws "Cannot read properties of
+// undefined"; naming the missing config turns that into an actionable error. A
+// non-null assertion (Astro.site!) would only silence TypeScript, not the
+// missing value.
 if (!Astro.site) throw new Error('astro.config.mjs is missing `site`; JSON-LD needs absolute URLs');
 const site = Astro.site.href;
 

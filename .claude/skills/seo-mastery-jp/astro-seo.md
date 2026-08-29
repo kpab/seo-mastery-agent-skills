@@ -74,8 +74,9 @@ import ThemeToggle from '../components/ThemeToggle.jsx';
 
 絶対URLの組み立てに使う値は2つです。
 
-- `Astro.site` — `astro.config.mjs`の`site`の値。**`site`未設定なら`undefined`**になり、相対URLや
-  壊れたcanonicalが静かに出力されます。
+- `Astro.site` — `astro.config.mjs`の`site`の値。**`site`未設定なら`undefined`**になります。
+  `new URL(path, undefined)`は例外を投げるため、壊れたcanonicalが出力されるのではなく、最初に
+  参照したコンポーネントの時点で`TypeError: Invalid URL`が出てビルドが止まります。
 - `Astro.url` — レンダリング中のページのURL。
 
 まず`site`を設定してください。以降の内容はすべてこれが前提です。
@@ -311,8 +312,9 @@ Organization・WebSite・BreadcrumbListはページごとではなくベース�
 ```astro
 ---
 // src/components/SiteJsonLd.astro — BaseLayoutで一度だけ描画する
-// "undefined" を含むURLを出力するくらいならビルド時に落とす。非nullアサーション
-//（Astro.site!）はTypeScriptを黙らせるだけで、本当の問題は解決しない。
+// このガードがないと、下の Astro.site.href が "Cannot read properties of undefined"
+// で落ちる。設定名を明示すれば原因の分かるエラーになる。非nullアサーション
+//（Astro.site!）はTypeScriptを黙らせるだけで、値が無いことは解決しない。
 if (!Astro.site) throw new Error('astro.config.mjs に `site` がありません。JSON-LDには絶対URLが必要です');
 const site = Astro.site.href;
 
