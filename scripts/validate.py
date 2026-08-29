@@ -4,14 +4,18 @@
 Checks:
 1. Every skill has a SKILL.md with valid frontmatter (name matches the
    directory, description present and within length limits).
-2. Every ```json code block in skill markdown files parses as JSON.
-3. marketplace manifests are valid JSON.
-4. The EN and JP skills stay structurally in sync (same file list, same
-   heading counts per level, same number of JSON code blocks per file).
+2. Every markdown file in a skill carries a `last_verified: YYYY-MM-DD`
+   frontmatter field, and it is not dated in the future.
+3. Every ```json code block in skill markdown files parses as JSON.
+4. marketplace manifests are valid JSON.
+5. The EN and JP skills stay structurally in sync (same file list, same
+   heading counts per level, same number of JSON code blocks per file,
+   same `last_verified` date per file).
 
 Stdlib only — no dependencies.
 """
 
+import datetime
 import json
 import re
 import sys
@@ -21,6 +25,8 @@ REPO = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO / ".claude" / "skills"
 SYNC_PAIRS = [("seo-mastery", "seo-mastery-jp")]
 MAX_DESCRIPTION_LENGTH = 1024
+DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+FENCE_PATTERN = re.compile(r"^```.*?^```", flags=re.M | re.S)
 
 errors = []
 
@@ -69,6 +75,23 @@ def check_frontmatter(skill_dir: Path) -> None:
         )
 
 
+def check_freshness(skill_dir: Path) -> None:
+    """Every reference file must declare when its content was last verified."""
+    today = datetime.date.today()
+    for md in sorted(skill_dir.glob("*.md")):
+        value = parse_frontmatter(md).get("last_verified", "")
+        if not value:
+            error(f"{md.relative_to(REPO)}: frontmatter is missing 'last_verified'")
+            continue
+        if not DATE_PATTERN.match(value):
+            error(
+                f"{md.relative_to(REPO)}: last_verified '{value}' is not YYYY-MM-DD"
+            )
+            continue
+        if datetime.date.fromisoformat(value) > today:
+            error(f"{md.relative_to(REPO)}: last_verified '{value}' is in the future")
+
+
 def json_blocks(path: Path) -> list:
     """Return (line_number, text) for each top-level ```json code block."""
     blocks = []
@@ -110,9 +133,12 @@ def check_manifests() -> None:
 def structure_signature(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     sig = {"json_blocks": len(re.findall(r"^```json\s*$", text, flags=re.M))}
+    # Headings are counted outside fenced code blocks only: shell/robots.txt
+    # samples contain `# comment` lines that are not document structure.
+    prose = FENCE_PATTERN.sub("", text)
     for level in range(1, 5):
         pattern = rf"^{'#' * level} "
-        sig[f"h{level}"] = len(re.findall(pattern, text, flags=re.M))
+        sig[f"h{level}"] = len(re.findall(pattern, prose, flags=re.M))
     return sig
 
 
@@ -132,6 +158,13 @@ def check_sync(en_name: str, jp_name: str) -> None:
                 f"structure mismatch in {name}: "
                 f"{en_name}={en_sig} vs {jp_name}={jp_sig}"
             )
+        en_date = parse_frontmatter(en_dir / name).get("last_verified", "")
+        jp_date = parse_frontmatter(jp_dir / name).get("last_verified", "")
+        if en_date != jp_date:
+            error(
+                f"last_verified mismatch in {name}: "
+                f"{en_name}={en_date or 'missing'} vs {jp_name}={jp_date or 'missing'}"
+            )
 
 
 def main() -> int:
@@ -140,6 +173,7 @@ def main() -> int:
         error("no skill directories found")
     for skill_dir in skill_dirs:
         check_frontmatter(skill_dir)
+        check_freshness(skill_dir)
         check_json_blocks(skill_dir)
     check_manifests()
     for en_name, jp_name in SYNC_PAIRS:
