@@ -490,7 +490,7 @@ reduce the layout shift when a web font swaps in.
 - [ ] OG image URLs are absolute
 - [ ] No `client:only` on indexable content; LCP element is not inside a hydrated island
 - [ ] Below-the-fold islands use `client:visible`
-- [ ] JSON-LD is generated from the collection schema, with `<` escaped to `\\u003c` before `set:html`
+- [ ] JSON-LD is generated from the collection schema, with `<` unicode-escaped before `set:html`
 - [ ] Organization/WebSite `@graph` is emitted once, without `SearchAction`
 - [ ] `@astrojs/sitemap` is installed; drafts and utility pages are filtered out *and* `noindex`ed
 - [ ] Multilingual sites configure `sitemap({ i18n })` with locale keys matching the route segments

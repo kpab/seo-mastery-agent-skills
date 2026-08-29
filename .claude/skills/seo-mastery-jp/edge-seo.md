@@ -466,7 +466,7 @@ class JsonLdInjector {
 // new HTMLRewriter().on('head', new JsonLdInjector(graph)).transform(response)
 ```
 
-`<`を`\\u003c`にエスケープすることで、値に`</script>`が含まれていてもタグが途中で閉じられません。
+`<`をUnicodeエスケープすることで、値に`</script>`が含まれていてもタグが途中で閉じられません。
 サーバーサイドテンプレートと同じ注意点です。
 
 ### 注意点

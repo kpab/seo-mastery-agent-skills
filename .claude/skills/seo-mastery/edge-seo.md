@@ -466,7 +466,7 @@ class JsonLdInjector {
 // new HTMLRewriter().on('head', new JsonLdInjector(graph)).transform(response)
 ```
 
-Escaping `<` to `\\u003c` prevents a value containing `</script>` from terminating the tag early —
+Unicode-escaping `<` prevents a value containing `</script>` from terminating the tag early —
 the same precaution as in server-side templates.
 
 ### Caveats
