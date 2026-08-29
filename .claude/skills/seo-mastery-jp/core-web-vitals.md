@@ -533,25 +533,24 @@ export default defineNuxtConfig({
     format: ['avif', 'webp'],
     screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280 },
   },
-  app: {
-    head: {
-      link: [
-        // LCP画像は明示的にpreloadする。HTTP/2 Server Pushに頼らない
-        //（Chromeから削除済み。Nuxt 2の `render.http2.push` オプションはもう存在しない）
-        { rel: 'preload', as: 'image', href: '/hero.webp', fetchpriority: 'high' },
-      ],
-    },
-  },
 });
 ```
 
 ```vue
-<!-- LCP画像を高優先度としてマークする -->
+<!-- LCP画像を高優先度としてマークする。`preload`はモジュールが実際に生成する
+     バリアント向けの<link rel=preload>を出力するので、preloadを書く場所はここ1箇所。
+     カンマ区切りの`format`はNuxtPictureのpropで、NuxtImgの`format`は単一フォーマット
+     しか受け取らない。 -->
 <template>
-  <NuxtImg src="/hero.jpg" width="1200" height="600" preload
-           fetchpriority="high" format="avif,webp" alt="Hero" />
+  <NuxtPicture src="/hero.jpg" width="1200" height="600" preload
+               fetchpriority="high" format="avif,webp" alt="Hero" />
 </template>
 ```
+
+preloadの宣言は1箇所に絞ります。`app.head.link`に`{ rel: 'preload', href: '/hero.webp' }`を直書き
+すると、`@nuxt/image`が生成するURLとは別物を指すことになり、ブラウザはページが参照しないファイルを
+ダウンロードして「preloaded using link preload but not used」を出力します。HTTP/2 Server Pushへの
+退避も不可です。Chromeから削除済みで、Nuxt 2の`render.http2.push`はもう存在しません。
 
 ---
 
