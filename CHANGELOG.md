@@ -157,6 +157,16 @@ Found by a second review pass on the same branch:
 - The `@astrojs/sitemap` `serialize` example demonstrated `priority`, which the paragraph below it
   says Google ignores, and matched only the blog index rather than the posts. It now sets `lastmod`,
   the one field the file says is worth getting right
+- `validate.py` rejected valid frontmatter: block scalars, sequences, nested mappings and multi-line
+  plain scalars all errored as "not `key: value`", so adding any standard multi-line field would
+  have failed CI. It also missed a value *ending* in a colon — the same scanner error the plain
+  scalar check exists to catch — false-positived on values starting with `-`, `?` or `:`, which YAML
+  accepts, and left `\uXXXX` escapes unexpanded while measuring description length against them
+- `freshness_table.py` walked the skills tree recursively while `validate.py` globbed one level, so
+  a file in a subdirectory would be demanded in the reminder issue but never enforced by CI. Both
+  now walk through the same function, the table exits non-zero on malformed frontmatter instead of
+  rendering it as "missing", and CI runs the script so a rename on its import cannot go unnoticed
+  until the monthly workflow fires
 
 ## [1.3.0] - 2026-08-28
 
