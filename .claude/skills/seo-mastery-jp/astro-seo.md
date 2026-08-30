@@ -74,8 +74,9 @@ import ThemeToggle from '../components/ThemeToggle.jsx';
 
 絶対URLの組み立てに使う値は2つです。
 
-- `Astro.site` — `astro.config.mjs`の`site`の値。**`site`未設定なら`undefined`**になり、相対URLや
-  壊れたcanonicalが静かに出力されます。
+- `Astro.site` — `astro.config.mjs`の`site`の値。**`site`未設定なら`undefined`**になります。
+  `new URL(path, undefined)`は例外を投げるため、壊れたcanonicalが出力されるのではなく、最初に
+  参照したコンポーネントの時点で`TypeError: Invalid URL`が出てビルドが止まります。
 - `Astro.url` — レンダリング中のページのURL。
 
 まず`site`を設定してください。以降の内容はすべてこれが前提です。
@@ -164,28 +165,37 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6+: ここでは Astro.site ではなく import.meta.env.SITE を使う
-      shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
+      // Astro 6+: ここでは Astro.site ではなく import.meta.env.SITE を使う。
+      // アセットのURLはリクエスト前に組み立ててよいが、ページのURLはだめ。
+      // 設定した trailingSlash を反映するのは Astro.url だけだから。
+      ogImage: new URL(post.data.cover.src, import.meta.env.SITE).href,
     },
   }));
 }
 
-const { post, shareUrl } = Astro.props;
+const { post, ogImage } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
+  image={ogImage}
   type="article"
-  canonicalUrl={shareUrl}
 >
   <Content />
 </BaseLayout>
 ```
 
-URLはpropで渡します。`head`スロットで2つ目の`og:url`を出力してはいけません。スロットはレイアウト
-自身のタグの**後**に描画され、スクレイパーは最初に見つけた`og:url`を採用します。つまりスロットでの
-上書きは黙って無視され、ページには矛盾するタグが2つ並ぶだけです。
+ここで渡していないものに注目してください。canonicalです。`BaseLayout`は`Astro.url.pathname`から
+canonicalを組み立てるので、設定した`trailingSlash`に自動的に一致します。ここで
+`` `/blog/${post.id}/` ``と書くと、設定が採用していないかもしれないスラッシュを固定することになり、
+`/blog/x`で配信されるページが`/blog/x/`をcanonicalと`og:url`に宣言します。1ページに2つのURL——
+次節そのものの状態です。
+
+canonicalを本当に差し替えたいページでは、`head`スロットで2つ目の`og:url`を出すのではなく
+`canonicalUrl`propを使ってください。スロットはレイアウト自身のタグの**後**に描画され、スクレイパー
+は最初に見つけた`og:url`を採用します。つまりスロットでの上書きは黙って無視され、ページには矛盾する
+タグが2つ並ぶだけです。
 
 ### 末尾スラッシュ
 
@@ -302,8 +312,9 @@ Organization・WebSite・BreadcrumbListはページごとではなくベース�
 ```astro
 ---
 // src/components/SiteJsonLd.astro — BaseLayoutで一度だけ描画する
-// "undefined" を含むURLを出力するくらいならビルド時に落とす。非nullアサーション
-//（Astro.site!）はTypeScriptを黙らせるだけで、本当の問題は解決しない。
+// このガードがないと、下の Astro.site.href が "Cannot read properties of undefined"
+// で落ちる。設定名を明示すれば原因の分かるエラーになる。非nullアサーション
+//（Astro.site!）はTypeScriptを黙らせるだけで、値が無いことは解決しない。
 if (!Astro.site) throw new Error('astro.config.mjs に `site` がありません。JSON-LDには絶対URLが必要です');
 const site = Astro.site.href;
 
@@ -333,8 +344,14 @@ const graph = {
 
 ```js
 // astro.config.mjs
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+
+// astro:content は設定ファイルからimportできないので、URLごとの日付はディスク
+// から読む。記事を書き出すのと同じ工程で出力すること。ページの生成元と同じデータ
+// でありさえすれば、形式は何でもよい。
+const updatedAt = JSON.parse(readFileSync('./src/data/updated.json', 'utf8'));
 
 export default defineConfig({
   site: 'https://example.com',
@@ -344,7 +361,9 @@ export default defineConfig({
         !page.includes('/draft/') &&
         !page.includes('/thank-you/'),
       serialize(item) {
-        if (item.url.endsWith('/blog/')) item.priority = 0.8;
+        // undefined を返すとそのエントリは除外される。それ以外はそのまま出力。
+        const date = updatedAt[new URL(item.url).pathname];
+        if (date) item.lastmod = new Date(date).toISOString();
         return item;
       },
       entryLimit: 10000,
@@ -353,8 +372,10 @@ export default defineConfig({
 });
 ```
 
-なお Google は**`<priority>`と`<changefreq>`を無視します**。設定しても害はありませんが効果もあり
-ません。正確さが問われるのは`lastmod`だけで、それも本当に正確な場合に限ります。
+3つのうち設定する価値があるのは`lastmod`だけで、それも正確さを保てる場合に限ります。ビルド時刻を
+全URLに一律で押すくらいなら、`lastmod`は無いほうがましです。Googleは**`<priority>`と
+`<changefreq>`を無視します**。設定しても害はありませんが効果もないので、上の例にはどちらも登場
+しません。
 
 ### 除外の正しいやり方
 

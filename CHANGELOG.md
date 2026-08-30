@@ -134,6 +134,43 @@ Found by review of this branch before release:
   newline), the notes regex now terminates on end-of-file rather than relying on the link-definition
   block, and a re-run updates the release instead of failing on "already exists"
 
+Found by a second review pass on the same branch:
+
+- **The dynamic sitemap published 404s for hierarchical slugs.** `locFor()` ran
+  `encodeURIComponent()` over the whole slug, so `2026/my-post` became `2026%2Fmy-post` — a
+  different URL, submitted to Google as canonical. It now encodes each path segment
+- **`astro-seo.md`'s blog route overrode the canonical with a hardcoded trailing slash.** The
+  `getStaticPaths` sample built `` `/blog/${post.id}/` `` and passed it as `canonicalUrl`, so under
+  `trailingSlash: 'never'` every post declared a canonical and `og:url` that did not match the URL
+  it was served at — the two-URLs-per-page split the next section warns about. The sample now lets
+  `BaseLayout` derive the canonical from `Astro.url.pathname`
+- **The tracking-parameter 301 rewrote parameters it was not meant to touch.** Mutating
+  `url.searchParams` re-serialises the whole query, turning `?q=a%20b` into `?q=a+b`; an origin that
+  normalises it back would bounce the request between the two rules. It now rebuilds the query from
+  the raw pairs
+- The sitemap Worker called `cache.put()` without checking the method, so a HEAD from any crawler or
+  uptime monitor rejected inside `waitUntil`; it also ran a cache lookup before routing, on every
+  static asset request, and spent a second `COUNT(*)` query per page purely to bound the page number
+- `astro-seo.md` described a missing `site` as silently producing broken canonicals. `new URL(path,
+  undefined)` throws, so the build fails — and only one of the three components that dereference
+  `Astro.site` had an explicit guard, which made the other two look like the silent case
+- The `@astrojs/sitemap` `serialize` example demonstrated `priority`, which the paragraph below it
+  says Google ignores, and matched only the blog index rather than the posts. It now sets `lastmod`,
+  the one field the file says is worth getting right
+- `validate.py` rejected valid frontmatter: block scalars, sequences, nested mappings and multi-line
+  plain scalars all errored as "not `key: value`", so adding any standard multi-line field would
+  have failed CI. It also missed a value *ending* in a colon — the same scanner error the plain
+  scalar check exists to catch — false-positived on values starting with `-`, `?` or `:`, which YAML
+  accepts, and left `\uXXXX` escapes unexpanded while measuring description length against them
+- `release.yml` re-implemented frontmatter parsing in `sed`, which disagreed with `validate.py` over
+  quoted values: `version: "1.4.0"` passed CI and would then have failed the release, after the tag
+  was already immutable. The tag check is now `validate.py --expect-version`
+- `freshness_table.py` walked the skills tree recursively while `validate.py` globbed one level, so
+  a file in a subdirectory would be demanded in the reminder issue but never enforced by CI. Both
+  now walk through the same function, the table exits non-zero on malformed frontmatter instead of
+  rendering it as "missing", and CI runs the script so a rename on its import cannot go unnoticed
+  until the monthly workflow fires
+
 ## [1.3.0] - 2026-08-28
 
 ### Added

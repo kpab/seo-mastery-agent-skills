@@ -18,3 +18,9 @@ jobs:
           python-version: "3.12"
       - name: Validate skills, JSON-LD templates, and EN/JP sync
         run: python3 scripts/validate.py
+
+      # freshness-reminder.yml runs this once a month against validate.py's
+      # parser. Exercising it here means a rename on that import surfaces in
+      # the PR that makes it, not in a broken reminder issue weeks later.
+      - name: Build the freshness table
+        run: python3 scripts/freshness_table.py > /dev/null

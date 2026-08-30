@@ -2,9 +2,10 @@
 """Print a markdown table of every skill file's `last_verified` date.
 
 Used by .github/workflows/freshness-reminder.yml. It reuses validate.py's
-frontmatter parser instead of re-implementing one in sed/grep: the shell
-version read only the first 10 lines and split on a single space, so a
-well-formed field could be reported as missing in the reminder issue.
+frontmatter parser and its file walk instead of re-implementing either: the
+shell version read only the first 10 lines and split on a single space, so a
+well-formed field could be reported as missing in the reminder issue, and a
+second walk would have listed files CI never checks.
 
 Stdlib only — no dependencies.
 """
@@ -15,7 +16,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from validate import REPO, SKILLS_DIR, parse_frontmatter  # noqa: E402
+from validate import (  # noqa: E402
+    REPO,
+    SKILLS_DIR,
+    errors,
+    parse_frontmatter,
+    scalar,
+    skill_markdown,
+)
 
 
 def main() -> int:
@@ -25,11 +33,18 @@ def main() -> int:
 
     print("| File | last_verified |")
     print("|------|---------------|")
-    for md in sorted(SKILLS_DIR.rglob("*.md")):
+    for md in skill_markdown():
+        label = str(md.relative_to(REPO))
         # Frontmatter complaints belong on stderr; stdout is the table itself.
         with contextlib.redirect_stdout(sys.stderr):
-            value = parse_frontmatter(md).get("last_verified", "")
-        print(f"| `{md.relative_to(REPO)}` | {value or '**missing**'} |")
+            value = scalar(label, parse_frontmatter(md), "last_verified")
+        print(f"| `{label}` | {value or '**missing**'} |")
+
+    # Without this the table renders "**missing**" for a file whose frontmatter
+    # is malformed and the step still passes green.
+    if errors:
+        print(f"{len(errors)} frontmatter error(s); see above", file=sys.stderr)
+        return 1
     return 0
 
 

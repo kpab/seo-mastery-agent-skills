@@ -22,32 +22,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate skills
-        run: python3 scripts/validate.py
-
-      - name: Check tag matches the manifest and skill versions
-        run: |
-          version="${GITHUB_REF_NAME#v}"
-          status=0
-
-          check() {
-            if [ "$2" != "$version" ]; then
-              echo "::error::$1 declares version '$2' but the tag is 'v$version'"
-              status=1
-            fi
-          }
-
-          check "marketplace.json" "$(jq -r '.version' marketplace.json)"
-          while read -r found; do
-            check ".claude-plugin/marketplace.json" "$found"
-          done < <(jq -r '.plugins[].version' .claude-plugin/marketplace.json)
-
-          for skill in .claude/skills/*/SKILL.md; do
-            check "$skill" "$(sed -n 's/^version: //p' "$skill" | head -1)"
-          done
-
-          [ "$status" -eq 0 ] && echo "All versions agree with tag v$version"
-          exit "$status"
+      # --expect-version folds the tag check into the validation run so both
+      # read the frontmatter through the same parser. A sed re-implementation
+      # here disagreed with validate.py over quoting: `version: "1.4.0"` passed
+      # CI and then failed the release, once the tag was already immutable.
+      - name: Validate skills and check the tag against every declared version
+        run: python3 scripts/validate.py --expect-version "${GITHUB_REF_NAME#v}"
 
       - name: Extract release notes from CHANGELOG
         run: |

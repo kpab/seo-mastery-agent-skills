@@ -72,8 +72,9 @@ animate it. The hero is the LCP element — keep it a plain `.astro` component a
 
 Astro exposes two values you need for absolute URLs:
 
-- `Astro.site` — the `site` value from `astro.config.mjs`. **Undefined if `site` is not set**, which
-  silently produces relative or broken canonicals.
+- `Astro.site` — the `site` value from `astro.config.mjs`. **Undefined if `site` is not set**, and
+  `new URL(path, undefined)` throws, so the build dies with `TypeError: Invalid URL` from whichever
+  component dereferences it first — not with a relative canonical you could spot in the output.
 - `Astro.url` — the URL of the page being rendered.
 
 Set `site` first; nothing else in this section works without it.
@@ -162,28 +163,37 @@ export async function getStaticPaths() {
     params: { slug: post.id },
     props: {
       post,
-      // Astro 6+: use import.meta.env.SITE here, NOT Astro.site
-      shareUrl: new URL(`/blog/${post.id}/`, import.meta.env.SITE).href,
+      // Astro 6+: use import.meta.env.SITE here, NOT Astro.site. Asset URLs are
+      // safe to build ahead of the request; page URLs are not, because only
+      // Astro.url reflects the configured trailingSlash.
+      ogImage: new URL(post.data.cover.src, import.meta.env.SITE).href,
     },
   }));
 }
 
-const { post, shareUrl } = Astro.props;
+const { post, ogImage } = Astro.props;
 const { Content } = await render(post);
 ---
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
+  image={ogImage}
   type="article"
-  canonicalUrl={shareUrl}
 >
   <Content />
 </BaseLayout>
 ```
 
-Pass the URL as a prop rather than emitting a second `og:url` through the `head` slot. The
-slot renders *after* the layout's own tags, and every scraper takes the first `og:url` it
-sees, so a slotted override is silently ignored while the page ships two conflicting tags.
+Note what is *not* passed: the canonical. `BaseLayout` derives it from `Astro.url.pathname`, which
+already matches whatever `trailingSlash` is configured. Writing `` `/blog/${post.id}/` `` here would
+hardcode a slash the config may not use, and the page would then be served at `/blog/x` while
+declaring `/blog/x/` as its canonical and its `og:url` — two URLs for one page, which is exactly
+what the next section is about.
+
+When a page genuinely needs a different canonical, pass it through the `canonicalUrl` prop rather
+than emitting a second `og:url` through the `head` slot. The slot renders *after* the layout's own
+tags, and every scraper takes the first `og:url` it sees, so a slotted override is silently ignored
+while the page ships two conflicting tags.
 
 ### Trailing slashes
 
@@ -299,8 +309,10 @@ them with `@graph` and emit once, so pages carry only their own entity.
 ```astro
 ---
 // src/components/SiteJsonLd.astro — rendered once in BaseLayout
-// Fail loudly at build time rather than emitting "undefined" URLs. A non-null
-// assertion (Astro.site!) would only silence TypeScript, not the real problem.
+// Without the guard, `Astro.site.href` below throws "Cannot read properties of
+// undefined"; naming the missing config turns that into an actionable error. A
+// non-null assertion (Astro.site!) would only silence TypeScript, not the
+// missing value.
 if (!Astro.site) throw new Error('astro.config.mjs is missing `site`; JSON-LD needs absolute URLs');
 const site = Astro.site.href;
 
@@ -330,8 +342,14 @@ uncompressed per file).
 
 ```js
 // astro.config.mjs
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+
+// astro:content cannot be imported from the config, so a per-URL date has to
+// come from disk. Emit this map in the same step that writes the posts — any
+// source works as long as it is the one the pages were built from.
+const updatedAt = JSON.parse(readFileSync('./src/data/updated.json', 'utf8'));
 
 export default defineConfig({
   site: 'https://example.com',
@@ -341,7 +359,9 @@ export default defineConfig({
         !page.includes('/draft/') &&
         !page.includes('/thank-you/'),
       serialize(item) {
-        if (item.url.endsWith('/blog/')) item.priority = 0.8;
+        // Returning undefined drops the entry; anything else is written as is.
+        const date = updatedAt[new URL(item.url).pathname];
+        if (date) item.lastmod = new Date(date).toISOString();
         return item;
       },
       entryLimit: 10000,
@@ -350,8 +370,10 @@ export default defineConfig({
 });
 ```
 
-Note that Google **ignores `<priority>` and `<changefreq>`** — setting them costs nothing but buys
-nothing. `lastmod` is the field worth getting right, and only if it is genuinely accurate.
+`lastmod` is the only one of the three worth setting, and only while it stays accurate — a build
+clock stamped onto every URL at once is worse than no `lastmod` at all. Google **ignores
+`<priority>` and `<changefreq>`**: setting them costs nothing but buys nothing, which is why
+neither appears above.
 
 ### Excluding pages properly
 
