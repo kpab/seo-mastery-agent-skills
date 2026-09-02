@@ -6,7 +6,7 @@ file is not a complete audit of every sentence in the skills — it records what
 checked, so a later pass can tell verified content from inherited content.
 
 **Research date: 2026-08-29** — all "as of" statements below refer to this date, except §7, which
-records a follow-up pass on **2026-08-30**.
+records a follow-up pass on **2026-08-30**, and §8, a freshness check on **2026-09-02**.
 
 Rules for this file:
 
@@ -607,3 +607,35 @@ diff their generated heading IDs rather than asserting either outcome.
 
 - <https://docs.astro.build/en/guides/upgrade-to/v7/>
 - <https://astro.build/blog/astro-7/>
+
+---
+
+## 8. Freshness check — Astro / Cloudflare (2026-09-02)
+
+### Astro
+- Astro core: 7.2.10 latest (2026-08-31). 7.1.0 2026-07-16, 7.2.0 2026-08-06. No API in
+  astro-seo.md changed. Dates from npm registry `time` field.
+  - 7.2.0: `Astro.url.pathname` fix for `build.format: 'preserve'` (returned `/x/` instead of
+    `/x.html`). Source: packages/astro/CHANGELOG.md.
+- `@astrojs/sitemap`: 3.7.4 latest (2026-08-31).
+  - 3.7.3 (2026-05-26): per-child `<lastmod>` in sitemap-index.xml (PR #16837).
+  - 3.7.4 (2026-08-31): homepage empty-path URL fix with `trailingSlash: 'never'` /
+    `build.format: 'file'` (PR #17851).
+  Source: packages/integrations/sitemap/CHANGELOG.md.
+- `@astrojs/cloudflare`: 14.2.6 (2026-08-31). Not diffed this round.
+
+### Cloudflare Workers static assets
+- `_redirects` (docs last updated 2026-04-23): limits 2,000 static / 100 dynamic / 2,100 total,
+  1,000 chars per line, default 302, codes 301/302/303/307/308, proxying relative-only and
+  first-match-only. All match edge-seo.md. https://developers.cloudflare.com/workers/static-assets/redirects/
+- Wrangler config reference: `html_handling` default `auto-trailing-slash`, `not_found_handling`
+  default `none`, `run_worker_first` boolean or pattern array. Match.
+  https://developers.cloudflare.com/workers/wrangler/configuration/
+- **Gap found**: navigation-request rule. With `main` + `not_found_handling` +
+  compatibility_date >= 2025-04-01 (`assets_navigation_prefers_asset_serving`), requests with
+  `Sec-Fetch-Mode: navigate` that miss an asset are served by the asset layer, not the Worker.
+  Paths matched by `run_worker_first` are exempt. Opt out: `assets_navigation_has_no_effect`.
+  Took effect 2025-04-01. Sources:
+  https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/ (updated 2026-08-25)
+  https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+- Not checked: `_headers` page, Cloudflare changelog feed.

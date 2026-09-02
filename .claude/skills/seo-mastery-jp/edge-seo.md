@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-02
 ---
 
 # エッジSEO リファレンス（Cloudflare Workers / Pages）
@@ -8,7 +8,7 @@ last_verified: 2026-08-29
 クローラー制御、配信直前のHTML書き換えを扱います。Cloudflare Workers / Cloudflare Pagesを前提に
 書いていますが、考え方は他のエッジランタイムにも適用できます。
 
-Cloudflare公式ドキュメントで2026年8月29日に検証済み。`_redirects`と`_headers`は静的アセット付き
+Cloudflare公式ドキュメントで2026年9月2日に検証済み。`_redirects`と`_headers`は静的アセット付き
 WorkersでもPagesでも同一に動作します。挙動が分かれる箇所は都度明記します。
 
 ## プラットフォームのモデル
@@ -37,6 +37,8 @@ Cloudflareは、リダイレクトは「リクエストURLがルールに一致�
     "directory": "./dist/",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
+    // 後述「ナビゲーションリクエストはWorkerを素通りする」参照。not_found_handling を
+    // 設定すると run_worker_first 外のSSRルートはブラウザで404になる。
     "run_worker_first": ["/api/*", "!/api/public/*"]
   }
 }
@@ -67,6 +69,32 @@ Workerでは、HTMLのパスを`run_worker_first`に列挙する必要があり�
 代償は前述のトレードオフです。これらのパスには`_headers`も`_redirects`も適用されなくなるため、
 ヘッダ設定とリダイレクトはWorker側で自前で行うことになります。プロジェクトごとに選んでください。
 純粋な静的サイトならアセット優先、HTMLを本当に変換する必要があるならWorker優先です。
+
+### ナビゲーションリクエストはWorkerを素通りする
+
+上の表には載っていない第3の経路があります。Workerスクリプト（`main`）があり、
+`not_found_handling`を設定していて、`compatibility_date`が`2025-04-01`以降（または
+`assets_navigation_prefers_asset_serving`フラグが有効）の場合、静的アセットに一致しない
+**ナビゲーションリクエスト**（ブラウザがページ遷移時に付ける`Sec-Fetch-Mode: navigate`
+ヘッダ付きのリクエスト）は**Workerではなくアセット層が処理します**。ブラウザには`404.html`
+（`single-page-application`なら`index.html`）が返り、Workerは一度も実行されません。
+
+クローラーは`Sec-Fetch-Mode`を送らないので、従来どおりWorkerに到達します。ハイブリッド
+サイトではこれが最悪の分岐を生みます。GooglebotはSSRページを取得してインデックスし、検索
+結果をクリックした人間は全員404ページに着地します。冒頭の1つ目の設定
+（`run_worker_first: ["/api/*", …]`＋`not_found_handling: "404-page"`）は、`/api/*`以外の
+SSRルートすべてでまさにこの問題を抱えています。
+
+回避策は3つ。優先順に：
+
+1. SSRパスをすべて`run_worker_first`に列挙する。ここに一致するパスはナビゲーション判定を
+   完全にスキップします（フラグは効きません）。
+2. `assets_navigation_has_no_effect`互換フラグを設定して旧挙動に戻す。アセット不一致は
+   すべてWorkerを起動し、その分課金されます。
+3. `not_found_handling`を設定しない。このルールは設定されているときだけ発動します。
+
+確認は同じSSRのURLに対してブラウザと`curl`（`Sec-Fetch-Mode`ヘッダなし）の両方で行うこと。
+レスポンスが違えばこの状態です。
 
 このうち2つのキーは、自前のリダイレクトが動くより前にURLの正規形を決めてしまいます。
 

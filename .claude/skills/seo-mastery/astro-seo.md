@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-30
+last_verified: 2026-09-02
 ---
 
 # Astro SEO Reference
@@ -9,9 +9,10 @@ solve much of what other frameworks need plugins for — what remains are the de
 *you* responsible for: which islands hydrate, how absolute URLs are constructed at build time, and
 how content metadata becomes structured data.
 
-Verified against Astro 7 (released 2026-06-22). No API in this file changed in v7 — what changed is
-the HTML Astro emits, covered in the migration section at the end. Where v5 and v6 differ, the v6
-form is given first and the v5 form is noted.
+Verified against Astro 7.2 (7.0 released 2026-06-22, 7.2 on 2026-08-06) and `@astrojs/sitemap`
+3.7.4. No API in this file changed in v7 — what changed is the HTML Astro emits, covered in the
+migration section at the end. Where v5 and v6 differ, the v6 form is given first and the v5 form is
+noted.
 
 ## Islands Architecture and Core Web Vitals
 
@@ -94,6 +95,12 @@ export default defineConfig({
 Generate canonical and OG tags once in a base layout so every page inherits them. Building the
 canonical from `Astro.url.pathname` (not `Astro.url.href`) drops query strings and fragments, which
 is almost always what you want.
+
+If you use `build.format: 'file'` or `'preserve'`, note that before Astro 7.2.0 (2026-08-06)
+`Astro.url.pathname` returned `/about-me/` for a page built to `dist/about-me.html`, so the
+canonical above pointed at a URL that did not exist. 7.2.0 fixed it to return `/about-me.html`.
+Sites on `'preserve'` that pinned an earlier 7.x should upgrade before trusting build-derived
+canonicals.
 
 ```astro
 ---
@@ -374,6 +381,16 @@ export default defineConfig({
 clock stamped onto every URL at once is worse than no `lastmod` at all. Google **ignores
 `<priority>` and `<changefreq>`**: setting them costs nothing but buys nothing, which is why
 neither appears above.
+
+Two `@astrojs/sitemap` fixes worth knowing about:
+
+- **3.7.3 (2026-05-26)** — each `<sitemap>` entry in `sitemap-index.xml` now carries the newest
+  `lastmod` among the URLs in that child file, instead of one global date on every entry. Per-URL
+  `lastmod` from `serialize()` therefore propagates up to the index for free.
+- **3.7.4 (2026-08-31)** — with `trailingSlash: 'never'` or `build.format: 'file'`, the homepage was
+  emitted as `https://example.com` (empty path) instead of `https://example.com/`. Sites on those
+  settings should upgrade; the bare-host form is a different URL from the one the canonical tag
+  declares.
 
 ### Excluding pages properly
 
