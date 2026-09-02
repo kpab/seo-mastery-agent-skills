@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-30
+last_verified: 2026-09-02
 ---
 
 # Astro SEO リファレンス
@@ -9,7 +9,8 @@ Astro特有のSEOパターン。Astroのデフォルト（JavaScriptゼロ、静
 判断です。どのアイランドをハイドレートするか、ビルド時に絶対URLをどう組み立てるか、
 コンテンツのメタデータをどう構造化データに変換するか。
 
-Astro 7（2026年6月22日リリース）で検証済み。このファイルで扱うAPIはv7では変更されていません。
+Astro 7.2（7.0は2026年6月22日、7.2は2026年8月6日リリース）と`@astrojs/sitemap` 3.7.4で検証済み。
+このファイルで扱うAPIはv7では変更されていません。
 v7が変えたのはAstroが出力するHTMLそのもので、末尾の移行ポイントにまとめてあります。v5とv6で
 異なる場合はv6の書き方を先に示し、v5の形を注記します。
 
@@ -96,6 +97,12 @@ export default defineConfig({
 ベースレイアウトでcanonicalとOGタグを一度だけ生成し、全ページに継承させます。canonicalを
 `Astro.url.href`ではなく`Astro.url.pathname`から組み立てると、クエリ文字列とフラグメントが落ちます。
 たいていの場合はこれが望ましい挙動です。
+
+`build.format: 'file'`または`'preserve'`を使っている場合の注意。Astro 7.2.0（2026年8月6日）より前は、
+`dist/about-me.html`として出力されるページで`Astro.url.pathname`が`/about-me/`を返していたため、
+上のcanonicalは存在しないURLを指していました。7.2.0で`/about-me.html`を返すよう修正されています。
+`'preserve'`で7.x初期を固定しているサイトは、ビルド由来のcanonicalを信用する前にアップグレードして
+ください。
 
 ```astro
 ---
@@ -376,6 +383,15 @@ export default defineConfig({
 全URLに一律で押すくらいなら、`lastmod`は無いほうがましです。Googleは**`<priority>`と
 `<changefreq>`を無視します**。設定しても害はありませんが効果もないので、上の例にはどちらも登場
 しません。
+
+`@astrojs/sitemap`で知っておくべき修正が2つあります。
+
+- **3.7.3（2026年5月26日）** — `sitemap-index.xml`の各`<sitemap>`エントリに、その子ファイル内の
+  URLのうち最新の`lastmod`が付くようになりました（以前は全エントリに同じ日付）。`serialize()`で
+  付けたURL単位の`lastmod`が、何もしなくてもインデックスまで伝播します。
+- **3.7.4（2026年8月31日）** — `trailingSlash: 'never'`または`build.format: 'file'`のとき、トップ
+  ページが`https://example.com/`ではなく`https://example.com`（パス空）で出力されていました。この
+  設定のサイトはアップグレードを。ホストだけの形はcanonicalタグが宣言するURLとは別物です。
 
 ### 除外の正しいやり方
 

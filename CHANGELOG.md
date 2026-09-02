@@ -19,6 +19,23 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 
 ## [Unreleased]
 
+### Fixed
+
+- **`edge-seo.md` (EN/JP)** — documented the navigation-request rule
+  (`assets_navigation_prefers_asset_serving`, default since compatibility date 2025-04-01): with a
+  Worker script and `not_found_handling` set, browser navigations that miss a static asset are
+  served `404.html` / `index.html` without invoking the Worker, while crawlers still reach it. The
+  reference `wrangler.jsonc` in this file exhibited the bug for SSR routes outside
+  `run_worker_first`. Added the three mitigations and a browser-vs-`curl` check.
+- **`astro-seo.md` (EN/JP)** — noted the Astro 7.2.0 `Astro.url.pathname` fix for
+  `build.format: 'preserve'` and the `@astrojs/sitemap` 3.7.3 (per-child `lastmod` in the index)
+  and 3.7.4 (homepage empty-path URL) fixes.
+
+### Changed
+
+- Refreshed `last_verified` on `astro-seo.md` and `edge-seo.md` (EN/JP) to 2026-09-02; verified
+  against Astro 7.2.10 and `@astrojs/sitemap` 3.7.4.
+
 ## [1.4.0] - 2026-08-29
 
 ### Added

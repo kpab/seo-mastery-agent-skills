@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-02
 ---
 
 # Edge SEO Reference (Cloudflare Workers / Pages)
@@ -8,7 +8,7 @@ SEO work that happens at the edge rather than in the application: redirects, res
 dynamically generated sitemaps, crawler handling, and last-mile HTML rewriting. Written for
 Cloudflare Workers and Cloudflare Pages, but the reasoning transfers to any edge runtime.
 
-Verified against Cloudflare's documentation on 2026-08-29. The `_redirects` and `_headers` files
+Verified against Cloudflare's documentation on 2026-09-02. The `_redirects` and `_headers` files
 behave identically on Workers with static assets and on Pages; where behaviour diverges it is called
 out.
 
@@ -37,6 +37,8 @@ Configuration lives under `assets` in `wrangler.jsonc`:
     "directory": "./dist/",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
+    // See "Navigation requests bypass the Worker" below: with not_found_handling set,
+    // SSR routes outside run_worker_first 404 in browsers.
     "run_worker_first": ["/api/*", "!/api/public/*"]
   }
 }
@@ -67,6 +69,32 @@ it. Middleware-style Workers need the HTML paths listed in `run_worker_first`:
 The cost is the trade documented above: those paths no longer get `_headers` or `_redirects`, so the
 Worker has to set headers and issue redirects itself. Pick per project — asset-first for a purely
 static site, Worker-first when you genuinely need to transform HTML.
+
+### Navigation requests bypass the Worker
+
+There is a third path that the table above does not show. When a Worker script (`main`) is
+present, `not_found_handling` is configured, and the `compatibility_date` is `2025-04-01` or later
+(or the `assets_navigation_prefers_asset_serving` flag is set), a **navigation request** — one
+carrying the `Sec-Fetch-Mode: navigate` header that browsers attach to page loads — that matches no
+static asset is **served by the asset layer, not the Worker**. The browser gets `404.html` (or
+`index.html` under `single-page-application`) and the Worker never runs.
+
+Crawlers do not send `Sec-Fetch-Mode`, so their requests fall through to the Worker as before. On
+a hybrid site this produces the worst possible split: Googlebot fetches the SSR page and indexes
+it, while every human clicking the result lands on the 404 page. The first config above
+(`run_worker_first: ["/api/*", …]` plus `not_found_handling: "404-page"`) has exactly this
+problem for any SSR route outside `/api/*`.
+
+Three ways out, in order of preference:
+
+1. List every SSR path in `run_worker_first`. Paths matched there skip the navigation check
+   entirely (the flag has no effect on them).
+2. Set the `assets_navigation_has_no_effect` compatibility flag to restore the old behaviour —
+   every asset miss invokes the Worker, billed accordingly.
+3. Leave `not_found_handling` unset. The rule only fires when it is configured.
+
+Verify with a browser and with `curl` (no `Sec-Fetch-Mode` header) against the same SSR URL; if
+the two responses differ, the site is in this state.
 
 Two of these keys decide your canonical URL shape before any of your own redirects run:
 
