@@ -19,6 +19,8 @@ These are practical working definitions, not standardized industry boundaries. S
 
 Within this skill, LLMO includes GEO; **LLMO ⊃ GEO is not an industry standard**. “Generative Visibility” groups AI Search Optimization, GEO, AEO, and LLMO work. Targets include Google AI Overviews / AI Mode, ChatGPT Search, Perplexity, Claude search/retrieval, Gemini, and other answer systems.
 
+> **Google-specific note:** Google treats optimization for its generative Search experiences as part of SEO rather than as a separate ranking discipline. AEO and GEO can be useful working labels, but Google's guidance remains rooted in the same Search fundamentals and quality systems. See [Google's generative AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
+
 ## 2. What GEO/LLMO Can and Cannot Do
 
 Improve accessibility, factual clarity, source attribution, and observable visibility. Do not promise indexing, citations, mentions, rankings, or training inclusion. Retrieval is different from learned model knowledge; editing a page does not rewrite model weights or remove historical training data. Search eligibility is not selection.

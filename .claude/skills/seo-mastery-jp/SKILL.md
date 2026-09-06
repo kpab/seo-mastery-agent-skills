@@ -8,7 +8,7 @@ author: kpab
 
 # SEO Mastery Agent Skills
 
-Google公式ドキュメントに基づく包括的なSEO最適化スキル。技術SEO、コンテンツ最適化、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
+検索・AI事業者の公式ドキュメントと一次研究に基づく包括的なSEO最適化スキル。技術SEO、コンテンツ最適化、構造化データ、Core Web Vitals、サイト監査を統合的にサポートします。
 
 ## 📁 このスキルの構成
 

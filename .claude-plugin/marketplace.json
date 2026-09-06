@@ -3,12 +3,12 @@
   "owner": {
     "name": "kpab"
   },
-  "description": "SEO optimization Agent Skills for Claude Code, based on Google's official guidelines (English & Japanese).",
+  "description": "SEO optimization Agent Skills for Claude Code, based on official search and AI vendor documentation and primary research (English & Japanese).",
   "plugins": [
     {
       "name": "seo-mastery",
       "source": "./",
-      "description": "Comprehensive SEO optimization skills (English & Japanese) based on Google's official guidelines: technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T, AI Search / GEO / LLMO (AI Overviews / AI Mode, llms.txt, AI crawler control), Astro and edge (Cloudflare Workers/Pages) SEO, and site audits.",
+      "description": "Comprehensive SEO optimization skills (English & Japanese) based on official search and AI vendor documentation and primary research: technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T, AI Search / GEO / LLMO (AI Overviews / AI Mode, llms.txt, AI crawler control), Astro and edge (Cloudflare Workers/Pages) SEO, and site audits.",
       "version": "1.5.0",
       "skills": [
         "./.claude/skills/seo-mastery",

@@ -1,7 +1,7 @@
 {
   "name": "seo-mastery-agent-skills",
   "version": "1.5.0",
-  "description": "Comprehensive SEO optimization skills for Claude/Codex based on Google's official guidelines",
+  "description": "Comprehensive SEO optimization skills for Claude/Codex based on official search and AI vendor documentation and primary research",
   "author": "kpab",
   "repository": "https://github.com/kpab/seo-mastery-agent-skills",
   "license": "MIT",

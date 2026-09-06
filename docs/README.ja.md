@@ -6,7 +6,7 @@
 
 [English README here](../README.md)
 
-Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式ドキュメントに基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、AI検索、エッジ・静的サイトのSEO、サイト監査を統合的にサポートします。
+Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。検索・AI事業者の公式ドキュメントと一次研究に基づく技術SEO、コンテンツSEO、構造化データ、Core Web Vitals、E-E-A-T、AI検索、エッジ・静的サイトのSEO、サイト監査を統合的にサポートします。
 
 ## このスキルの位置づけ
 

@@ -8,7 +8,7 @@ author: kpab
 
 # SEO Mastery Agent Skills
 
-Comprehensive SEO optimization skill based on Google's official documentation. Provides integrated support for technical SEO, content optimization, structured data, Core Web Vitals, and site audits.
+Comprehensive SEO optimization skill based on official search and AI vendor documentation and primary research. Provides integrated support for technical SEO, content optimization, structured data, Core Web Vitals, and site audits.
 
 ## How This Skill Is Organized
 

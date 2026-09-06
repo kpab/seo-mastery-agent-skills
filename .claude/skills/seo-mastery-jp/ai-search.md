@@ -19,6 +19,8 @@ last_verified: 2026-09-07
 
 本SkillではLLMOにGEOを含めるが、**LLMO ⊃ GEOは業界標準ではない**。「生成AI検索での可視性（Generative Visibility）」にAI Search Optimization、GEO、AEO、LLMOの作業を整理する。対象はGoogle AI Overviews / AIモード、ChatGPT Search、Perplexity、Claude search/retrieval、Gemini、その他の回答システム。
 
+> **Google固有の注意:** GoogleはAI OverviewsやAIモード向けの最適化を、独立した「AIランキング対策」ではなくSEOの一部として扱っている。AEOやGEOは実務上の整理には使えるが、Googleの公式ガイダンスは従来のSearchの基礎・品質システムを土台としている。[Googleの生成AI最適化ガイド](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) を参照。
+
 ## 2. GEO/LLMOでできること・できないこと
 
 アクセス可能性、事実の明確性、出典表示、観測可能な可視性を改善する。インデックス、引用、言及、順位、学習採用を保証しない。取得とモデルの学習済み知識は異なり、ページの編集でモデルの重みや過去の学習データが書き換わるわけではない。掲載資格と実際の選択を区別する。

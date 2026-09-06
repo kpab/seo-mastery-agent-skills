@@ -4,7 +4,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
 [![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](docs/README.ja.md)
 
-Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Google's official documentation, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T, AI search, edge/static-site SEO, and site audits.
+Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on official search and AI vendor documentation and primary research, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T, AI search, edge/static-site SEO, and site audits.
 
 [日本語版 README はこちら](docs/README.ja.md)
 
