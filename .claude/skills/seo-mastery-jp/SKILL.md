@@ -1,8 +1,8 @@
 ---
 name: seo-mastery-jp
-description: "包括的なSEO最適化スキル（日本語版）。Googleの公式ガイドラインに基づく技術SEO、コンテンツSEO、構造化データ（JSON-LD）、Core Web Vitals、E-E-A-T対策、AI検索（AI Overviews / AIモード）・AIクローラー制御、Astro・エッジ（Cloudflare）SEOを網羅し、実践的なコード生成とサイト監査ワークフローを提供。SEO、検索順位、メタタグ、robots.txt、サイトマップ、canonical・hreflang、schema.org構造化データ、リッチリザルト、LCP/INP/CLS、Lighthouse・PageSpeedスコア、AI Overviews・AIO、AIモード、生成AI検索、llms.txt、AIクローラー（GPTBot・ClaudeBot・Google-Extended）、Astro SEO（アイランド・client:load等のクライアントディレクティブ・@astrojs/sitemap・ClientRouter・Content Collections）、Cloudflare Workers/Pages のSEO（wrangler・_redirects・_headers・X-Robots-Tag・HTMLRewriter・D1/KV動的サイトマップ・Pages Functions）、エッジ・静的サイトのSEOに関する相談や、サイト監査の依頼があったときに使用する。言語による使い分け: ユーザーが日本語で書いている場合はこのスキルを使い、英語の場合は seo-mastery を使う。両方を同時に読み込まない。"
-version: 1.4.0
-last_verified: 2026-08-29
+description: "公式情報・研究に基づくSEOと生成AI検索の可視性改善。技術SEO、コンテンツ、schema.org / JSON-LD、Core Web Vitals、E-E-A-T、Astro、Cloudflare Workers/Pages、サイト監査に対応。SEO、robots.txt、sitemap、canonical、hreflang、meta tags、LCP/INP/CLS、GEO (Generative Engine Optimization)、LLMO (Large Language Model Optimization)、AEO (Answer Engine Optimization)、AI visibility、AI citation / AI citations、AI mentions、generative search、ChatGPT Search、Perplexity、Claude search、AI search optimization、AI Overviews / AI Mode、llms.txt、AIクローラー制御、引用可能性・エンティティ・独自情報の監査で使用する。日本語の依頼には本Skill、英語にはseo-masteryを使い、両方を同時に読み込まない。"
+version: 1.5.0
+last_verified: 2026-09-07
 author: kpab
 ---
 
@@ -21,7 +21,7 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 | [structured-data.md](structured-data.md) | 全構造化データタイプのJSON-LDテンプレート、検証、よくあるエラー | 構造化データ実装時 |
 | [core-web-vitals.md](core-web-vitals.md) | LCP/INP/CLSの詳細な原因と対策、測定、Next.js/Nuxt.jsコード | パフォーマンス改善時 |
 | [audit-workflow.md](audit-workflow.md) | 6フェーズの監査手順、診断コマンド、レポートテンプレート | サイト監査実施時 |
-| [ai-search.md](ai-search.md) | AI Overviews / AIモードの公式ガイダンス、Search Consoleの生成AIコントロール、AIクローラーのrobots.txtレシピ、llms.txt、AI引用されやすいコンテンツ設計、計測 | AI検索最適化・クローラー制御時 |
+| [ai-search.md](ai-search.md) | GEO / LLMO / AEO、根拠レベル、取得・掲載資格、クローラー制御、引用可能性・エンティティ・独自情報、計測、8段階監査 | 生成AI検索の可視性改善・監査 |
 | [astro-seo.md](astro-seo.md) | クライアントディレクティブとINP/LCP、canonical・OG生成、Content CollectionsからのJSON-LD、@astrojs/sitemap、View Transitions | Astroサイトの構築・監査時 |
 | [edge-seo.md](edge-seo.md) | `_redirects` / `_headers`、X-Robots-Tag、D1/KV駆動の動的サイトマップ、クローラー検証、HTMLRewriter、クロールバジェット | Cloudflare Workers / Pagesへのデプロイ時 |
 
@@ -63,13 +63,12 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 - CLS（Cumulative Layout Shift）対策
 - パフォーマンス監視と改善
 
-### 🤖 AI検索（AI Overviews / AIモード）
-- AI Overviews / AIモードのコンテンツ選定の仕組み（インデックス可能＋スニペット表示可能＋Search Consoleの生成AIコントロールで「含める」設定）
-- Search Consoleの「設定 → 検索の生成AI」によるオプトイン／オプトアウト（ランキングには影響しない）
-- スニペットコントロール（nosnippet, data-nosnippet, max-snippet, noindex）によるAI表示制御
-- robots.txtによるAIクローラー制御（Google-Extended, GPTBot, ClaudeBot, PerplexityBot等）
-- llms.txtの扱い（Googleは利用しない）
-- AI検索に引用されやすいコンテンツ設計、AIトラフィックの計測
+### 🤖 AI Search / GEO / LLMO
+- GEO / LLMO / AEOの実務上の定義と根拠レベルの区別
+- 学習・検索・ユーザー起点取得とGoogleの掲載資格・制御
+- 引用可能性、エンティティの明確性、独自情報の監査
+- AI参照流入・引用率・言及率・反復ベンチマーク
+- llms.txtはExperimental / Low Evidenceの任意施策
 
 ### 🚀 Astro / エッジ（Cloudflare）サイト
 - INP・LCPを損なわない`client:*`ディレクティブの選び方
@@ -170,17 +169,17 @@ Google公式ドキュメントに基づく包括的なSEO最適化スキル。�
 
 ---
 
-## 🤖 AI検索（AI Overviews / AIモード）
+## 🤖 AI Search / GEO / LLMO
 
-GoogleのAI機能ガイドおよび生成AI最適化ガイドで確認済みの要点:
+従来SEOを基盤に生成AI検索での可視性を改善する。GEO / LLMO / AEOの境界と「LLMOにGEOを含める」分類は本Skillの実務上の整理であり、業界標準ではない。
 
-- 表示要件は3つ: ページが**インデックス可能**であること、**スニペット表示可能**であること、そしてサイトがSearch Consoleの**「検索の生成AI機能」から除外されていない**こと。デフォルトは「含める」で、コントロール自体が2026年6月3日から順次展開中のため、設定が出ていないプロパティが要件を満たしていないわけではない
-- サイト単位のコントロールは、プロパティに出ていれば Search Console の **設定 → 検索の生成AI**（デフォルトは「含める」）。利用できる前提にせず、設定の有無を確認する。除外するとAI Overviews・AIモード・Discoverの生成AI機能から外れるが、Googleは「Search の他の部分に影響するランキングや掲載のシグナルとしては使用しない」と明記している
-- そのうえで表示の細かさは既存のスニペットコントロール（`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`）で制御する。新しいファイルやマークアップは不要で、Googleはllms.txtもコンテンツのチャンク分割もAI専用スキーマも利用しない
-- `Google-Extended` はGeminiの学習・グラウンディング拒否のみを制御する。ブロックしても検索・AI Overviewsには影響せず、ランキングシグナルでもない
-- AI経由のトラフィックは検索パフォーマンスの検索タイプ「ウェブ」に含まれるほか、専用の**検索の生成AIパフォーマンスレポート**でも確認できる（過去分の遡及なし、表示回数のみ）
+- High Confidence：公式の取得・インデックス・スニペット・クローラー制御。掲載資格は引用保証ではない。
+- Medium Confidence：引用可能性、エンティティの明確性、独自情報、出典などの編集上の仮説。局所的に効果を検証する。
+- Experimental / Low Evidence：llms.txtやAI専用ファイル。任意であり、順位向上を断定しない。
+- AI遮断は学習・検索・ユーザー取得を区別する。Google-Extendedは学習と指定のグラウンディングを含み、Google検索の掲載制御ではない。
+- 隠しLLMテキスト、prompt injection、偽の出典・著者・統計、スパムを推奨しない。
 
-AIクローラーのUA一覧、robots.txtレシピ、llms.txtの書式、AI引用されやすいコンテンツ設計、計測の詳細は [ai-search.md](ai-search.md) を参照。
+公式仕様、クローラー表、8段階監査、6項目の指摘書式、反復計測は [ai-search.md](ai-search.md) を参照。GEO監査の依頼では必ず読み、全段階を確認する。通常SEO監査からは [audit-workflow.md](audit-workflow.md) を通して連携する。
 
 ---
 

@@ -20,7 +20,8 @@ Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Go
 - **Content SEO Optimization** - Meta tags, heading structure, E-E-A-T strategies
 - **Structured Data Templates** - Article, FAQ, Product, LocalBusiness, etc.
 - **Core Web Vitals Support** - Detailed optimization techniques for LCP, INP, CLS
-- **AI Search** - AI Overviews / AI Mode eligibility and controls, AI crawler management
+- **AI Search / GEO / LLMO** - AI Overviews / AI Mode, ChatGPT / Claude / Perplexity crawler control, citation-ready content, entity clarity, original information gain, AI visibility measurement, and evidence-based optional llms.txt guidance
+- **Evidence-based generative visibility audits** - High / Medium / Experimental recommendations, eight audit stages, and repeatable citation/mention measurement. GEO / LLMO / AEO are working terms, not ranking or citation guarantees.
 - **Astro & Edge SEO** - Astro-specific patterns and Cloudflare Workers/Pages edge SEO
 - **Site Audit Workflow** - Systematic audit process and report formats
 - **Practical Code Examples** - Ready-to-use templates

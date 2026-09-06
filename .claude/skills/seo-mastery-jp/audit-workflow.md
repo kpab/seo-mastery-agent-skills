@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-07
 ---
 
 # SEO監査ワークフロー
@@ -180,30 +180,20 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] タップターゲットが適切なサイズ
 - [ ] テキストが読みやすいサイズ
 
-### 2.6 AI検索対応診断
+### 2.6 生成AI検索の可視性監査（AI Search / GEO / LLMO）
 
-```bash
-# robots.txt のAIクローラー設定をグループ単位で確認 — 該当する各User-agentグループを
-# Allow/Disallow行ごと表示（ワイルドカード * のグループも含む）
-curl -s https://example.com/robots.txt | awk -v RS='' 'tolower($0) ~ /google-extended|gptbot|oai-searchbot|claudebot|claude-searchbot|perplexitybot|ccbot|applebot-extended|meta-externalagent|bytespider|user-agent: ?\*/ {print $0 "\n"}'
+[ai-search.md](ai-search.md) の「14. GEO監査」を読み、以下の8段階を適用する。技術面はPhase 1〜2、編集・実体面はPhase 3、比較計測はPhase 5、優先度はPhase 6へ統合する。
 
-# スニペットコントロールの確認（AI Overviews / AIモードの表示もこれで制御される）
-curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
-curl -s https://example.com | grep -c 'data-nosnippet'
+1. Retrieval：200と本文、HTML/JS、robots、canonical、CDN/WAFを確認。
+2. Eligibility：Googleのインデックス済み・スニペット要件と適用されるSearch Console設定、他社固有の制御を確認。
+3. Citation readiness：直接回答、独立した事実、出典、日付・単位、著者を確認。
+4. Entity clarity：組織・製品・著者・About・表示内容とschemaの一致を確認。
+5. Information gain：一次知識、独自例、データと方法を確認。
+6. Authority：専門性、正当な外部参照、出典の正確性を確認。
+7. AI crawler policy：学習・検索・ユーザー取得と混在トークンを区別。
+8. Measurement：参照流入・引用・言及を分け、質問・言い換え・複数エンジン・反復・基準値を定義。
 
-# スニペットコントロールはHTTPヘッダー（X-Robots-Tag）でも配信できる
-curl -sI https://example.com | grep -i 'x-robots-tag'
-
-# llms.txt の有無を確認（Googleは利用しない）
-curl -sI https://example.com/llms.txt | head -1
-```
-
-**チェックリスト:**
-- [ ] **プロパティに設定が出ていれば**（2026年6月3日から順次展開中で、無いこと自体は設定漏れではない）、Search Consoleの **設定 → 検索の生成AI** が意図どおりになっている（デフォルトは「含める」）。除外すると通常の検索順位に影響せずAI Overviews / AIモード / DiscoverのAI表示だけが消えるため、サイトの方針と一致しているか確認する
-- [ ] robots.txtのAIクローラー設定がサイトの意図と一致している（学習拒否かAI検索での引用か — [ai-search.md](ai-search.md) 参照）
-- [ ] `Google-Extended` をブロックしている場合、それが学習のみの制御だと理解されている（検索・AI Overviewsからは除外されない）
-- [ ] スニペットコントロール（`nosnippet` / `max-snippet` / `data-nosnippet`）が意図的な設定である — AI Overviews / AIモードの表示も抑制され、通常のスニペットも失う。AI機能だけを除外したいならSearch Consoleのコントロールを使う
-- [ ] Google向けにllms.txt・コンテンツのチャンク分割・AI専用スキーマへ依存していない（Googleはいずれも利用しない）
+各指摘は同リファレンスの Finding / Evidence level / Impact / Current state / Recommended action / How to verify 形式でPhase 6へ引き継ぐ。High Confidence / Medium Confidence / Experimentalを優先度と区別し、未取得の証拠は未評価とする。llms.txtの欠如を必須要件違反として扱わない。8段階の詳細チェックリストとクローラー仕様の正本はai-search.mdに置く。
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-07
 ---
 
 # SEO Audit Workflow
@@ -180,30 +180,20 @@ npx lighthouse https://example.com --only-categories=seo --form-factor=mobile
 - [ ] Tap targets are appropriate size
 - [ ] Text is readable size
 
-### 2.6 AI Search Readiness
+### 2.6 Generative Visibility Audit (AI Search / GEO / LLMO)
 
-```bash
-# Check robots.txt AI crawler rules — paragraph mode prints each matching
-# User-agent group with its Allow/Disallow lines, including the catch-all * group
-curl -s https://example.com/robots.txt | awk -v RS='' 'tolower($0) ~ /google-extended|gptbot|oai-searchbot|claudebot|claude-searchbot|perplexitybot|ccbot|applebot-extended|meta-externalagent|bytespider|user-agent: ?\*/ {print $0 "\n"}'
+Read section 14, GEO Audit, in [ai-search.md](ai-search.md) and apply its eight stages. Integrate technical findings into Phases 1–2, editorial/entity findings into Phase 3, comparative measurement into Phase 5, and priorities into Phase 6.
 
-# Check snippet controls (these also govern AI Overviews / AI Mode appearance)
-curl -s https://example.com | grep -oiE '<meta[^>]*(nosnippet|max-snippet|noindex)[^>]*>'
-curl -s https://example.com | grep -c 'data-nosnippet'
+1. Retrieval: verify 200 and real content, HTML/JS, robots, canonical, CDN/WAF.
+2. Eligibility: check Google indexed/snippet requirements and applicable Search Console control; check other providers independently.
+3. Citation readiness: direct answers, standalone facts, sources, dates/units, authorship.
+4. Entity clarity: organization/product/author/About identity and visible-content/schema agreement.
+5. Information gain: first-party knowledge, unique examples, data and methodology.
+6. Authority: expertise, legitimate external references and accurate sourcing.
+7. AI crawler policy: distinguish training, search, user retrieval and mixed-purpose tokens.
+8. Measurement: separate referrals/citations/mentions; define queries, paraphrases, engines, repeats and baseline.
 
-# Snippet controls can also be served as HTTP headers
-curl -sI https://example.com | grep -i 'x-robots-tag'
-
-# Check whether llms.txt exists (Google does not use it)
-curl -sI https://example.com/llms.txt | head -1
-```
-
-**Checklist:**
-- [ ] **If the property has it** (rolling out from 2026-06-03 — its absence is not a misconfiguration), Search Console **Settings → Search generative AI** is set intentionally (default: included). Excluding removes AI Overviews / AI Mode / Discover AI visibility without affecting normal Search rankings — verify the setting matches the site's stated intent
-- [ ] robots.txt AI crawler rules match the site's intent (training opt-out vs. AI search citations — see [ai-search.md](ai-search.md))
-- [ ] `Google-Extended` blocking, if present, is understood as training-only (it does not remove the site from Search or AI Overviews)
-- [ ] Snippet controls (`nosnippet` / `max-snippet` / `data-nosnippet`) are intentional — they also suppress AI Overviews / AI Mode appearance, and they cost regular snippets too, so the Search Console control is the better tool for AI-only exclusion
-- [ ] No reliance on llms.txt, content chunking, or AI-specific schema for Google (Google uses none of them)
+Carry each finding into Phase 6 using the reference’s Finding / Evidence level / Impact / Current state / Recommended action / How to verify format. Separate High Confidence / Medium Confidence / Experimental from priority; mark unavailable evidence not assessed. Missing llms.txt is not a failed prerequisite. Keep the detailed eight-stage checklists and crawler specifications canonical in ai-search.md.
 
 ---
 

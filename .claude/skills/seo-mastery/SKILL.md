@@ -1,8 +1,8 @@
 ---
 name: seo-mastery
-description: "Comprehensive SEO skill (English) based on Google's official guidelines: technical SEO, content SEO, structured data (JSON-LD), Core Web Vitals, E-E-A-T, AI search (AI Overviews / AI Mode) and AI crawler control, Astro and Cloudflare edge SEO, code generation, and site audits. Use when the user asks about SEO, search rankings, meta tags, robots.txt, sitemaps, canonical or hreflang, schema.org, rich results, LCP/INP/CLS, Lighthouse or PageSpeed, AI Overviews / AIO, AI Mode, generative AI search, llms.txt, AI crawlers (GPTBot, ClaudeBot, Google-Extended), Astro SEO (islands, client:load and other client directives, @astrojs/sitemap, ClientRouter, content collections), Cloudflare Workers/Pages SEO (wrangler, _redirects, _headers, X-Robots-Tag, HTMLRewriter, D1/KV sitemaps, Pages Functions), edge or static-site SEO, or a site audit. Language: use this skill when the user writes in English; when the user writes in Japanese use seo-mastery-jp instead. Load only one of the two."
-version: 1.4.0
-last_verified: 2026-08-29
+description: "Evidence-based SEO and generative search visibility: technical/content SEO, schema.org / JSON-LD, Core Web Vitals, E-E-A-T, Astro, Cloudflare Workers/Pages, and audits. Use for SEO, robots.txt, sitemaps, canonical, hreflang, meta tags, LCP/INP/CLS, GEO (Generative Engine Optimization), LLMO (Large Language Model Optimization), AEO (Answer Engine Optimization), AI visibility, AI citation / AI citations, AI mentions, generative search, ChatGPT Search, Perplexity, Claude search, AI search optimization, AI Overviews / AI Mode, llms.txt, AI crawler control, citation readiness, entity clarity, and information gain audits. For English requests use this skill; for Japanese use seo-mastery-jp. Load only one."
+version: 1.5.0
+last_verified: 2026-09-07
 author: kpab
 ---
 
@@ -21,7 +21,7 @@ This file contains the checklists, targets, and workflow overview. Load the refe
 | [structured-data.md](structured-data.md) | Full JSON-LD templates for all supported types, validation, common errors | Structured data implementation |
 | [core-web-vitals.md](core-web-vitals.md) | Detailed LCP/INP/CLS causes and fixes, measurement, Next.js/Nuxt.js code | Performance improvement |
 | [audit-workflow.md](audit-workflow.md) | 6-phase audit procedure, diagnostic commands, report templates | Site audit execution |
-| [ai-search.md](ai-search.md) | AI Overviews / AI Mode guidance, the Search Console generative AI control, AI crawler robots.txt recipes, llms.txt, AI-citable content design, measurement | AI search optimization and crawler control |
+| [ai-search.md](ai-search.md) | GEO / LLMO / AEO, evidence levels, retrieval/eligibility, crawler policy, citation readiness, entities, information gain, measurement, eight-stage audit | Generative search visibility and audits |
 | [astro-seo.md](astro-seo.md) | Client directives vs. INP/LCP, canonical & OG generation, JSON-LD from Content Collections, @astrojs/sitemap, view transitions | Building or auditing an Astro site |
 | [edge-seo.md](edge-seo.md) | `_redirects` / `_headers`, X-Robots-Tag, D1/KV dynamic sitemaps, crawler verification, HTMLRewriter, crawl budget | Cloudflare Workers / Pages deployments |
 
@@ -63,13 +63,12 @@ question names a platform, read the topic file *and* the platform file.
 - CLS (Cumulative Layout Shift) fixes
 - Performance monitoring and improvement
 
-### AI Search (AI Overviews / AI Mode)
-- Understanding how AI Overviews / AI Mode select content (indexable + snippet-eligible + included via the Search Console generative AI control)
-- Opting in or out with **Settings → Search generative AI** in Search Console (ranking-neutral)
-- Controlling AI appearance with snippet controls (nosnippet, data-nosnippet, max-snippet, noindex)
-- AI crawler control via robots.txt (Google-Extended, GPTBot, ClaudeBot, PerplexityBot, etc.)
-- llms.txt guidance (Google does not use it)
-- Designing content that AI search cites; measuring AI traffic
+### AI Search / GEO / LLMO
+- Practical GEO / LLMO / AEO definitions and evidence classification
+- Training, search and user retrieval policies; Google eligibility and controls
+- Citation readiness, entity clarity and original information audits
+- AI referrals, citation/mention rates and repeated benchmarks
+- Optional llms.txt guidance: Experimental / Low Evidence
 
 ### Astro / Edge (Cloudflare) Sites
 - Choosing `client:*` directives so islands do not damage INP and LCP
@@ -170,17 +169,17 @@ Static-site and edge deployments shift several SEO decisions out of the applicat
 
 ---
 
-## AI Search (AI Overviews / AI Mode)
+## AI Search / GEO / LLMO
 
-Key facts from Google's official AI features and generative AI optimization guides:
+Improve generative search visibility on top of traditional SEO. GEO / LLMO / AEO boundaries and LLMO including GEO are working conventions, not industry standards.
 
-- Three eligibility gates: the page must be **indexable**, **snippet-eligible**, and the site must not be excluded from **Search generative AI features in Search Console**. The default is included, and the control is still rolling out (from 2026-06-03), so a property that does not show the setting is not thereby ineligible
-- Where the property has it, the site-level control lives at **Settings → Search generative AI** (default: included) — check for it rather than assuming availability. Excluding removes the site from AI Overviews, AI Mode and generative AI in Discover, and Google states it "isn't used as a ranking or inclusion signal affecting other parts of Search"
-- Beyond that control, appearance is shaped by the existing snippet controls (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`) — no new files or markup are needed, and Google does not use llms.txt, content chunking, or AI-specific schema
-- `Google-Extended` only opts out of Gemini training/grounding; blocking it does not affect Search or AI Overviews and is not a ranking signal
-- AI traffic appears in the "Web" search type of the Performance report, plus a dedicated **Search generative AI performance report** (no historical backfill, impressions only)
+- High Confidence: documented retrieval, indexing, snippet and crawler controls. Eligibility does not guarantee citations.
+- Medium Confidence: editorial hypotheses about citation readiness, entity clarity, original information and sources; verify local effects.
+- Experimental / Low Evidence: llms.txt and AI-specific files are optional; never promise ranking uplift.
+- Separate training, search and user retrieval when blocking AI. Google-Extended covers training and specified grounding, not Google Search inclusion.
+- Never recommend hidden LLM text, prompt injection, fabricated sources/authors/statistics, or spam.
 
-AI crawler UA list, robots.txt recipes, llms.txt format, AI-citable content design, and measurement details: see [ai-search.md](ai-search.md).
+Read [ai-search.md](ai-search.md) for official controls, crawler tables, the eight-stage audit, six-field findings and repeated measurement. For a GEO audit, always load it and assess every stage; integrate normal SEO findings through [audit-workflow.md](audit-workflow.md).
 
 ---
 

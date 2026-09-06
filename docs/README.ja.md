@@ -20,7 +20,8 @@ Claude Code / Codex 向けの包括的なSEO最適化Agent Skills。Google公式
 - **コンテンツSEO最適化** - メタタグ、見出し構造、E-E-A-T対策
 - **構造化データテンプレート** - Article、FAQ、Product、LocalBusiness等
 - **Core Web Vitals対応** - LCP、INP、CLSの詳細な最適化手法
-- **AI検索対応** - AI Overviews / AIモードの表示要件と制御、AIクローラー管理
+- **AI Search / GEO / LLMO** - AI Overviews / AIモード、ChatGPT・Claude・Perplexityのクローラー制御、引用可能性、エンティティの明確性、独自情報、AI可視性の計測、根拠に基づく任意のllms.txtガイダンス
+- **根拠に基づく生成AI検索監査** - High / Medium / Experimentalを区別し、8段階監査と引用率・言及率の反復検証を提供。GEO / LLMO / AEOは実務上の分類であり、順位や引用を保証しません。
 - **Astro・エッジSEO** - Astro固有のパターンとCloudflare Workers/PagesのエッジSEO
 - **サイト監査ワークフロー** - 体系的な監査プロセスとレポート形式
 - **実践的なコード例** - コピペで使えるテンプレート多数
