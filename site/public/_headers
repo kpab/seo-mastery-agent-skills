@@ -1,0 +1,25 @@
+# Cloudflare の静的アセットにのみ適用される。Worker コードが返すレスポンスには届かない。
+# このサイトは Worker スクリプトを持たない純粋な静的配信なので、全ページがここで賄える。
+#
+# 重要: 一致したルールは上書きではなく積み上がり、同じヘッダ名はカンマで結合される。
+# 1 つのヘッダ名につき一致するルールを 1 つに保つこと。Cache-Control を /* に書かないのはこのため。
+
+# ビルド成果物はハッシュ付き。再検証させない
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# クローラーが頻繁に取りに来る。1 時間で十分に新鮮
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap-*.xml
+  Cache-Control: public, max-age=3600
+
+# HTML の Cache-Control はここに書かない。上のルールと結合してしまう。
+# 必要になったらゾーンレベルの Cache Rules で設定する
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

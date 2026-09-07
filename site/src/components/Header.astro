@@ -1,0 +1,51 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { copy } from '../data/content';
+import type { Locale } from '../data/site';
+import { site } from '../data/site';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = copy[locale];
+const home = locale === 'ja' ? '/ja' : '/';
+const other = locale === 'ja' ? '/' : '/ja';
+const anchor = (id: string) => `${home === '/' ? '' : home}#${id}`;
+const releases = locale === 'ja' ? '/ja/releases' : '/releases';
+
+const links = [
+  { href: anchor('coverage'), label: t.nav.coverage },
+  { href: anchor('install'), label: t.nav.install },
+  { href: anchor('freshness'), label: t.nav.freshness },
+  { href: releases, label: t.nav.releases },
+];
+---
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href={home}>
+      <span class="brand__mark" aria-hidden="true">SEO</span>
+      <span class="brand__name">SEO Mastery <span>Agent Skills</span></span>
+    </a>
+
+    <nav class="site-nav" aria-label={locale === 'ja' ? 'サイト内' : 'Primary'}>
+      {/* 広い画面ではそのまま並べる。狭い画面では下の details に畳む */}
+      <ul class="site-nav__links">
+        {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+        <li><a href={site.repo} rel="noopener">{t.nav.repo}</a></li>
+      </ul>
+
+      <a class="pill" href={other} hreflang={locale === 'ja' ? 'en' : 'ja'}>{t.nav.lang}</a>
+      <ThemeToggle label={locale === 'ja' ? 'テーマを切り替える' : 'Toggle color theme'} />
+
+      {/* JavaScript を使わない開閉。INP のコストを払わずに済む */}
+      <details class="site-menu">
+        <summary class="pill" aria-label={t.nav.menu}>
+          <span aria-hidden="true">☰</span>
+        </summary>
+        <ul class="site-menu__panel">
+          {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+          <li><a href={site.repo} rel="noopener">{t.nav.repo}</a></li>
+        </ul>
+      </details>
+    </nav>
+  </div>
+</header>

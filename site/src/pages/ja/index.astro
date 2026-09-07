@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Landing from '../../components/Landing.astro';
+import { copy } from '../../data/content';
+
+const t = copy.ja;
+---
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <Landing locale="ja" />
+</BaseLayout>
