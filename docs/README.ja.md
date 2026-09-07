@@ -62,13 +62,14 @@ done
 ### Codex
 
 ```bash
-# 上記と同様。ターゲットを Codex のスキルディレクトリに変更:
-# プロジェクトローカル: .codex/skills/$SKILL  |  ユーザーグローバル: ~/.codex/skills/$SKILL
+# 上記と同様だが、置き場所は Codex のスキルディレクトリ。Codex は .agents/skills を読み、
+# 作業ディレクトリからリポジトリのルートまで各階層を走査する。
+# リポジトリ: .agents/skills/$SKILL  |  個人用: ~/.agents/skills/$SKILL
 SKILL=seo-mastery   # または seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
-mkdir -p .codex/skills/$SKILL
+mkdir -p .agents/skills/$SKILL
 for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md astro-seo.md edge-seo.md audit-workflow.md; do
-  curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
+  curl -fsSL -o .agents/skills/$SKILL/$f "$BASE/$f"
 done
 ```
 
