@@ -62,13 +62,14 @@ done
 ### Codex
 
 ```bash
-# Same as above, but target a Codex skills directory.
-# Project local: .codex/skills/$SKILL   |   User global: ~/.codex/skills/$SKILL
+# Same as above, but target a Codex skills directory. Codex reads `.agents/skills`,
+# scanned in every directory from your working directory up to the repository root.
+# Repository: .agents/skills/$SKILL   |   Personal: ~/.agents/skills/$SKILL
 SKILL=seo-mastery   # or seo-mastery-jp
 BASE=https://raw.githubusercontent.com/kpab/seo-mastery-agent-skills/main/.claude/skills/$SKILL
-mkdir -p .codex/skills/$SKILL
+mkdir -p .agents/skills/$SKILL
 for f in SKILL.md technical-seo.md content-seo.md structured-data.md core-web-vitals.md ai-search.md astro-seo.md edge-seo.md audit-workflow.md; do
-  curl -fsSL -o .codex/skills/$SKILL/$f "$BASE/$f"
+  curl -fsSL -o .agents/skills/$SKILL/$f "$BASE/$f"
 done
 ```
 
