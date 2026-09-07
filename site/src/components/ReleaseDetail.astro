@@ -1,0 +1,95 @@
+---
+import { render } from 'astro:content';
+import JsonLd from './JsonLd.astro';
+import { copy } from '../data/content';
+import type { Locale } from '../data/site';
+import { site } from '../data/site';
+import { formatDate, releaseIndexPath, type Release } from '../data/releases';
+
+interface Props { locale: Locale; entry: Release }
+const { locale, entry } = Astro.props;
+const t = copy[locale];
+const { Content } = await render(entry);
+// 非 null アサーションは TypeScript を黙らせるだけ。設定漏れは原因の分かる形で落とす
+if (!Astro.site) throw new Error('astro.config.mjs に `site` がありません');
+const base = Astro.site;
+const url = new URL(Astro.url.pathname, base).href;
+const modified = entry.data.updated ?? entry.data.date;
+---
+<article class="release">
+  <div class="wrap release__inner">
+    <nav class="crumbs" aria-label={locale === 'ja' ? 'パンくず' : 'Breadcrumb'}>
+      <a href={releaseIndexPath(locale)}>{t.releases.back}</a>
+    </nav>
+
+    <header class="release__head">
+      <p class="label">{entry.data.version}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="release__summary">{entry.data.summary}</p>
+      <p class="release__dates">
+        {t.releases.published}
+        <time datetime={entry.data.date.toISOString().slice(0, 10)}>
+          {formatDate(entry.data.date, locale)}
+        </time>
+        {entry.data.updated && (
+          <Fragment>
+            {' · '}{t.releases.updated}
+            <time datetime={entry.data.updated.toISOString().slice(0, 10)}>
+              {formatDate(entry.data.updated, locale)}
+            </time>
+          </Fragment>
+        )}
+      </p>
+    </header>
+
+    <div class="prose"><Content /></div>
+
+    <footer class="release__foot">
+      <a class="btn btn--ghost" href={releaseIndexPath(locale)}>{t.releases.back}</a>
+      <a
+        class="btn btn--ghost"
+        href={`${site.repo}/releases/tag/v${entry.data.version}`}
+        rel="noopener">GitHub Release</a>
+    </footer>
+  </div>
+</article>
+
+<JsonLd
+  schema={{
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        headline: `${entry.data.version} — ${entry.data.title}`,
+        description: entry.data.summary,
+        datePublished: entry.data.date.toISOString(),
+        dateModified: modified.toISOString(),
+        inLanguage: locale === 'ja' ? 'ja-JP' : 'en-US',
+        image: new URL('/og.png', base).href,
+        author: { '@id': `${site.origin}/#person` },
+        publisher: { '@id': `${site.origin}/#person` },
+        isPartOf: { '@id': `${site.origin}/#website` },
+        about: { '@id': `${site.origin}/#skill` },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: t.releases.breadcrumbHome,
+            item: new URL(locale === 'ja' ? '/ja' : '/', base).href,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: t.releases.heading,
+            item: new URL(releaseIndexPath(locale), base).href,
+          },
+          { '@type': 'ListItem', position: 3, name: entry.data.version },
+        ],
+      },
+    ],
+  }}
+/>

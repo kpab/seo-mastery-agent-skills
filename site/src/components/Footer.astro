@@ -1,0 +1,22 @@
+---
+import { copy } from '../data/content';
+import type { Locale } from '../data/site';
+import { site } from '../data/site';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = copy[locale];
+const releases = locale === 'ja' ? '/ja/releases' : '/releases';
+// Astro 7 の compressHTML: 'jsx' は隣接する要素の間の空白を詰める。
+// インデックス対象の文字列は 1 本の文字列として組み立て、空白を要素の境界に置かない
+const meta = `${t.footer.skill} ${site.version} · last_verified ${site.lastVerified}`;
+---
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <span>{t.footer.built}{' '}<a href={site.authorUrl} rel="author">{site.author}</a></span>
+    <a href={releases}>{t.nav.releases}</a>
+    <a href={`${site.repo}/blob/main/CHANGELOG.md`} rel="noopener">CHANGELOG</a>
+    <a href={`${site.repo}/blob/main/LICENSE`} rel="noopener">{t.footer.license}</a>
+    <span class="site-footer__meta">{meta}</span>
+  </div>
+</footer>

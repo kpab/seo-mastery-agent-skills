@@ -1,0 +1,143 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { copy } from '../data/content';
+import { alternatePaths, localeFromPath, ogLocale, site } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+}
+const {
+  title,
+  description,
+  noindex = false,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+// 設定名を明示して落とす。フォールバックすると壊れた canonical が静かに出る
+if (!Astro.site) throw new Error('astro.config.mjs に `site` がありません。canonical と OG に絶対 URL が要ります');
+const base = Astro.site;
+// クエリとフラグメントを落とすため href ではなく pathname から組み立てる
+const canonical = new URL(Astro.url.pathname, base);
+const locale = localeFromPath(Astro.url.pathname);
+const alt = alternatePaths(Astro.url.pathname);
+const enURL = new URL(alt.en, base);
+const jaURL = new URL(alt.ja, base);
+const ogImage = new URL('/og.png', base);
+const t = copy[locale];
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    {/* テーマは最初のペイント前に決める。遅らせると明るい地が一瞬見える */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        try {
+          const stored = localStorage.getItem('seo-mastery-theme');
+          if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
+          root.dataset.themeChoice = stored === 'light' || stored === 'dark' ? stored : 'auto';
+        } catch {
+          root.dataset.themeChoice = 'auto';
+        }
+      })();
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {/* hreflang は双方向。英語が既定なので x-default も英語へ向ける。
+        noindex のページは対訳を持たないので出さない */}
+    {!noindex && (
+      <Fragment>
+        <link rel="alternate" hreflang="en" href={enURL} />
+        <link rel="alternate" hreflang="ja" href={jaURL} />
+        <link rel="alternate" hreflang="x-default" href={enURL} />
+      </Fragment>
+    )}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Astro 6 以降、拡張子付きエンドポイントは末尾スラッシュなしでのみ配信される */}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={locale === 'ja' ? 'お知らせ' : 'Releases'}
+      href={locale === 'ja' ? '/ja/releases/rss.xml' : '/releases/rss.xml'}
+    />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={ogLocale[locale]} />
+    <meta property="og:locale:alternate" content={ogLocale[locale === 'ja' ? 'en' : 'ja']} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SEO Mastery Agent Skills" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <JsonLd
+      schema={{
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': `${site.origin}/#website`,
+            url: site.origin,
+            name: site.name,
+            inLanguage: locale === 'ja' ? 'ja-JP' : 'en-US',
+            publisher: { '@id': `${site.origin}/#person` },
+          },
+          {
+            '@type': 'Person',
+            '@id': `${site.origin}/#person`,
+            name: site.author,
+            url: site.authorUrl,
+            sameAs: ['https://github.com/kpab'],
+          },
+          {
+            '@type': 'SoftwareApplication',
+            '@id': `${site.origin}/#skill`,
+            name: 'seo-mastery',
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Any',
+            softwareVersion: site.version,
+            url: site.origin,
+            codeRepository: site.repo,
+            license: 'https://opensource.org/licenses/MIT',
+            inLanguage: ['en', 'ja'],
+            author: { '@id': `${site.origin}/#person` },
+            description: t.meta.description,
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          },
+        ],
+      }}
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{locale === 'ja' ? '本文へスキップ' : 'Skip to content'}</a>
+    <Header locale={locale} />
+    <main id="main"><slot /></main>
+    <Footer locale={locale} />
+  </body>
+</html>
