@@ -5,7 +5,7 @@ verification pass** must be traceable to an entry here, and every entry must car
 file is not a complete audit of every sentence in the skills — it records what each pass actually
 checked, so a later pass can tell verified content from inherited content.
 
-**Research date: 2026-08-29** — all "as of" statements below refer to this date, except §7, which
+**Research date: 2026-08-29** — all "as of" statements below refer to this date, except the dated v1.5.0 pass below, §7, which
 records a follow-up pass on **2026-08-30**, and §8, a freshness check on **2026-09-02**.
 
 Rules for this file:
@@ -17,6 +17,49 @@ Rules for this file:
   of the skill files.
 
 ---
+
+## v1.5.0 — GEO / LLMO verification (2026-09-07)
+
+Scope: AI Search reference, its SKILL.md entrypoints and audit routing (EN/JP). Other topic
+references retain their existing verification dates. This pass supersedes older AI-search
+wording below where noted; it is not a re-verification of unrelated historical claims.
+
+Source priority for this capability: official search/AI documentation, standards/specifications,
+peer-reviewed or primary academic research, large-scale industry studies, SEO vendor observations,
+then anecdotes. Categories below track provenance, not automatic proof of efficacy. Unsupported
+ranking claims remain UNCONFIRMED; clearly labelled editorial hypotheses and optional experiments
+are included because the requested capability must distinguish them from requirements.
+
+| Category | Claim | Source | Verified date | Confidence | Notes |
+|----------|-------|--------|---------------|------------|-------|
+| Official documentation | Google treats optimization for its generative Search experiences as SEO, rooted in existing Search ranking and quality systems | [Google optimization guide — Is SEO still relevant for generative AI search?](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) | 2026-09-07 | High for Google's stated position | Google discusses AEO/GEO labels; this does not establish universal terminology, Google adoption of LLMO, or new ranking effects. Repository-wide descriptions cover search/AI provider documentation and primary research; Google-specific specifications retain their scope |
+| Official documentation | Google supporting-link eligibility requires indexing and snippet eligibility | [AI features](https://developers.google.com/search/docs/appearance/ai-features) | 2026-09-07 | High | Indexed, not merely indexable; eligibility is not selection |
+| Official documentation | Applicable Search Console inclusion is also required; special AI files/schema and tiny chunks are unnecessary | [Optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) | 2026-09-07 | High for documented guidance | Newer guide includes the site control absent from the older AI features guide; editorial layout suggestions are not engine requirements |
+| Official documentation | Include/exclude/inherit controls have property scope and propagation delay | [Search Console control](https://support.google.com/webmasters/answer/16908024) | 2026-09-07 | High | No ordinary Search ranking effect; check availability and parent inheritance |
+| Official documentation | Google-Extended covers Gemini training AND specified grounding; not Search inclusion/ranking | [Common crawlers](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers) | 2026-09-07 | High | Corrects training-only wording in old audit; removed from generic training-only recipe |
+| Vendor documentation | OpenAI training, search, and user-fetch policies differ | [OpenAI bots](https://developers.openai.com/api/docs/bots) | 2026-09-07 | High for policy | OAI-SearchBot opt-out still permits navigational links; ChatGPT-User robots rules may not apply |
+| Vendor documentation | ClaudeBot / Claude-SearchBot / Claude-User serve different purposes | [Anthropic bots](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler) | 2026-09-07 | High for policy | Search blocking may reduce visibility; does not prove all mentions disappear |
+| Vendor documentation | PerplexityBot is search, not foundation-model training; Perplexity-User generally ignores robots.txt | [Perplexity bots](https://docs.perplexity.ai/docs/resources/perplexity-crawlers) | 2026-09-07 | High for policy | Published IP verification matters; allowlisting does not ensure citation |
+| Official documentation | noindex/snippet controls have specific scopes and must be read by the crawler | [Robots meta](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag) | 2026-09-07 | High | max-snippet is not a guaranteed AI exclusion threshold; data-nosnippet uses span/div/section |
+| Official documentation | Search Console provides generative AI performance reporting | [Announcement](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports) | 2026-09-07 | High for report existence | Guide now instructs checking actual fields/history/availability rather than inheriting unverified exact start dates or permanent impressions-only assumptions |
+| Vendor documentation | Bing reports citations across supported AI surfaces, not universal rank | [AI Performance](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview) | 2026-09-07 | High for documented metrics | Grounding queries are sampled; citation counts do not expose prominence within answers |
+| Vendor documentation | Bing has provider-specific noarchive/nocache behavior | [Bing robots meta](https://www.bing.com/webmasters/help/robots-meta-tags-and-attributes-that-bing-supports-5198d240) | 2026-09-07 | High for policy | Do not transfer meanings to Google |
+| Academic research | GEO studies interventions and visibility metrics in a defined experimental system | [GEO, KDD 2024 / arXiv v3](https://arxiv.org/html/2311.09735v3) | 2026-09-07 | Medium for transfer to practice | Citation/statistics interventions motivate hypotheses; setup, domains and engines limit generalization. No promised uplift percentage on current products |
+| Official documentation | Original useful content and coherent organization support an editorial strategy | [Google optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide), [Bing AI Performance](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview) | 2026-09-07 | Medium for inferred visibility effects | Answer-first, atomic facts, author/entity clarity and information gain are checkable editorial heuristics, not universal ranking factors or mandatory word counts |
+| Experimental / anecdotal | llms.txt is a community proposal, now v2; publishing it does not prove search uplift | [Proposal](https://llmstxt.org/) | 2026-09-07 | High for proposal existence; Experimental / Low Evidence for visibility | Proposal updated 2026-08-10. Adoption claims do not prove engine consumption; no Google visibility benefit per its guide. Keep optional; removed blanket assertion that other-vendor adoption is unconfirmed |
+| Industry study | No industry-only efficacy claim adopted in this pass | [GEO primary study used instead](https://arxiv.org/abs/2311.09735) | 2026-09-07 | Not assessed | This category is reserved for future studies with sample/methodology disclosure, not a claim that this academic paper is an industry study |
+| Official documentation | Hidden text, fabricated material and scaled manipulation are not a valid optimization strategy | [Spam policies](https://developers.google.com/search/docs/essentials/spam-policies), [AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) | 2026-09-07 | High for Google policy; skill-wide quality rule | Explicitly prohibit prompt injection, fake authors/citations/reviews/statistics and AI-only doorway content |
+
+Terminology boundaries (including LLMO containing GEO), the eight audit stages, six finding fields,
+and manual benchmark denominators are this skill's operational conventions, not vendor standards.
+Citation/mention rates count responses once; source prominence requires a declared observational
+rubric. Referral sessions cannot measure unclicked exposure. Repeated query families, engines,
+conditions, evidence artifacts and failures make comparisons reviewable, but do not establish
+causality. No live engine benchmark or traffic experiment was performed in this documentation pass.
+
+The previous table's extra Apple/Common Crawl/Meta/ByteDance entries were not re-verified in this
+pass and are omitted from the active AI reference; additional operators require official checks.
+This is a scoped verified table, not an exhaustive blocklist.
 
 ## 1. Google Search — specification changes
 

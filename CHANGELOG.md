@@ -19,6 +19,25 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-09-07
+
+### Added
+
+- GEO / LLMO / AEO working definitions and evidence-level classification.
+- Eight-stage Generative Visibility audit with six-field findings, entity clarity,
+  original information gain, and citation-ready editorial checks.
+- AI referral, citation/mention rate, source prominence and repeated benchmark methodology.
+
+### Changed
+
+- Expanded the existing AI Search reference and discovery triggers in EN/JP; no new skill or dependency.
+- Classified training, search and user retrieval separately; clarified mixed-purpose
+  Google-Extended and blocking limitations, and optional experimental llms.txt guidance.
+- Synchronized documentation, research provenance and distribution versions at 1.5.0.
+- Verified the changed AI search material on 2026-09-07; untouched references retain their dates.
+- Refreshed `last_verified` on `astro-seo.md` and `edge-seo.md` (EN/JP) to 2026-09-02; verified
+  against Astro 7.2.10 and `@astrojs/sitemap` 3.7.4.
+
 ### Fixed
 
 - **`edge-seo.md` (EN/JP)** — documented the navigation-request rule
@@ -30,11 +49,6 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 - **`astro-seo.md` (EN/JP)** — noted the Astro 7.2.0 `Astro.url.pathname` fix for
   `build.format: 'preserve'` and the `@astrojs/sitemap` 3.7.3 (per-child `lastmod` in the index)
   and 3.7.4 (homepage empty-path URL) fixes.
-
-### Changed
-
-- Refreshed `last_verified` on `astro-seo.md` and `edge-seo.md` (EN/JP) to 2026-09-02; verified
-  against Astro 7.2.10 and `@astrojs/sitemap` 3.7.4.
 
 ## [1.4.0] - 2026-08-29
 
@@ -273,7 +287,8 @@ Found by a second review pass on the same branch:
 - Site audit workflow
 - English and Japanese skill variants
 
-[Unreleased]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.2.1...v1.2.2

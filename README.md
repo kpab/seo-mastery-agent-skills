@@ -4,7 +4,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Agent%20Skill-7C3AED)](https://docs.claude.com/en/docs/claude-code/overview)
 [![Languages: EN | JP](https://img.shields.io/badge/Languages-EN%20%7C%20JP-success)](docs/README.ja.md)
 
-Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Google's official documentation, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T, AI search, edge/static-site SEO, and site audits.
+Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on official search and AI vendor documentation and primary research, providing integrated support for technical SEO, content SEO, structured data, Core Web Vitals, E-E-A-T, AI search, edge/static-site SEO, and site audits.
 
 [日本語版 README はこちら](docs/README.ja.md)
 
@@ -20,7 +20,8 @@ Comprehensive SEO optimization Agent Skills for Claude Code & Codex. Based on Go
 - **Content SEO Optimization** - Meta tags, heading structure, E-E-A-T strategies
 - **Structured Data Templates** - Article, FAQ, Product, LocalBusiness, etc.
 - **Core Web Vitals Support** - Detailed optimization techniques for LCP, INP, CLS
-- **AI Search** - AI Overviews / AI Mode eligibility and controls, AI crawler management
+- **AI Search / GEO / LLMO** - AI Overviews / AI Mode, ChatGPT / Claude / Perplexity crawler control, citation-ready content, entity clarity, original information gain, AI visibility measurement, and evidence-based optional llms.txt guidance
+- **Evidence-based generative visibility audits** - High / Medium / Experimental recommendations, eight audit stages, and repeatable citation/mention measurement. GEO / LLMO / AEO are working terms, not ranking or citation guarantees.
 - **Astro & Edge SEO** - Astro-specific patterns and Cloudflare Workers/Pages edge SEO
 - **Site Audit Workflow** - Systematic audit process and report formats
 - **Practical Code Examples** - Ready-to-use templates
