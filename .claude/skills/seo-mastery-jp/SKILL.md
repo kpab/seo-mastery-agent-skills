@@ -1,7 +1,7 @@
 ---
 name: seo-mastery-jp
 description: "公式情報・研究に基づくSEOと生成AI検索の可視性改善。技術SEO、コンテンツ、schema.org / JSON-LD、Core Web Vitals、E-E-A-T、Astro、Cloudflare Workers/Pages、サイト監査に対応。SEO、robots.txt、sitemap、canonical、hreflang、meta tags、LCP/INP/CLS、GEO (Generative Engine Optimization)、LLMO (Large Language Model Optimization)、AEO (Answer Engine Optimization)、AI visibility、AI citation / AI citations、AI mentions、generative search、ChatGPT Search、Perplexity、Claude search、AI search optimization、AI Overviews / AI Mode、llms.txt、AIクローラー制御、引用可能性・エンティティ・独自情報の監査で使用する。日本語の依頼には本Skill、英語にはseo-masteryを使い、両方を同時に読み込まない。"
-version: 1.5.0
+version: 1.5.1
 last_verified: 2026-09-07
 author: kpab
 ---

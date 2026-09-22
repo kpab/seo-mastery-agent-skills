@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-02
+last_verified: 2026-09-22
 ---
 
 # Edge SEO Reference (Cloudflare Workers / Pages)

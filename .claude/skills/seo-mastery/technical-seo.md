@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-22
 ---
 
 # Technical SEO Reference
@@ -51,6 +51,11 @@ Sitemap: https://example.com/sitemap.xml
    - Cached for up to 24 hours, so changes are not immediate
    - Precedence: the most specific (longest path) rule wins; on a tie, the least restrictive applies. Path matching is case-sensitive
    - Group matching: the most specific `user-agent` match determines the group — file order is irrelevant
+
+5. **Robots Meta Directives Google No Longer Uses**
+   - `noarchive` and `nositelinkssearchbox` are documented as no longer used by Google Search, and `nocache` as not used — shipping any of them has no effect
+   - Active directives: `all`, `noindex`, `nofollow`, `none`, `nosnippet`, `max-snippet:[n]`, `max-image-preview:[setting]`, `max-video-preview:[n]`, `notranslate`, `noimageindex`, `unavailable_after:[date]`, `indexifembedded`
+   - `data-nosnippet` on `<span>` / `<div>` / `<section>` is the text-level equivalent of `nosnippet`
 
 ### Common Mistakes
 
