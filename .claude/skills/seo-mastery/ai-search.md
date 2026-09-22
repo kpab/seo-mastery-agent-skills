@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-07
+last_verified: 2026-09-22
 ---
 
 # AI Search / GEO / LLMO Reference
@@ -81,6 +81,7 @@ High Confidence for the operators' documented policies, not a guarantee of enfor
 | GPTBot | OpenAI | Training | Opt out of future foundation-model training use |
 | OAI-SearchBot | OpenAI | Search / retrieval | ChatGPT search; opted-out sites can still appear as navigational links |
 | ChatGPT-User | OpenAI | User-initiated retrieval | robots.txt rules may not apply to user-triggered requests |
+| OAI-AdsBot | OpenAI | Ad review | Checks pages submitted as ChatGPT ads and may use landing page content to judge when to show the ad; not used for model training. OpenAI documents the "each setting is independent" guarantee for OAI-SearchBot and GPTBot only |
 | ClaudeBot | Anthropic | Training | Signals exclusion of future materials from training |
 | Claude-SearchBot | Anthropic | Search / retrieval | Blocking prevents its search indexing and may reduce visibility/accuracy |
 | Claude-User | Anthropic | User-initiated retrieval | Blocking prevents retrieval in response to user queries |

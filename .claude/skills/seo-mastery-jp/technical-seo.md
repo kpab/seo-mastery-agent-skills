@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-08-29
+last_verified: 2026-09-22
 ---
 
 # 技術SEO リファレンス
@@ -51,6 +51,11 @@ Sitemap: https://example.com/sitemap.xml
    - 最大24時間キャッシュされるため、変更は即座には反映されない
    - 優先順位: もっとも具体的な（パスが長い）ルールが勝つ。同点なら制限の緩い方が適用される。パスの照合は大文字小文字を区別する
    - グループの解決: もっとも具体的な `user-agent` の一致でグループが決まる。ファイル内の記述順は関係ない
+
+5. **Googleが使わなくなったrobotsメタディレクティブ**
+   - `noarchive` / `nocache` / `nositelinkssearchbox` は「Google検索では使われない」と明記されている — 書いても効果はない
+   - 有効なディレクティブは `all` / `noindex` / `nofollow` / `none` / `nosnippet` / `max-snippet:[n]` / `max-image-preview:[setting]` / `max-video-preview:[n]` / `notranslate` / `noimageindex` / `unavailable_after:[date]` / `indexifembedded`
+   - `<span>` / `<div>` / `<section>` に付ける `data-nosnippet` が、テキスト単位での `nosnippet` にあたる
 
 ### よくある間違い
 

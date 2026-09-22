@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-02
+last_verified: 2026-09-22
 ---
 
 # エッジSEO リファレンス（Cloudflare Workers / Pages）

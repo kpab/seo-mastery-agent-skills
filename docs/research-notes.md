@@ -6,7 +6,8 @@ file is not a complete audit of every sentence in the skills — it records what
 checked, so a later pass can tell verified content from inherited content.
 
 **Research date: 2026-08-29** — all "as of" statements below refer to this date, except the dated v1.5.0 pass below, §7, which
-records a follow-up pass on **2026-08-30**, and §8, a freshness check on **2026-09-02**.
+records a follow-up pass on **2026-08-30**, §8, a freshness check on **2026-09-02**, and §9, the
+2026-09 freshness round on **2026-09-22**.
 
 Rules for this file:
 
@@ -103,6 +104,11 @@ Note the asymmetry in the 2025-06-12 announcement: seven types were named, but *
 still listed as a supported feature** in the gallery as of 2026-08-29. Because the gallery is the
 authoritative "what works today" list, the repo treats Book actions as still supported and does not
 list it among the retired types.
+
+> **Corrected 2026-09-22 (§9.2): Book actions is not in the gallery.** The gallery has not changed
+> since 2026-06-15, so the sentence above was wrong when written. Book actions keeps its own
+> documentation page with no deprecation notice, but it is not among the 25 features the gallery
+> lists. No skill file is affected.
 
 - <https://developers.google.com/search/docs/appearance/structured-data/search-gallery>
 - <https://developers.google.com/search/blog/2025/06/simplifying-search-results>
@@ -267,7 +273,8 @@ Rules without a user agent apply to all; on conflict the more restrictive rule w
 ### 1.11 Ranking system updates during the covered period
 
 Confirmed named updates in 2026: February 2026 Discover core update, March 2026 core update, March
-2026 spam update, May 2026 core update (rolled out 2026-05-21 → 2026-06-02), June 2026 spam update.
+2026 spam update, May 2026 core update (rolled out 2026-05-21 → 2026-06-02), June 2026 spam update,
+August 2026 spam update (started 2026-08-18, ran 2 days 16 hours — added 2026-09-22, see §9.3).
 
 Also relevant from the Search Central blog: a new "back button hijacking" spam policy (April 2026)
 and a site reputation policy update (August 2026, with EEA-specific enforcement).
@@ -682,3 +689,151 @@ diff their generated heading IDs rather than asserting either outcome.
   https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/ (updated 2026-08-25)
   https://developers.cloudflare.com/workers/configuration/compatibility-flags/
 - Not checked: `_headers` page, Cloudflare changelog feed.
+
+---
+
+## 9. Freshness check — 2026-09 round (2026-09-22)
+
+Closes what issue #13 left open after #14: Google Search, performance, Schema.org, the Cloudflare
+`_headers` page and changelog, and the AI crawler operators.
+
+### 9.1 Google Search — no specification change affecting these skills
+
+- robots.txt spec (page updated 2026-08-31): 500 KiB limit, up to 24 hours of caching, the four
+  supported fields, longest-path precedence with a least-restrictive tie-break. Unchanged from §1.8.
+- Robots meta / X-Robots-Tag (page updated 2026-03-24): the active directive list is unchanged, and
+  `noarchive` / `nocache` / `nositelinkssearchbox` are still documented as unused by Google Search
+  (`noarchive` and `nositelinkssearchbox` as "no longer used", `nocache` as "isn't used" — the page
+  does not claim it ever was). **Applied to the skill files this round** — §1.10 recorded this in
+  2026-08-29 but `technical-seo.md` never said it, so a reader could still ship a directive that does
+  nothing. Note that `all` belongs in the active list too; §1.10 omitted it.
+- Scope note on "unchanged" above: the robots.txt page names only `crawl-delay` as unsupported. The
+  separate claim in `technical-seo.md` that a `noindex` line in robots.txt has no effect rests on
+  Google's block-indexing guidance, not on the robots.txt specification page, and was not re-fetched
+  this round.
+- Common crawlers (page updated 2026-07-14): the token list is identical to §1.7, and the
+  verification file is still `/static/crawling/ipranges/common-crawlers.json`.
+- AI features (page updated 2025-12-10) and the generative AI optimization guide (2026-07-10): the
+  site-owner controls are unchanged (`nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`,
+  robots.txt, Google-Extended), and the guide still states that machine-readable files such as
+  `llms.txt` "neither harm nor help your site's visibility or rankings."
+
+- <https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt>
+- <https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag>
+- <https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers>
+- <https://developers.google.com/search/docs/appearance/ai-features>
+- <https://developers.google.com/search/docs/fundamentals/ai-optimization-guide>
+
+### 9.2 Book actions is not in the search gallery — correction to §1.2
+
+The gallery (page updated 2026-06-15) lists 25 features: Article, Breadcrumb, Carousel, Course list,
+Dataset, Discussion forum, Education Q&A, Employer aggregate rating, Event, Image metadata, Job
+posting, Local business, Math solver, Movie, Organization, Product, Profile page, Q&A, Recipe, Review
+snippet, Software app, Speakable, Subscription and paywalled content, Vacation rental, Video.
+
+**Book actions is absent.** Two independent fetches on 2026-09-22 agree, and the gallery page has not
+changed since 2026-06-15 — so the "Book actions is still listed" line in §1.2, recorded on
+2026-08-29, was wrong when written rather than describing a later removal. The book actions
+documentation page itself (updated 2025-12-10) carries no deprecation notice, so the honest summary
+is: documented as a feature, not listed in the gallery. No skill file is affected —
+`structured-data.md` never documented Book.
+
+- <https://developers.google.com/search/docs/appearance/structured-data/search-gallery>
+- <https://developers.google.com/search/docs/appearance/structured-data/book>
+
+### 9.3 Ranking updates — one to add to §1.11
+
+**August 2026 spam update**: started 18 Aug 2026, ran 2 days 16 hours (US/Pacific). Everything else
+on the dashboard matches §1.11.
+
+Note for future passes: `developers.google.com/search/updates/ranking` now 301s to the Search Status
+Dashboard history page.
+
+- <https://status.search.google.com/products/rGHU1u87FJnkP6W2GwMi/history>
+
+### 9.4 Documentation updates since the last pass — none change the guidance
+
+- 2026-08-28 — supported favicon file formats spelled out; site reputation policy enforcement
+  described for the EEA.
+- 2026-08-20 — documentation for a custom interactive button for the preferred sources feature.
+- 2026-08-31 — European Search Dataset Licensing Program page refreshed.
+- 2026-09-08 — new page on regional differences in Search features (aggregator units, supplier
+  units, carousels by country).
+- 2026-09-16 — new guide for adding Search profile badges to a site.
+- 2026-09-18 — aggregator and supplier units extended to local business queries.
+
+Search Central blog, same window: one post in August 2026 (the site reputation policy update already
+recorded in §1.11) and three in September 2026, all Search Central Live event announcements
+(Deep Dive Europe, India / Bengaluru, Bogotá and Ciudad de México). Nothing with a technical claim to
+carry into the skills. The blog archive lists posts by month without per-post dates, so the dated
+entries above come from the documentation updates changelog.
+
+- <https://developers.google.com/search/updates>
+- <https://developers.google.com/search/blog>
+
+### 9.5 Core Web Vitals — unchanged
+
+LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1, assessed at the 75th percentile of field data, mobile and
+desktop separately. No metric change announced; web.dev states the set is reviewed on an annual
+cadence. `scheduler.yield()` is still not Baseline (MDN: "limited availability"), so the feature
+detection in the `core-web-vitals.md` sample remains required.
+
+- <https://web.dev/articles/vitals>
+- <https://developer.mozilla.org/en-US/docs/Web/API/Scheduler/yield>
+
+### 9.6 Schema.org 30.1 (released 2026-09-16)
+
+Previous release 30.0 (2026-03-19). 30.1 adds vocabulary for EU Digital Product Passports and common
+eCommerce product data. None of the types used in `structured-data.md` changed.
+
+What the refreshed `last_verified` on `structured-data.md` covers this round: the gallery's feature
+list (§9.2) and the schema.org release (this section) — that is, the two external lists the file
+depends on. The individual JSON-LD examples in the file were validated in the 2026-08-29 pass and
+were not re-run against the Rich Results Test this round.
+
+- <https://schema.org/docs/releases.html>
+
+### 9.7 Cloudflare `_headers` and changelog — the last open item from §8
+
+`_headers` (the page left unchecked in §8) matches §4.3 exactly: 100 header rules, 2,000 characters
+per line, `!` to remove a header, splat and placeholder matching, and — the load-bearing one —
+"custom headers defined in the `_headers` file are not applied to responses generated by your Worker
+code." No correction needed in `edge-seo.md`.
+
+The Cloudflare changelog carries no August or September 2026 entry touching static assets, Pages,
+redirects, headers, HTMLRewriter, or crawler/bot controls.
+
+- <https://developers.cloudflare.com/workers/static-assets/headers/>
+- <https://developers.cloudflare.com/changelog/>
+
+### 9.8 AI crawler operators — one new token
+
+- **OpenAI**: the bots page moved to `developers.openai.com/api/docs/bots`. `OAI-AdsBot` is recorded
+  here for the first time — it checks pages submitted as ChatGPT ads, may use landing page content
+  "to determine when it's most relevant to show the ad to users," and is explicitly not used for
+  model training (IP file `openai.com/adsbot.json`, live). The page carries no last-updated stamp, so
+  whether the token is *new* is unverifiable; only that it is newly recorded by this repo.
+  **Limit on the independence claim:** the page says "OpenAI uses OAI-SearchBot and GPTBot robots.txt
+  tags … Each setting is independent of the others" — naming those two only. It documents no
+  robots.txt control for `OAI-AdsBot`, so "blocking OAI-AdsBot does not affect OAI-SearchBot" is
+  `UNCONFIRMED` and is kept out of the skill files. `GPTBot`, `OAI-SearchBot` and `ChatGPT-User` are
+  unchanged. **`OAI-AdsBot` added to `ai-search.md` (EN/JP) this round, worded to that limit.**
+- **Anthropic**: `ClaudeBot` (training), `Claude-User` (user-initiated), `Claude-SearchBot` (search)
+  unchanged. Verified crawler IPs are published at `claude.com/crawling/bots.json`; Anthropic states
+  IP-based blocking is unreliable and robots.txt is the supported route.
+- **Perplexity**: `PerplexityBot` (search, not foundation-model training) and `Perplexity-User`
+  (user-initiated, generally ignores robots.txt) unchanged, with per-bot IP files.
+
+- <https://developers.openai.com/api/docs/bots>
+- <https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler>
+- <https://docs.perplexity.ai/docs/resources/perplexity-crawlers> (the `/guides/bots` URL used by the
+  freshness issue template 308s here; the skill files already cite the destination)
+
+### 9.9 Not confirmed this round
+
+- **Chrome Platform Status** (`chromestatus.com`) renders through JavaScript and could not be read as
+  a primary source. `UNCONFIRMED` for this round; the one API the samples depend on
+  (`scheduler.yield()`) was checked against MDN instead, as in §2.
+- The **August 2026 site reputation policy** blog post could not be fetched at its expected URL (404).
+  The policy change itself is corroborated by the 2026-08-28 entry in the documentation updates
+  changelog, which is what §1.11 already relies on. No new claim was added from the post.

@@ -19,6 +19,36 @@ Every reference file carries a `last_verified` date in its frontmatter. See
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-09-22
+
+Freshness round for 2026-09 (issue #13): Google Search, Core Web Vitals, Schema.org, the Cloudflare
+`_headers` page, and the AI crawler operators.
+
+### Added
+
+- `OAI-AdsBot` in the AI crawler table (EN/JP) — OpenAI's ad reviewer, which also reads landing page
+  content to judge ad relevance, and is not a training crawler. OpenAI documents no robots.txt
+  control for it, so no blocking advice is given (see research notes §9.8).
+- The robots meta directives Google does not use (`noarchive`, `nocache`, `nositelinkssearchbox`)
+  in `technical-seo.md` (EN/JP), alongside the active directive list and `data-nosnippet`.
+
+### Fixed
+
+- Corrected the research note that listed Book actions as present in the structured data search
+  gallery; it is not, and the gallery has not changed since 2026-06-15. No skill file relied on it.
+
+### Changed
+
+- Re-verified and unchanged: robots.txt spec, robots meta / X-Robots-Tag, Google's common crawler
+  tokens and IP range file, AI features and the generative AI optimization guide (llms.txt still
+  neither helps nor harms), Core Web Vitals thresholds, `scheduler.yield()` support, Cloudflare
+  `_headers` limits and its non-application to Worker responses.
+- Recorded the August 2026 spam update and Schema.org 30.1 (2026-09-16) in the research notes.
+- Refreshed `last_verified` to 2026-09-22 on `technical-seo.md`, `structured-data.md`,
+  `core-web-vitals.md`, `ai-search.md` and `edge-seo.md` (EN/JP).
+- `freshness-reminder.yml` now points at the moved sources it asks the next round to check: the
+  ranking history on the Search Status Dashboard, and OpenAI's bots page at `developers.openai.com`.
+
 ## [1.5.0] - 2026-09-07
 
 ### Added
@@ -287,7 +317,8 @@ Found by a second review pass on the same branch:
 - Site audit workflow
 - English and Japanese skill variants
 
-[Unreleased]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/kpab/seo-mastery-agent-skills/compare/v1.2.2...v1.3.0

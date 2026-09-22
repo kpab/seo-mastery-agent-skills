@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-09-07
+last_verified: 2026-09-22
 ---
 
 # AI Search / GEO / LLMO リファレンス
@@ -81,6 +81,7 @@ AI専用schema、Markdown、llms.txtは不要。[robotsメタ仕様](https://dev
 | GPTBot | OpenAI | 学習 | 将来の基盤モデル学習への利用を拒否する |
 | OAI-SearchBot | OpenAI | 検索・取得 | ChatGPT検索。拒否後もナビゲーションリンクとして表示される場合がある |
 | ChatGPT-User | OpenAI | ユーザー起点の取得 | ユーザー操作のリクエストにはrobots.txtが適用されない場合がある |
+| OAI-AdsBot | OpenAI | 広告の審査 | ChatGPT広告として申請されたページを確認し、ランディングページの内容を広告表示の判断にも使う場合がある。モデル学習には使わない。「各設定は独立」と明記されているのはOAI-SearchBotとGPTBotのみ |
 | ClaudeBot | Anthropic | 学習 | 将来のコンテンツを学習対象から除外する意思表示 |
 | Claude-SearchBot | Anthropic | 検索・取得 | 遮断により検索用インデックスを防ぎ、可視性・正確性が低下する可能性 |
 | Claude-User | Anthropic | ユーザー起点の取得 | 遮断によりユーザー質問に応じた取得を防ぐ |

@@ -1,7 +1,7 @@
 ---
 name: seo-mastery
 description: "Evidence-based SEO and generative search visibility: technical/content SEO, schema.org / JSON-LD, Core Web Vitals, E-E-A-T, Astro, Cloudflare Workers/Pages, and audits. Use for SEO, robots.txt, sitemaps, canonical, hreflang, meta tags, LCP/INP/CLS, GEO (Generative Engine Optimization), LLMO (Large Language Model Optimization), AEO (Answer Engine Optimization), AI visibility, AI citation / AI citations, AI mentions, generative search, ChatGPT Search, Perplexity, Claude search, AI search optimization, AI Overviews / AI Mode, llms.txt, AI crawler control, citation readiness, entity clarity, and information gain audits. For English requests use this skill; for Japanese use seo-mastery-jp. Load only one."
-version: 1.5.0
+version: 1.5.1
 last_verified: 2026-09-07
 author: kpab
 ---
